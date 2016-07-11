@@ -10,10 +10,23 @@ public class MainWindow extends JFrame {
 
 	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	private ProductListPanel productListPanel = new ProductListPanel();
+	private SalePanel salePanel = new SalePanel();
 	
 	public MainWindow() {
 		setTitle("Farmacia Regine Inventory");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//SALE PANEL
+		
+		tabbedPane.setBackground(new Color(255, 255, 255));
+		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tabbedPane.addTab("Sale", salePanel);
+		
+		getContentPane().setBackground(new Color(255, 255, 255));
+		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
+		getContentPane().add(tabbedPane, "cell 0 0,grow");
+		
+		//PRODUCT LIST PANEL
 		
 		tabbedPane.setBackground(new Color(255, 255, 255));
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -23,9 +36,11 @@ public class MainWindow extends JFrame {
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
 		getContentPane().add(tabbedPane, "cell 0 0,grow");
 		
+		
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
+	
 	
 }
