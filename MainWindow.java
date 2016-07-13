@@ -10,6 +10,7 @@ public class MainWindow extends JFrame {
 
 	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	private ProductListPanel productListPanel = new ProductListPanel();
+	private StockPanel stockPanel = new StockPanel();
 	private SalePanel salePanel = new SalePanel();
 	
 	public MainWindow() {
@@ -28,9 +29,11 @@ public class MainWindow extends JFrame {
 		
 		//PRODUCT LIST PANEL
 		
+		//STOCK PANEL
 		tabbedPane.setBackground(new Color(255, 255, 255));
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabbedPane.addTab("Product List", productListPanel);
+		tabbedPane.addTab("Stock", stockPanel);
 		
 		getContentPane().setBackground(new Color(255, 255, 255));
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
@@ -43,4 +46,5 @@ public class MainWindow extends JFrame {
 	}
 	
 	
+}
 }
