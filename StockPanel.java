@@ -1,3 +1,5 @@
+package ProjectFrontEnd;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,6 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.table.DefaultTableModel;
 
+import ProjectBackEnd.BatchManager;
+import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
 
 public class StockPanel extends JPanel implements ActionListener{
@@ -47,7 +51,7 @@ public class StockPanel extends JPanel implements ActionListener{
 	private JLabel lblPesosAdd_1 = new JLabel("Pesos");
 	private JLabel lblQuantityAdd = new JLabel("Quantity:");
 	private JLabel lblPiecesAdd = new JLabel("Pieces");
-	private JLabel lblFeedbackAdd = new JLabel("??? successfully added to the inventory.");
+	private JLabel lblFeedbackAdd = new JLabel("Add details above to add product.");
 	private JButton btnAdd = new JButton("Add");
 	private Component vstAdd = Box.createVerticalStrut(20);
 	
@@ -72,6 +76,10 @@ public class StockPanel extends JPanel implements ActionListener{
 	private JToggleButton tglbtnUpdateRestock = new JToggleButton("Update");
 	private JButton btnRestock = new JButton("Restock");
 	
+	//MANAGER INITIALIZERS
+	private ProductManager productManage = new ProductManager();
+	private BatchManager batchManage = new BatchManager();
+	
 	public StockPanel() {
 		setBackground(new Color(255, 255, 255));
 		setLayout(new MigLayout("", "[grow][]", "[]"));
@@ -83,11 +91,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		btnSearch.setForeground(new Color(255, 255, 255));
 		btnSearch.setBackground(new Color(0, 204, 0));
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		lblSort.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		cboSort.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		cboSort.setModel(new DefaultComboBoxModel(new String[] {"Quantity, Ascending", "Item Name"}));
 		
 		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductList.setModel(new DefaultTableModel(
@@ -113,8 +116,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		pnlProductList.setLayout(new MigLayout("", "[grow][][grow][]", "[][grow]"));
 		pnlProductList.add(txtSearch, "cell 0 0,grow");
 		pnlProductList.add(btnSearch, "cell 1 0,alignx left,growy");
-		pnlProductList.add(lblSort, "cell 2 0,alignx right");
-		pnlProductList.add(cboSort, "cell 3 0,alignx right");
 		pnlProductList.add(scrollPane, "cell 0 1 4 1,grow");
 		
 		pnlForm.setBackground(new Color(255, 255, 255));
@@ -156,6 +157,7 @@ public class StockPanel extends JPanel implements ActionListener{
 		btnAdd.setForeground(new Color(255, 255, 255));
 		btnAdd.setBackground(new Color(0, 204, 0));
 		btnAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnAdd.addActionListener(this);
 																			
 		pnlAddNewItemForm.setBackground(Color.WHITE);
 		pnlAddNewItemForm.setLayout(new MigLayout("", "[80:80px][grow]", "[][][][][][][]"));
@@ -258,6 +260,12 @@ public class StockPanel extends JPanel implements ActionListener{
 			}
 			else {
 				txtSellingPriceRestock.setEditable(false);
+			}
+			
+			if(e.getSource().equals(btnAdd)) {
+				productManage.addProduct(txtItemNameAdd.getText(), Double.parseDouble(txtSellingPriceAdd.getText()));
+				batchManage.addFirstBatch(Integer.parseInt(txtQuantityAdd.getText()), Double.parseDouble(txtBuyingPriceAdd.getText()));
+				lblFeedbackRestock.setText(txtItemNameAdd.getText() +"successfully added to the inventory!");
 			}
 		}
 	}
