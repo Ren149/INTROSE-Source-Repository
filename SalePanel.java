@@ -15,16 +15,31 @@ public class SalePanel extends JPanel{
 	private JTable tblTransaction;
 	public SalePanel() {
 		setBackground(Color.WHITE);
-		setLayout(new MigLayout("", "[82.00,grow][grow]", "[281.00,grow][grow]"));
+		setLayout(new MigLayout("", "[82.00,grow][grow]", "[grow][281.00,grow][grow]"));
+		
+		JPanel pnlSetDate = new JPanel();
+		pnlSetDate.setBackground(Color.WHITE);
+		pnlSetDate.setBorder(new TitledBorder(null, "1. Set sales date:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(pnlSetDate, "cell 0 0,grow");
+		pnlSetDate.setLayout(new MigLayout("", "[103.00][59.00][61.00]", "[]"));
+		
+		JComboBox comboBoxSalesDateMonth = new JComboBox();
+		pnlSetDate.add(comboBoxSalesDateMonth, "cell 0 0,growx");
+		
+		JComboBox comboBoxSalesDateDay = new JComboBox();
+		pnlSetDate.add(comboBoxSalesDateDay, "cell 1 0,growx");
+		
+		JComboBox comboBoxSalesDateYear = new JComboBox();
+		pnlSetDate.add(comboBoxSalesDateYear, "cell 2 0,growx");
 		
 		JPanel pnlSelectItem = new JPanel();
 		pnlSelectItem.setBackground(Color.WHITE);
-		pnlSelectItem.setBorder(new TitledBorder(null, "1. Select item sold:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(pnlSelectItem, "cell 0 0,grow");
-		pnlSelectItem.setLayout(new MigLayout("", "[grow]", "[][grow]"));
+		pnlSelectItem.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "2. Select item sold:", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		add(pnlSelectItem, "cell 0 1,grow");
+		pnlSelectItem.setLayout(new MigLayout("", "[grow]", "[grow][][grow]"));
 		
 		txtSaleSearch = new JTextField();
-		pnlSelectItem.add(txtSaleSearch, "flowx,cell 0 0,growx");
+		pnlSelectItem.add(txtSaleSearch, "flowx,cell 0 1,growx");
 		txtSaleSearch.setColumns(10);
 		
 		JButton btnSaleSearch = new JButton("Search");
