@@ -84,11 +84,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		btnSearch.setBackground(new Color(0, 204, 0));
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		lblSort.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		cboSort.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		cboSort.setModel(new DefaultComboBoxModel(new String[] {"Quantity, Ascending", "Item Name"}));
-		
 		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductList.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -113,8 +108,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		pnlProductList.setLayout(new MigLayout("", "[grow][][grow][]", "[][grow]"));
 		pnlProductList.add(txtSearch, "cell 0 0,grow");
 		pnlProductList.add(btnSearch, "cell 1 0,alignx left,growy");
-		pnlProductList.add(lblSort, "cell 2 0,alignx right");
-		pnlProductList.add(cboSort, "cell 3 0,alignx right");
 		pnlProductList.add(scrollPane, "cell 0 1 4 1,grow");
 		
 		pnlForm.setBackground(new Color(255, 255, 255));
