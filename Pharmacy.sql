@@ -28,8 +28,9 @@ CREATE TABLE `batch` (
   `batchID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `productID` int(10) unsigned zerofill NOT NULL,
   `batch_quantity` int(11) NOT NULL,
-  `expiration_date` date NOT NULL,
-  `entry_date` date NOT NULL,
+  `expiry_month` varchar(45) DEFAULT NULL,
+  `expiry_year` year(4) DEFAULT NULL,
+  `entry_date` date DEFAULT NULL,
   `buying_price` int(11) NOT NULL,
   PRIMARY KEY (`batchID`,`productID`),
   UNIQUE KEY `batchID_UNIQUE` (`batchID`),
@@ -57,8 +58,8 @@ CREATE TABLE `products` (
   `productID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `product_name` varchar(45) NOT NULL,
   `selling_price` int(11) NOT NULL,
-  `demand` int(11) NOT NULL,
-  `isDiscontinued` binary(0) DEFAULT NULL,
+  `demand` int(11) DEFAULT NULL,
+  `isDiscontinued` binary(1) NOT NULL,
   PRIMARY KEY (`productID`),
   UNIQUE KEY `productID_UNIQUE` (`productID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -108,4 +109,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-15 12:32:38
+-- Dump completed on 2016-07-16  0:09:02

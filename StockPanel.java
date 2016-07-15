@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -18,6 +19,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import ProjectBackEnd.BatchManager;
@@ -72,7 +75,7 @@ public class StockPanel extends JPanel implements ActionListener{
 	private JLabel lblPesosRestock_1 = new JLabel("Pesos");
 	private JLabel lblPiecesRestock = new JLabel("Pieces");
 	private JLabel lblExpiryRestock = new JLabel("Expiry:");
-	private JLabel lblFeedbackRestock = new JLabel("??? successfully added to the inventory.");
+	private JLabel lblFeedbackRestock = new JLabel("Add details above to restock product.");
 	private JComboBox cboExpiryMonthRestock = new JComboBox();
 	private JComboBox cboExpiryYearRestock = new JComboBox();
 	private Component hstRestock = Box.createHorizontalStrut(20);
@@ -95,20 +98,11 @@ public class StockPanel extends JPanel implements ActionListener{
 		btnSearch.setForeground(new Color(255, 255, 255));
 		btnSearch.setBackground(new Color(0, 204, 0));
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnSearch.addActionListener(this);
 		
 		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tblProductList.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null},
-				{null, null},
-				{null, null},
-				{null, null},
-			},
-			new String[] {
-				"Item Name", "Quantity"
-			}
-		)
-		);
+		tblProductList.setModel(productManage.viewProducts());
+		selectTableField();
 		tblProductList.getColumnModel().getColumn(0).setPreferredWidth(100);
 		tblProductList.getColumnModel().getColumn(0).setMinWidth(100);
 		tblProductList.getColumnModel().getColumn(1).setMinWidth(80);
@@ -157,9 +151,9 @@ public class StockPanel extends JPanel implements ActionListener{
 		lblExpiryAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		cboExpiryMonthAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		cboExpiryMonthAdd.setModel(new DefaultComboBoxModel(new String[] {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
+		cboExpiryMonthAdd.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
 		
-		cboExpiryYearAdd.setModel(new DefaultComboBoxModel(new String[] {"Year", "2016", "2017", "2018", "2019", "2020"}));
+		cboExpiryYearAdd.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
 		cboExpiryYearAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		lblFeedbackAdd.setForeground(new Color(0, 128, 128));
@@ -242,16 +236,17 @@ public class StockPanel extends JPanel implements ActionListener{
 		
 		lblExpiryRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		cboExpiryMonthRestock.setModel(new DefaultComboBoxModel(new String[] {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
+		cboExpiryMonthRestock.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
 		cboExpiryMonthRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 
-		cboExpiryYearRestock.setModel(new DefaultComboBoxModel(new String[] {"Year", "2016", "2017", "2018", "2019", "2020"}));
+		cboExpiryYearRestock.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
 		cboExpiryYearRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		btnRestock.setMinimumSize(new Dimension(100, 35));
 		btnRestock.setForeground(Color.WHITE);
 		btnRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnRestock.setBackground(new Color(0, 204, 0));
+		btnRestock.addActionListener(this);
 		
 		pnlRestockItemForm.add(cboExpiryMonthRestock, "flowx,cell 1 3,alignx left");
 		pnlRestockItemForm.add(lblQuantityRestock, "cell 0 4,alignx trailing");
@@ -275,23 +270,93 @@ public class StockPanel extends JPanel implements ActionListener{
 		add(pnlProductList, "cell 0 0,grow");
 		add(pnlForm, "cell 1 0,grow");
 	}
+	
+	public void selectTableField()
+	{
+		tblProductList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+		{
+			
+			@Override
+			public void valueChanged(ListSelectionEvent event) {
+				txtItemNameRestock.setText((String) tblProductList.getModel().getValueAt(tblProductList.getSelectedRow(), 0));
+			}
+			
+		});
+	}
+	
+	public void togglePriceUpdate()
+	{			
+	if(tglbtnUpdateRestock.isSelected()) 
+		{
+		txtBuyingPriceRestock.setEditable(true);
+		txtSellingPriceRestock.setEditable(true);
+	}
+	else 
+	{
+		txtBuyingPriceRestock.setEditable(false);
+		txtSellingPriceRestock.setEditable(false);
+	}
+	}
+	
+	public int getProductID()
+	{
+		return productManage.getProductID(tblProductList.getSelectedRow());
+	}
+
+	public void restockItem()
+	{
+		if(Double.parseDouble(txtSellingPriceRestock.getText()) < 0 ||Double.parseDouble(txtBuyingPriceRestock.getText()) < 0|| Integer.parseInt(txtQuantityRestock.getText()) < 0)
+		{
+			lblFeedbackRestock.setText("Input cannot be added!");
+		}
+		else
+		{
+		productManage.restockProduct(txtItemNameRestock.getText(), Double.parseDouble(txtSellingPriceRestock.getText()), getProductID());
+		batchManage.restockBatch(Integer.parseInt(txtQuantityRestock.getText()), Double.parseDouble(txtBuyingPriceRestock.getText()), getProductID());
+		lblFeedbackRestock.setText(txtItemNameAdd.getText() +" successfully added to the inventory!");
+		tblProductList.setModel(productManage.viewProducts());
+		selectTableField();
+		}
+	}
+	public void addItem()
+	{
+		if(Double.parseDouble(txtSellingPriceAdd.getText()) < 0 ||Double.parseDouble(txtBuyingPriceAdd.getText()) < 0|| Integer.parseInt(txtQuantityAdd.getText()) < 0)
+		{
+			lblFeedbackAdd.setText("Input cannot be added!");
+		}
+		else
+		{
+		productManage.addProduct(txtItemNameAdd.getText(), Double.parseDouble(txtSellingPriceAdd.getText()));
+		batchManage.addFirstBatch(Integer.parseInt(txtQuantityAdd.getText()), Double.parseDouble(txtBuyingPriceAdd.getText()),
+				cboExpiryMonthAdd.getSelectedItem().toString(), Integer.parseInt(cboExpiryYearAdd.getSelectedItem().toString()));
+		tblProductList.setModel(productManage.viewProducts());
+		selectTableField();
+		lblFeedbackAdd.setText(txtItemNameAdd.getText() +" successfully added to the inventory!");
+		}
+	}
+	
+	public void updateTable()
+	{
+		if(txtSearch.getText().toString().equals(""))
+			tblProductList.setModel(productManage.viewProducts());
+			else
+		tblProductList.setModel(productManage.searchProduct(txtSearch.getText()));
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(tglbtnUpdateRestock)) {
-			if(tglbtnUpdateRestock.isSelected()) {
-				txtBuyingPriceRestock.setEditable(true);
-				txtSellingPriceRestock.setEditable(true);
-			}
-			else {
-				txtBuyingPriceRestock.setEditable(false);
-				txtSellingPriceRestock.setEditable(false);
-			}
+			togglePriceUpdate();
 		}
-		else if(e.getSource().equals(btnAdd)) {
-			System.out.println("Hello");
-			productManage.addProduct(txtItemNameAdd.getText(), Double.parseDouble(txtSellingPriceAdd.getText()));
-			batchManage.addFirstBatch(Integer.parseInt(txtQuantityAdd.getText()), Double.parseDouble(txtBuyingPriceAdd.getText()));
-			lblFeedbackRestock.setText(txtItemNameAdd.getText() +"successfully added to the inventory!");
+			if(e.getSource().equals(btnAdd)) {
+				addItem();
+			}
+		if(e.getSource().equals(btnSearch))
+		{
+			updateTable();
 		}
-	}
+		if(e.getSource().equals(btnRestock))
+		{
+			restockItem();
+		}
+		}
 }
