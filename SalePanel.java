@@ -19,27 +19,33 @@ public class SalePanel extends JPanel{
 		
 		JPanel pnlSetDate = new JPanel();
 		pnlSetDate.setBackground(Color.WHITE);
-		pnlSetDate.setBorder(new TitledBorder(null, "1. Set sales date:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlSetDate.setBorder(null);
 		add(pnlSetDate, "cell 0 0,grow");
-		pnlSetDate.setLayout(new MigLayout("", "[103.00][59.00][61.00]", "[]"));
+		pnlSetDate.setLayout(new MigLayout("", "[][76.00][18.00][61.00]", "[]"));
+		
+		JLabel lblNewLabel_1 = new JLabel("1. Select Sales Date");
+		pnlSetDate.add(lblNewLabel_1, "cell 0 0");
 		
 		JComboBox comboBoxSalesDateMonth = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateMonth, "cell 0 0,growx");
+		pnlSetDate.add(comboBoxSalesDateMonth, "cell 1 0,growx");
 		
 		JComboBox comboBoxSalesDateDay = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateDay, "cell 1 0,growx");
+		pnlSetDate.add(comboBoxSalesDateDay, "cell 2 0,growx");
 		
 		JComboBox comboBoxSalesDateYear = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateYear, "cell 2 0,growx");
+		pnlSetDate.add(comboBoxSalesDateYear, "cell 3 0,growx");
 		
 		JPanel pnlSelectItem = new JPanel();
 		pnlSelectItem.setBackground(Color.WHITE);
-		pnlSelectItem.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "2. Select item sold:", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		pnlSelectItem.setBorder(null);
 		add(pnlSelectItem, "cell 0 1,grow");
-		pnlSelectItem.setLayout(new MigLayout("", "[grow]", "[grow][][grow]"));
+		pnlSelectItem.setLayout(new MigLayout("", "[][grow]", "[grow][][grow]"));
+		
+		JLabel lblNewLabel_2 = new JLabel("2. Select Item Sold");
+		pnlSelectItem.add(lblNewLabel_2, "cell 0 1,alignx trailing");
 		
 		txtSaleSearch = new JTextField();
-		pnlSelectItem.add(txtSaleSearch, "flowx,cell 0 1,growx");
+		pnlSelectItem.add(txtSaleSearch, "flowx,cell 1 1,growx");
 		txtSaleSearch.setColumns(10);
 		
 		JButton btnSaleSearch = new JButton("Search");
@@ -48,76 +54,75 @@ public class SalePanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		pnlSelectItem.add(btnSaleSearch, "cell 0 0");
+		pnlSelectItem.add(btnSaleSearch, "cell 1 1");
 		
 		JScrollPane scrollPaneSelectItem = new JScrollPane();
-		pnlSelectItem.add(scrollPaneSelectItem, "cell 0 1,grow");
+		pnlSelectItem.add(scrollPaneSelectItem, "cell 0 2 2 1,grow");
 		
 		tblSaleSearch = new JTable();
 		scrollPaneSelectItem.setViewportView(tblSaleSearch);
 		
 		JPanel pnlTransaction = new JPanel();
 		pnlTransaction.setBackground(Color.WHITE);
-		pnlTransaction.setBorder(new TitledBorder(null, "3. Check items in transaction", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(pnlTransaction, "cell 1 0,grow");
-		pnlTransaction.setLayout(new MigLayout("", "[grow]", "[grow][]"));
+		pnlTransaction.setBorder(null);
+		add(pnlTransaction, "cell 1 0 1 3,grow");
+		pnlTransaction.setLayout(new MigLayout("", "[116.00,grow][]", "[][][grow][][]"));
+		
+		JLabel lblNewLabel_4 = new JLabel("4. Check Items for Transaction");
+		pnlTransaction.add(lblNewLabel_4, "cell 0 0");
+		
+		JLabel lblNewLabel_5 = new JLabel("Select and item and click remove to delete it from the cart");
+		lblNewLabel_5.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		pnlTransaction.add(lblNewLabel_5, "cell 0 1");
+		
+		JButton btnSaleRemove = new JButton("Remove");
+		btnSaleRemove.setBackground(Color.RED);
+		pnlTransaction.add(btnSaleRemove, "cell 1 1");
 		
 		JScrollPane scrollPaneTransaction = new JScrollPane();
-		pnlTransaction.add(scrollPaneTransaction, "cell 0 0,grow");
+		pnlTransaction.add(scrollPaneTransaction, "cell 0 2 2 1,grow");
 		
 		tblTransaction = new JTable();
 		scrollPaneTransaction.setViewportView(tblTransaction);
 		
 		JLabel lblNewLabel = new JLabel("Total: ");
-		pnlTransaction.add(lblNewLabel, "flowx,cell 0 1");
+		pnlTransaction.add(lblNewLabel, "flowx,cell 1 3");
 		
 		JLabel lblTransactionTotal = new JLabel("<Amount>");
 		lblTransactionTotal.setFont(new Font("Tahoma", Font.BOLD, 11));
-		pnlTransaction.add(lblTransactionTotal, "cell 0 1");
+		pnlTransaction.add(lblTransactionTotal, "cell 1 3");
+		
+		JLabel lblSalePromptMsg = new JLabel("User Prompt Message");
+		pnlTransaction.add(lblSalePromptMsg, "flowx,cell 0 4");
+		lblSalePromptMsg.setForeground(new Color(0, 128, 0));
+		
+		JButton btnRecordSale = new JButton("Record");
+		pnlTransaction.add(btnRecordSale, "cell 1 4,growx");
+		btnRecordSale.setBackground(Color.GREEN);
 		
 		JPanel pnlSetQty = new JPanel();
 		pnlSetQty.setBackground(Color.WHITE);
-		pnlSetQty.setBorder(new TitledBorder(null, "2. Enter quantity: ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(pnlSetQty, "cell 0 1,grow");
-		pnlSetQty.setLayout(new MigLayout("", "[grow]", "[][][]"));
+		pnlSetQty.setBorder(null);
+		add(pnlSetQty, "cell 0 2,grow");
+		pnlSetQty.setLayout(new MigLayout("", "[][grow]", "[][][]"));
+		
+		JLabel lblNewLabel_3 = new JLabel("3. Enter Quantity");
+		pnlSetQty.add(lblNewLabel_3, "cell 0 0,alignx trailing");
 		
 		textField = new JTextField();
-		pnlSetQty.add(textField, "flowx,cell 0 0,growx");
+		pnlSetQty.add(textField, "flowx,cell 1 0,growx");
 		textField.setColumns(10);
 		
 		JLabel lblPieces = new JLabel("pieces");
-		pnlSetQty.add(lblPieces, "cell 0 0");
+		pnlSetQty.add(lblPieces, "cell 1 0");
 		
 		JLabel lblSaleWarning = new JLabel("User warning message");
 		lblSaleWarning.setForeground(Color.RED);
-		pnlSetQty.add(lblSaleWarning, "flowx,cell 0 1");
+		pnlSetQty.add(lblSaleWarning, "flowx,cell 1 1");
 		
-		JButton btnSaleAdd = new JButton("Add to Transaction");
+		JButton btnSaleAdd = new JButton("Add to Cart");
 		btnSaleAdd.setBackground(Color.CYAN);
-		pnlSetQty.add(btnSaleAdd, "cell 0 1");
-		
-		JPanel pnlSetDate = new JPanel();
-		pnlSetDate.setBackground(Color.WHITE);
-		pnlSetDate.setBorder(new TitledBorder(null, "4. Set sales date:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(pnlSetDate, "cell 1 1,grow");
-		pnlSetDate.setLayout(new MigLayout("", "[93.00,grow][53.00,grow][]", "[][]"));
-		
-		JComboBox comboBoxSalesDateMonth = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateMonth, "cell 0 0,growx");
-		
-		JComboBox comboBoxSalesDateDay = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateDay, "flowx,cell 1 0,growx");
-		
-		JComboBox comboBoxSalesDateYear = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateYear, "cell 2 0,growx");
-		
-		JLabel lblSalePromptMsg = new JLabel("User Prompt Message");
-		lblSalePromptMsg.setForeground(new Color(0, 128, 0));
-		pnlSetDate.add(lblSalePromptMsg, "flowx,cell 0 1");
-		
-		JButton btnRecordSale = new JButton("Record");
-		btnRecordSale.setBackground(Color.GREEN);
-		pnlSetDate.add(btnRecordSale, "cell 2 1");
+		pnlSetQty.add(btnSaleAdd, "cell 1 1");
 	}
 
 }
