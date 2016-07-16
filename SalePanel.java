@@ -1,4 +1,4 @@
-package introsePharmacyInventory;
+package ProjectFrontEnd;
 
 import java.awt.*;
 
@@ -7,122 +7,152 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.border.TitledBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 
-public class SalePanel extends JPanel{
-	private JTextField txtSaleSearch;
-	private JTable tblSaleSearch;
-	private JTextField textField;
-	private JTable tblTransaction;
+public class SalePanel extends JPanel implements ActionListener {
+	
+	private JPanel pnlAddToCart = new JPanel();
+	private JTextField txtSearch = new JTextField();
+	private JButton btnSearch = new JButton("Search");
+	private JTable tblSaleSearch = new JTable();
+	private JLabel lblQuantity = new JLabel("Quantity:");
+	private JTextField txtQuantity = new JTextField();
+	private JScrollPane scrollPaneSelectItem = new JScrollPane();
+	private JTable tblCart = new JTable();
+	private JButton btnAddToCart = new JButton("Add to Cart");
+	private JLabel lblAddToCartFeedback = new JLabel("User warning message");
+	private JPanel pnlCart = new JPanel();
+	private JLabel lblHelpCart = new JLabel("Select and item and click remove to delete it from the cart");
+	private JButton btnRemove = new JButton("Remove");
+	private JScrollPane scrollPaneCart = new JScrollPane();
+	private JLabel lblSalesDate = new JLabel("Sales Date:");
+	private JLabel lblTotal = new JLabel("Total: ");
+	private JLabel lblTotalValue = new JLabel("<Amount>");
+	private JButton btnRecord = new JButton("Record");
+	private JLabel lblFeedbackCart = new JLabel("User Prompt Message");
+	private JComboBox cboSalesDateMonth = new JComboBox();
+	private JComboBox cboSalesDateDay = new JComboBox();
+	private JComboBox cboSalesDateYear = new JComboBox();
+	
 	public SalePanel() {
 		setBackground(Color.WHITE);
-		setLayout(new MigLayout("", "[82.00,grow][grow]", "[grow][281.00,grow][grow]"));
+		setLayout(new MigLayout("", "[300][grow]", "[grow]"));
 		
-		JPanel pnlSetDate = new JPanel();
-		pnlSetDate.setBackground(Color.WHITE);
-		pnlSetDate.setBorder(null);
-		add(pnlSetDate, "cell 0 0,grow");
-		pnlSetDate.setLayout(new MigLayout("", "[][76.00][18.00][61.00]", "[]"));
+		pnlAddToCart.setBackground(Color.WHITE);
+		pnlAddToCart.setBorder(new TitledBorder(null, "Add to Cart", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlAddToCart.setLayout(new MigLayout("", "[grow][]", "[][grow][][][]"));
 		
-		JLabel lblNewLabel_1 = new JLabel("1. Select Sales Date");
-		pnlSetDate.add(lblNewLabel_1, "cell 0 0");
+		txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtSearch.setColumns(10);
 		
-		JComboBox comboBoxSalesDateMonth = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateMonth, "cell 1 0,growx");
+		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnSearch.setBackground(new Color(0, 204, 0));
+		btnSearch.addActionListener(this);
 		
-		JComboBox comboBoxSalesDateDay = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateDay, "cell 2 0,growx");
+		pnlAddToCart.add(txtSearch, "cell 0 0,grow");
+		pnlAddToCart.add(btnSearch, "cell 1 0,alignx left");
 		
-		JComboBox comboBoxSalesDateYear = new JComboBox();
-		pnlSetDate.add(comboBoxSalesDateYear, "cell 3 0,growx");
+				btnSearch.setForeground(new Color(255, 255, 255));
+				btnSearch.setBackground(new Color(0, 204, 0));
+				btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JPanel pnlSelectItem = new JPanel();
-		pnlSelectItem.setBackground(Color.WHITE);
-		pnlSelectItem.setBorder(null);
-		add(pnlSelectItem, "cell 0 1,grow");
-		pnlSelectItem.setLayout(new MigLayout("", "[][grow]", "[grow][][grow]"));
-		
-		JLabel lblNewLabel_2 = new JLabel("2. Select Item Sold");
-		pnlSelectItem.add(lblNewLabel_2, "cell 0 1,alignx trailing");
-		
-		txtSaleSearch = new JTextField();
-		pnlSelectItem.add(txtSaleSearch, "flowx,cell 1 1,growx");
-		txtSaleSearch.setColumns(10);
-		
-		JButton btnSaleSearch = new JButton("Search");
-		btnSaleSearch.setBackground(Color.YELLOW);
-		btnSaleSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		tblSaleSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tblSaleSearch.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null},
+			},
+			new String[] {
+				"Item Name", "Quantity"
 			}
-		});
-		pnlSelectItem.add(btnSaleSearch, "cell 1 1");
-		
-		JScrollPane scrollPaneSelectItem = new JScrollPane();
-		pnlSelectItem.add(scrollPaneSelectItem, "cell 0 2 2 1,grow");
-		
-		tblSaleSearch = new JTable();
+		));
+		tblSaleSearch.getColumnModel().getColumn(1).setPreferredWidth(65);
+		tblSaleSearch.getColumnModel().getColumn(1).setMinWidth(65);
+		tblSaleSearch.getColumnModel().getColumn(1).setMaxWidth(65);
 		scrollPaneSelectItem.setViewportView(tblSaleSearch);
 		
-		JPanel pnlTransaction = new JPanel();
-		pnlTransaction.setBackground(Color.WHITE);
-		pnlTransaction.setBorder(null);
-		add(pnlTransaction, "cell 1 0 1 3,grow");
-		pnlTransaction.setLayout(new MigLayout("", "[116.00,grow][]", "[][][grow][][]"));
+		lblQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JLabel lblNewLabel_4 = new JLabel("4. Check Items for Transaction");
-		pnlTransaction.add(lblNewLabel_4, "cell 0 0");
+		btnAddToCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnAddToCart.setMinimumSize(new Dimension(100, 35));
+		btnAddToCart.setBackground(new Color(51, 255, 153));
 		
-		JLabel lblNewLabel_5 = new JLabel("Select and item and click remove to delete it from the cart");
-		lblNewLabel_5.setFont(new Font("Tahoma", Font.ITALIC, 11));
-		pnlTransaction.add(lblNewLabel_5, "cell 0 1");
+		lblAddToCartFeedback.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JButton btnSaleRemove = new JButton("Remove");
-		btnSaleRemove.setBackground(Color.RED);
-		pnlTransaction.add(btnSaleRemove, "cell 1 1");
+		lblAddToCartFeedback.setForeground(Color.RED);
 		
-		JScrollPane scrollPaneTransaction = new JScrollPane();
-		pnlTransaction.add(scrollPaneTransaction, "cell 0 2 2 1,grow");
+		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtQuantity.setColumns(10);
 		
-		tblTransaction = new JTable();
-		scrollPaneTransaction.setViewportView(tblTransaction);
+		pnlAddToCart.add(scrollPaneSelectItem, "cell 0 1 2 1,grow");
+		pnlAddToCart.add(lblQuantity, "cell 0 2,alignx right,growy");
+		pnlAddToCart.add(btnAddToCart, "cell 0 3 2 1,alignx right");
+		pnlAddToCart.add(lblAddToCartFeedback, "cell 0 4 2 1,alignx right");
+		pnlAddToCart.add(txtQuantity, "cell 1 2,grow");
 		
-		JLabel lblNewLabel = new JLabel("Total: ");
-		pnlTransaction.add(lblNewLabel, "flowx,cell 1 3");
+		pnlCart.setBackground(Color.WHITE);
+		pnlCart.setBorder(new TitledBorder(null, "Cart", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlCart.setLayout(new MigLayout("", "[][grow]", "[][grow][][][]"));
 		
-		JLabel lblTransactionTotal = new JLabel("<Amount>");
-		lblTransactionTotal.setFont(new Font("Tahoma", Font.BOLD, 11));
-		pnlTransaction.add(lblTransactionTotal, "cell 1 3");
+		lblHelpCart.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
-		JLabel lblSalePromptMsg = new JLabel("User Prompt Message");
-		pnlTransaction.add(lblSalePromptMsg, "flowx,cell 0 4");
-		lblSalePromptMsg.setForeground(new Color(0, 128, 0));
+		btnRemove.setForeground(Color.WHITE);
+		btnRemove.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnRemove.setBackground(Color.RED);
 		
-		JButton btnRecordSale = new JButton("Record");
-		pnlTransaction.add(btnRecordSale, "cell 1 4,growx");
-		btnRecordSale.setBackground(Color.GREEN);
+		tblCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tblCart.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+			},
+			new String[] {
+				"Item Name", "Quantity", "Selling Price", "Subtotal"
+			}
+		));
+		scrollPaneCart.setViewportView(tblCart);
 		
-		JPanel pnlSetQty = new JPanel();
-		pnlSetQty.setBackground(Color.WHITE);
-		pnlSetQty.setBorder(null);
-		add(pnlSetQty, "cell 0 2,grow");
-		pnlSetQty.setLayout(new MigLayout("", "[][grow]", "[][][]"));
+		lblTotal.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JLabel lblNewLabel_3 = new JLabel("3. Enter Quantity");
-		pnlSetQty.add(lblNewLabel_3, "cell 0 0,alignx trailing");
+		lblTotalValue.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		
-		textField = new JTextField();
-		pnlSetQty.add(textField, "flowx,cell 1 0,growx");
-		textField.setColumns(10);
+		lblSalesDate.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JLabel lblPieces = new JLabel("pieces");
-		pnlSetQty.add(lblPieces, "cell 1 0");
+		cboSalesDateMonth.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
+		cboSalesDateMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JLabel lblSaleWarning = new JLabel("User warning message");
-		lblSaleWarning.setForeground(Color.RED);
-		pnlSetQty.add(lblSaleWarning, "flowx,cell 1 1");
+		cboSalesDateDay.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"}));
+		cboSalesDateDay.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		JButton btnSaleAdd = new JButton("Add to Cart");
-		btnSaleAdd.setBackground(Color.CYAN);
-		pnlSetQty.add(btnSaleAdd, "cell 1 1");
+		cboSalesDateYear.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
+		cboSalesDateYear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		
+		lblFeedbackCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblFeedbackCart.setForeground(new Color(0, 128, 0));
+		
+		btnRecord.setForeground(Color.WHITE);
+		btnRecord.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnRecord.setMinimumSize(new Dimension(100, 35));
+		btnRecord.setBackground(new Color(0, 204, 0));
+		
+		pnlCart.add(lblHelpCart, "cell 0 0");
+		pnlCart.add(btnRemove, "cell 1 0,alignx right");
+		pnlCart.add(scrollPaneCart, "cell 0 1 2 1,grow");
+		pnlCart.add(lblSalesDate, "flowx,cell 0 2");
+		pnlCart.add(lblTotal, "flowx,cell 1 2,alignx right");
+		pnlCart.add(lblTotalValue, "cell 1 2,alignx right");
+		pnlCart.add(btnRecord, "flowy,cell 1 3,alignx right");
+		pnlCart.add(lblFeedbackCart, "cell 0 4 2 1,alignx right");
+		pnlCart.add(cboSalesDateMonth, "cell 0 2");
+		pnlCart.add(cboSalesDateDay, "cell 0 2");
+		pnlCart.add(cboSalesDateYear, "cell 0 2");
+		
+		add(pnlAddToCart, "cell 0 0,alignx left,growy");
+		add(pnlCart, "cell 1 0,grow");
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		
+	}
 }
