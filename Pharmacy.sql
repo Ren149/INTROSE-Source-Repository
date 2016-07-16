@@ -28,9 +28,9 @@ CREATE TABLE `batch` (
   `batchID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `productID` int(10) unsigned zerofill NOT NULL,
   `batch_quantity` int(11) NOT NULL,
-  `expiry_month` varchar(45) DEFAULT NULL,
-  `expiry_year` year(4) DEFAULT NULL,
-  `entry_date` date DEFAULT NULL,
+  `expiry_month` int(11) NOT NULL,
+  `expiry_year` year(4) NOT NULL,
+  `entry_date` date NOT NULL,
   `buying_price` int(11) NOT NULL,
   PRIMARY KEY (`batchID`,`productID`),
   UNIQUE KEY `batchID_UNIQUE` (`batchID`),
@@ -109,4 +109,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-16  0:09:02
+-- Dump completed on 2016-07-16 13:56:44

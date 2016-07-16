@@ -1,3 +1,5 @@
+package ProjectFrontEnd;
+
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
@@ -9,6 +11,9 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.border.TitledBorder;
+
+import ProjectBackEnd.ProductManager;
+
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Font;
@@ -27,6 +32,9 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	private JLabel lblNoItemsShown = new JLabel("Items Showed");
 	private final JPanel pnlProducSearchPanel = new JPanel();
 	private final JPanel panel = new JPanel();
+
+	//MANAGER INITIALIZERS
+	private ProductManager productManage = new ProductManager();
 	
 	public ProductListPanel() {
 		setLayout(new MigLayout("", "[grow][grow][][][][][][][][][grow]", "[grow][grow][]"));
@@ -43,6 +51,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		pnlProducSearchPanel.add(btnSearch, "cell 14 0");
 		
 		btnSearch.setBackground(Color.YELLOW);
+		btnSearch.addActionListener(this);
 		add(pnlProductListTable, "cell 0 1 11 1,grow");
 		
 		
@@ -50,6 +59,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		tblProductListTable = new JTable();
 		tblProductListTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductListTable.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		tblProductListTable.setModel(productManage.viewProductsWithPrice());
 		pnlProductListTable.add(tblProductListTable);
 		
 		
@@ -59,11 +69,20 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		panel.add(lblNoItemsShown);
 
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	
+	public void updateTable()
+	{
+		if(txtProductSearch.getText().toString().equals(""))
+			tblProductListTable.setModel(productManage.viewProductsWithPrice());
+			else
+				tblProductListTable.setModel(productManage.searchProductWithPrice(txtProductSearch.getText()));
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(btnSearch))
+		{
+			updateTable();
+		}
+		}
 }
+

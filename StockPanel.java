@@ -328,7 +328,7 @@ public class StockPanel extends JPanel implements ActionListener{
 		{
 		productManage.addProduct(txtItemNameAdd.getText(), Double.parseDouble(txtSellingPriceAdd.getText()));
 		batchManage.addFirstBatch(Integer.parseInt(txtQuantityAdd.getText()), Double.parseDouble(txtBuyingPriceAdd.getText()),
-				cboExpiryMonthAdd.getSelectedItem().toString(), Integer.parseInt(cboExpiryYearAdd.getSelectedItem().toString()));
+				cboExpiryMonthAdd.getSelectedIndex(), Integer.parseInt(cboExpiryYearAdd.getSelectedItem().toString()));
 		tblProductList.setModel(productManage.viewProducts());
 		selectTableField();
 		lblFeedbackAdd.setText(txtItemNameAdd.getText() +" successfully added to the inventory!");
