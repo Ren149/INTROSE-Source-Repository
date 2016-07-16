@@ -26,15 +26,14 @@ DROP TABLE IF EXISTS `batch`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `batch` (
   `batchID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `productID` int(10) unsigned zerofill NOT NULL,
+  `productID` int(10) NOT NULL,
   `batch_quantity` int(11) NOT NULL,
   `expiry_month` int(11) NOT NULL,
   `expiry_year` year(4) NOT NULL,
   `entry_date` date NOT NULL,
   `buying_price` int(11) NOT NULL,
-  PRIMARY KEY (`batchID`,`productID`),
-  UNIQUE KEY `batchID_UNIQUE` (`batchID`),
-  UNIQUE KEY `productID_UNIQUE` (`productID`)
+  PRIMARY KEY (`batchID`),
+  UNIQUE KEY `batchID_UNIQUE` (`batchID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -45,6 +44,31 @@ CREATE TABLE `batch` (
 LOCK TABLES `batch` WRITE;
 /*!40000 ALTER TABLE `batch` DISABLE KEYS */;
 /*!40000 ALTER TABLE `batch` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `line_item`
+--
+
+DROP TABLE IF EXISTS `line_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `line_item` (
+  `lineitemID` int(10) unsigned zerofill NOT NULL,
+  `salesID` int(11) NOT NULL,
+  `productID` int(11) NOT NULL,
+  PRIMARY KEY (`lineitemID`),
+  UNIQUE KEY `lineitemID_UNIQUE` (`lineitemID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `line_item`
+--
+
+LOCK TABLES `line_item` WRITE;
+/*!40000 ALTER TABLE `line_item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `line_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -109,4 +133,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-16 13:56:44
+-- Dump completed on 2016-07-16 20:24:24

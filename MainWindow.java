@@ -1,3 +1,5 @@
+package ProjectFrontEnd;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -46,5 +48,4 @@ public class MainWindow extends JFrame {
 	}
 	
 	
-}
 }

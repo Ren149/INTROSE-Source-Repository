@@ -13,17 +13,25 @@ import java.awt.event.ActionListener;
 import javax.swing.border.TitledBorder;
 
 import ProjectBackEnd.ProductManager;
+import ProjectBackEnd.BatchManager;
 
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Font;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
+import java.util.Date;
 
 public class ProductListPanel extends JPanel implements ActionListener {
+	
+	private Date currentDate = new Date();
+	private int currentMonth = currentDate.getMonth();
+	private int currentDay = currentDate.getDay();
+	private int currentYear = currentDate.getYear();
+	private int rowCount = 0;
 
-	private JLabel lblProductListDate = new JLabel("Product List as of <insert date>");
-	private JLabel lblItemCount = new JLabel("Displaying 10 items");
+	private JLabel lblProductListDate = new JLabel("Product List as of " + currentMonth + "/" + currentDay + "/" + currentYear);
+	private JLabel lblItemCount = new JLabel("Displaying " + rowCount + " items");
 	private JTextField txtProductSearch = new JTextField();
 	private JButton btnSearch = new JButton("Search");
 	private JTable tblProductListTable;
@@ -48,14 +56,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		scrollPane.setViewportView(tblProductListTable);
 		tblProductListTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductListTable.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		tblProductListTable.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-			},
-			new String[] {
-				"Product Name", "Buying Price", "Selling Price", "Quantity"
-			}
-		));
+		viewTable();
 		
 		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
@@ -65,14 +66,30 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		add(scrollPane, "cell 0 3 2 1,grow");
 		add(lblItemCount, "cell 0 4");
 	}
+
+	public void viewTable()
+	{
+		tblProductListTable.setModel(productManage.viewProductsWithPrice());
+		rowCount = tblProductListTable.getRowCount();
+		lblItemCount.setText("Displaying " + rowCount + " items");
+	}
 	
-	public void update(){
+	public void searchTableWithPrices()
+	{
+		if(txtProductSearch.getText().toString().equals(""))
+		{
+			viewTable();
+		}
+			else
+				tblProductListTable.setModel(productManage.searchProductWithPrice(txtProductSearch.getText()));
+				rowCount = tblProductListTable.getRowCount();
+				lblItemCount.setText("Displaying " + rowCount + " items");
 		
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnSearch)) {
-			update();
+			searchTableWithPrices();
 		}
 	}
 }
