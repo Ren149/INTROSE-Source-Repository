@@ -17,72 +17,63 @@ import ProjectBackEnd.ProductManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Font;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
 
 public class ProductListPanel extends JPanel implements ActionListener {
-	//PRODUCT SEARCH PANEL
-	private JLabel lblProductListDate = new JLabel("Product List as of ");
+
+	private JLabel lblProductListDate = new JLabel("Product List as of <insert date>");
+	private JLabel lblItemCount = new JLabel("Displaying 10 items");
 	private JTextField txtProductSearch = new JTextField();
 	private JButton btnSearch = new JButton("Search");
-	
-	//TABLE LIST PANEL
-	JPanel pnlProductListTable = new JPanel();
 	private JTable tblProductListTable;
-	
-	//BOTTOM PANEL
-	private JLabel lblNoItemsShown = new JLabel("Items Showed");
-	private final JPanel pnlProducSearchPanel = new JPanel();
-	private final JPanel panel = new JPanel();
-
-	//MANAGER INITIALIZERS
+	private JScrollPane scrollPane = new JScrollPane();
 	private ProductManager productManage = new ProductManager();
 	
 	public ProductListPanel() {
-		setLayout(new MigLayout("", "[grow][grow][][][][][][][][][grow]", "[grow][grow][]"));
-		//PRODUCT SEARCH PANEL
-		add(pnlProducSearchPanel, "cell 0 0 11 1,alignx left,aligny top");
-		pnlProducSearchPanel.setLayout(new MigLayout("", "[100px:n][][][][][][][][][][][][][][]", "[26px]"));
+		setBackground(Color.WHITE);
+		setLayout(new MigLayout("", "[][grow]", "[][][][grow][]"));
+		
 		lblProductListDate.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		pnlProducSearchPanel.add(lblProductListDate, "cell 0 0 6 1,alignx left,aligny top");
+		
 		txtProductSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		pnlProducSearchPanel.add(txtProductSearch, "cell 13 0");
 		txtProductSearch.setColumns(10);
+		btnSearch.setForeground(Color.WHITE);
+		
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		pnlProducSearchPanel.add(btnSearch, "cell 14 0");
-		
-		btnSearch.setBackground(Color.YELLOW);
+		btnSearch.setBackground(new Color(0, 204, 0));
 		btnSearch.addActionListener(this);
-		add(pnlProductListTable, "cell 0 1 11 1,grow");
 		
-		
-		//TABLE PANEL
 		tblProductListTable = new JTable();
+		scrollPane.setViewportView(tblProductListTable);
 		tblProductListTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductListTable.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		tblProductListTable.setModel(productManage.viewProductsWithPrice());
-		pnlProductListTable.add(tblProductListTable);
+		tblProductListTable.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+			},
+			new String[] {
+				"Product Name", "Buying Price", "Selling Price", "Quantity"
+			}
+		));
 		
+		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		//BOTTOM PANEL
-		add(panel, "flowx,cell 0 2 11 1");
-		lblNoItemsShown.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		panel.add(lblNoItemsShown);
-
+		add(lblProductListDate, "cell 0 0");
+		add(txtProductSearch, "cell 0 1,grow");
+		add(btnSearch, "cell 1 1,alignx left,growy");
+		add(scrollPane, "cell 0 3 2 1,grow");
+		add(lblItemCount, "cell 0 4");
 	}
 	
-	public void updateTable()
-	{
-		if(txtProductSearch.getText().toString().equals(""))
-			tblProductListTable.setModel(productManage.viewProductsWithPrice());
-			else
-				tblProductListTable.setModel(productManage.searchProductWithPrice(txtProductSearch.getText()));
+	public void update(){
+		
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(btnSearch))
-		{
-			updateTable();
+		if(e.getSource().equals(btnSearch)) {
+			update();
 		}
-		}
+	}
 }
 
