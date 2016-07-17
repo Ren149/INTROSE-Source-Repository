@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 public class SalePanel extends JPanel implements ActionListener {
+	private MainWindow parent;
 	
 	private JPanel pnlAddToCart = new JPanel();
 	private JTextField txtSearch = new JTextField();
@@ -53,8 +54,10 @@ public class SalePanel extends JPanel implements ActionListener {
         private int sellingprice;
             
         
-	public SalePanel() {
-                tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
+	public SalePanel(MainWindow mw) {
+        parent = mw;
+        
+		tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
             
 		setBackground(Color.WHITE);
 		setLayout(new MigLayout("", "[300][grow]", "[grow]"));
@@ -78,7 +81,14 @@ public class SalePanel extends JPanel implements ActionListener {
 				btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		tblSaleSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tblSaleSearch.setModel(productManage.viewProducts());
+		tblSaleSearch.setModel(new DefaultTableModel(
+			new Object[][] {
+				{"", new Integer(6222)},
+			},
+			new String[] {
+				"Product Name", "Quantity"
+			}
+		));
 		tblSaleSearch.getColumnModel().getColumn(1).setPreferredWidth(65);
 		tblSaleSearch.getColumnModel().getColumn(1).setMinWidth(65);
 		tblSaleSearch.getColumnModel().getColumn(1).setMaxWidth(65);
@@ -273,5 +283,9 @@ public class SalePanel extends JPanel implements ActionListener {
                 }
                 
             lblTotalValue.setText(String.valueOf(sum));
+	}
+	
+	public void update() {
+		searchTable();
 	}
 }
