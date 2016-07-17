@@ -86,7 +86,6 @@ public class StockPanel extends JPanel implements ActionListener{
 	//MANAGER INITIALIZERS
 	private ProductManager productManage = new ProductManager();
 	private BatchManager batchManage = new BatchManager();
-	private ProductListPanel productListPanel = new ProductListPanel();
 	
 	public StockPanel() {
 		setBackground(new Color(255, 255, 255));
@@ -103,7 +102,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		
 		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductList.setModel(productManage.viewProducts());
-		selectTableField();
 		tblProductList.getColumnModel().getColumn(0).setPreferredWidth(100);
 		tblProductList.getColumnModel().getColumn(0).setMinWidth(100);
 		tblProductList.getColumnModel().getColumn(1).setMinWidth(80);
@@ -191,7 +189,7 @@ public class StockPanel extends JPanel implements ActionListener{
 		
 		//ELEMENTS IN THE RESTOCK ITEM PANEL
 		lblItemNameRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		txtItemNameRestock.setText("Select an item on the left.");
+		txtItemNameRestock.setText("Select an item on the left:");
 		
 		txtItemNameRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtItemNameRestock.setEditable(false);
@@ -278,19 +276,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		add(pnlForm, "cell 1 0,grow");
 	}
 	
-	public void selectTableField()
-	{
-		tblProductList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
-		{
-			
-			@Override
-			public void valueChanged(ListSelectionEvent event) {
-				txtItemNameRestock.setText((String) tblProductList.getModel().getValueAt(tblProductList.getSelectedRow(), 0));
-			}
-			
-		});
-	}
-	
 	public void togglePriceUpdate()
 	{			
 	if(tglbtnUpdateRestock.isSelected()) 
@@ -307,14 +292,14 @@ public class StockPanel extends JPanel implements ActionListener{
 	
 	public void restockItem()
 	{
-		if((txtSellingPriceRestock.isEditable() == true && Double.parseDouble(txtSellingPriceRestock.getText()) < 0) ||
-			(txtBuyingPriceRestock.isEditable() == true && Double.parseDouble(txtBuyingPriceRestock.getText()) < 0)||
+		if((txtSellingPriceRestock.isEditable() == true && Double.parseDouble(txtSellingPriceRestock.getText()) <= 0) ||
+			(txtBuyingPriceRestock.isEditable() == true && Double.parseDouble(txtBuyingPriceRestock.getText()) <= 0)||
 			Integer.parseInt(txtQuantityRestock.getText()) <= 0)
 		{
 			lblFeedbackRestock.setText("Input cannot be added!");
 			txtItemNameRestock.setText("");
 		}
-		else if((batchManage.getBatchQuantity(productManage.getProductID(tblProductList.getSelectedRow())) - Integer.parseInt(txtQuantityRestock.getText())) < 0)
+		else if((batchManage.getBatchQuantity(productManage.getProductID(tblProductList.getSelectedRow())) - Integer.parseInt(txtQuantityRestock.getText())) <= 0)
 		{
 			lblFeedbackRestock.setText("Input cannot be added!");
 			txtItemNameRestock.setText("");
@@ -325,59 +310,54 @@ public class StockPanel extends JPanel implements ActionListener{
 			{
 				if(txtSellingPriceRestock.isEditable() == true)
 				{
-					productManage.restockProduct(txtItemNameRestock.getText(),
+					productManage.restockProduct(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString(),
 							Double.parseDouble(txtSellingPriceRestock.getText()),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 					batchManage.restockBatch(Integer.parseInt(txtQuantityRestock.getText()),
 							Double.parseDouble(txtBuyingPriceRestock.getText()),
 							cboExpiryMonthRestock.getSelectedIndex(),
 							Integer.parseInt(cboExpiryYearRestock.getSelectedItem().toString()),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 				}
 				else
 				{
-					productManage.restockProduct(txtItemNameRestock.getText(),
+					productManage.restockProduct(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString(),
 							productManage.getSellingPrice(productManage.getProductID(tblProductList.getSelectedRow())),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 					batchManage.restockBatch(Integer.parseInt(txtQuantityRestock.getText()),
 							Double.parseDouble(txtBuyingPriceRestock.getText()),
 							cboExpiryMonthRestock.getSelectedIndex(),
 							Integer.parseInt(cboExpiryYearRestock.getSelectedItem().toString()),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 				}
 			}
 			else
 			{
 				if(txtSellingPriceRestock.isEditable() == true)
 				{
-					productManage.restockProduct(txtItemNameRestock.getText(),
+					productManage.restockProduct(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString(),
 							Double.parseDouble(txtSellingPriceRestock.getText()),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 					batchManage.restockBatch(Integer.parseInt(txtQuantityRestock.getText()),
 							batchManage.getBuyingPrice(productManage.getProductID(tblProductList.getSelectedRow()))
 							, cboExpiryMonthRestock.getSelectedIndex(),
 							Integer.parseInt(cboExpiryYearRestock.getSelectedItem().toString()),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 				}
 				else
 				{
-					productManage.restockProduct(txtItemNameRestock.getText(),
+					productManage.restockProduct(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString(),
 							productManage.getSellingPrice(productManage.getProductID(tblProductList.getSelectedRow())),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
 					batchManage.restockBatch(Integer.parseInt(txtQuantityRestock.getText()),
 							batchManage.getBuyingPrice(productManage.getProductID(tblProductList.getSelectedRow())),
 							cboExpiryMonthRestock.getSelectedIndex(),
 							Integer.parseInt(cboExpiryYearRestock.getSelectedItem().toString()),
-							productManage.getProductID(tblProductList.getSelectedRow()));
+							productManage.getProductID(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString()));
+				}
 				}
 			lblFeedbackRestock.setText((String) tblProductList.getModel().getValueAt(tblProductList.getSelectedRow(), 0) +" restocked successfully!");
-			txtItemNameRestock.setText("");
 			}
-		productListPanel.viewTable();
-		tblProductList.getSelectionModel().clearSelection();
-		tblProductList.setModel(productManage.viewProducts());
-		repaint();
-		}
 	}
 	public void addItem()
 	{
@@ -401,9 +381,8 @@ public class StockPanel extends JPanel implements ActionListener{
 				Double.parseDouble(txtBuyingPriceAdd.getText()),
 				cboExpiryMonthAdd.getSelectedIndex(),
 				Integer.parseInt(cboExpiryYearAdd.getSelectedItem().toString()));
-		tblProductList.getSelectionModel().clearSelection();
+		tblProductList.clearSelection();
 		tblProductList.setModel(productManage.viewProducts());
-		productListPanel.viewTable();
 		lblFeedbackAdd.setText(txtItemNameAdd.getText() +" successfully added to the inventory!");
 		}
 	}

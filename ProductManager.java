@@ -38,6 +38,29 @@ public class ProductManager {
 		return 0;
 	}
 	
+	public int getSellingPrice(String productname)
+	{
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT selling_price FROM products WHERE product_name = ?;";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			ps.setString(1, productname);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+				
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
 	public int getLatestProductID()
 	{
 		PreparedStatement ps;
@@ -68,7 +91,7 @@ public class ProductManager {
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
-			ps.setString(2, productname);
+			ps.setString(1, productname);
 			
 			rs = ps.executeQuery();
 			
@@ -201,7 +224,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2)});
 			}
 			return tm;
 				
@@ -217,7 +241,7 @@ public class ProductManager {
 		ResultSet rs;
 		DefaultTableModel tm = new DefaultTableModel();
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Buying Price", "Selling Price", "Batch Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity", "Buying Price", "Selling Price"});
 		
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
@@ -232,7 +256,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3), rs.getDouble(4)});
 			}
 			return tm;
 				
@@ -262,7 +287,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2)});
 			}
 			return tm;
 				
@@ -278,7 +304,7 @@ public class ProductManager {
 		ResultSet rs;
 		DefaultTableModel tm = new DefaultTableModel();
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Buying Price", "Selling Price", "Batch Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity", "Buying Price", "Selling Price"});
 		
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
@@ -292,7 +318,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3), rs.getDouble(4)});
 			}
 			return tm;
 				
@@ -301,4 +328,5 @@ public class ProductManager {
 		}	
 		return tm;
 	}
+	
 }
