@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
 
 import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.ProductManager;
+import ProjectBackEnd.SalesManager;
 import net.miginfocom.swing.MigLayout;
 
 public class StockPanel extends JPanel implements ActionListener{
@@ -86,6 +87,7 @@ public class StockPanel extends JPanel implements ActionListener{
 	//MANAGER INITIALIZERS
 	private ProductManager productManage = new ProductManager();
 	private BatchManager batchManage = new BatchManager();
+	private ProductListPanel productPanel = new ProductListPanel();
 	
 	public StockPanel() {
 		setBackground(new Color(255, 255, 255));
@@ -299,11 +301,6 @@ public class StockPanel extends JPanel implements ActionListener{
 			lblFeedbackRestock.setText("Input cannot be added!");
 			txtItemNameRestock.setText("");
 		}
-		else if((batchManage.getBatchQuantity(productManage.getProductID(tblProductList.getSelectedRow())) - Integer.parseInt(txtQuantityRestock.getText())) <= 0)
-		{
-			lblFeedbackRestock.setText("Input cannot be added!");
-			txtItemNameRestock.setText("");
-		}
 		else
 		{
 			if(txtBuyingPriceRestock.isEditable() == true)
@@ -400,17 +397,21 @@ public class StockPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(tglbtnUpdateRestock)) {
 			togglePriceUpdate();
+			this.repaint();
 		}
 			if(e.getSource().equals(btnAdd)) {
 				addItem();
+				this.repaint();
 			}
 		if(e.getSource().equals(btnSearch))
 		{
 			searchTable();
+			this.repaint();
 		}
 		if(e.getSource().equals(btnRestock))
 		{
 			restockItem();
+			this.repaint();
 		}
 		}
 }

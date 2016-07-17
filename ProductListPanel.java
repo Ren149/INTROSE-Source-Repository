@@ -25,12 +25,9 @@ import java.util.Date;
 public class ProductListPanel extends JPanel implements ActionListener {
 	
 	private Date currentDate = new Date();
-	private int currentMonth = currentDate.getMonth();
-	private int currentDay = currentDate.getDay();
-	private int currentYear = currentDate.getYear();
 	private int rowCount = 0;
 
-	private JLabel lblProductListDate = new JLabel("Product List as of " + currentMonth + "/" + currentDay + "/" + currentYear);
+	private JLabel lblProductListDate = new JLabel("Product List as of " + currentDate);
 	private JLabel lblItemCount = new JLabel("Displaying " + rowCount + " items");
 	private JTextField txtProductSearch = new JTextField();
 	private JButton btnSearch = new JButton("Search");
@@ -90,6 +87,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnSearch)) {
 			searchTableWithPrices();
+			this.repaint();
 		}
 	}
 }

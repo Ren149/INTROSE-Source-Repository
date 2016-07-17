@@ -5,6 +5,8 @@ import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -24,6 +26,7 @@ public class MainWindow extends JFrame {
 		tabbedPane.setBackground(new Color(255, 255, 255));
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabbedPane.addTab("Sale", salePanel);
+		
 		
 		getContentPane().setBackground(new Color(255, 255, 255));
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
@@ -45,6 +48,26 @@ public class MainWindow extends JFrame {
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(e.getSource().equals(salePanel))
+				{
+					salePanel.repaint();
+				}
+				if(e.getSource().equals(productListPanel))
+				{
+					salePanel.repaint();
+				}
+				if(e.getSource().equals(stockPanel))
+				{
+					stockPanel.repaint();
+				}
+				
+			}
+		});
 	}
 	
 	
