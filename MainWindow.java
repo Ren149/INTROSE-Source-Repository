@@ -13,9 +13,9 @@ import net.miginfocom.swing.MigLayout;
 public class MainWindow extends JFrame implements ChangeListener{
 
 	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-	private ProductListPanel productListPanel = new ProductListPanel(this);
-	private StockPanel stockPanel = new StockPanel(this);
-	private SalePanel salePanel = new SalePanel(this);
+	private ProductListPanel productListPanel = new ProductListPanel();
+	private StockPanel stockPanel = new StockPanel();
+	private SalePanel salePanel = new SalePanel();
 	
 	public MainWindow() {
 		setTitle("Farmacia Regine Inventory");
@@ -26,6 +26,7 @@ public class MainWindow extends JFrame implements ChangeListener{
 		tabbedPane.addTab("Sale", salePanel);
 		tabbedPane.addTab("Stock", stockPanel);
 		tabbedPane.addTab("Product List", productListPanel);
+		tabbedPane.addChangeListener(this);
 		
 		getContentPane().setBackground(new Color(255, 255, 255));
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
@@ -34,25 +35,17 @@ public class MainWindow extends JFrame implements ChangeListener{
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
-		
-		tabbedPane.addChangeListener(this);
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		if(e.getSource().equals(salePanel)) {
-			salePanel.repaint();
+		if(tabbedPane.getSelectedComponent().equals(salePanel)) {
+			salePanel.update();
 		}
-		if(e.getSource().equals(productListPanel)) {
-			productListPanel.repaint();
+		if(tabbedPane.getSelectedComponent().equals(productListPanel)) {
+			productListPanel.update();
 		}
-		if(e.getSource().equals(stockPanel)) {
-			stockPanel.repaint();
+		if(tabbedPane.getSelectedComponent().equals(stockPanel)) {
+			stockPanel.update();
 		}
-	}
-	
-	public void update() {
-		productListPanel.update();
-		stockPanel.update();
-		salePanel.update();
 	}
 }

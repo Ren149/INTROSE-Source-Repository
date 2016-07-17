@@ -29,8 +29,6 @@ import ProjectBackEnd.SaleManager;
 import net.miginfocom.swing.MigLayout;
 
 public class StockPanel extends JPanel implements ActionListener{
-	private MainWindow parent;
-	
 	//PRODUCTLIST PANEL
 	private JPanel pnlProductList = new JPanel();
 	private JTextField txtSearch = new JTextField();
@@ -90,8 +88,7 @@ public class StockPanel extends JPanel implements ActionListener{
 	private ProductManager productManage = new ProductManager();
 	private BatchManager batchManage = new BatchManager();
 	
-	public StockPanel(MainWindow mw) {
-		parent = mw;
+	public StockPanel() {
 		setBackground(new Color(255, 255, 255));
 		setLayout(new MigLayout("", "[grow][]", "[]"));
 		
@@ -381,8 +378,6 @@ public class StockPanel extends JPanel implements ActionListener{
 		else if(e.getSource().equals(btnRestock)) {
 			restockItem();
 		}
-		
-		parent.update();
 	}
 	
 	public void update() {

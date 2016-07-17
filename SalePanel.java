@@ -19,8 +19,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 public class SalePanel extends JPanel implements ActionListener {
-	private MainWindow parent;
-	
 	private JPanel pnlAddToCart = new JPanel();
 	private JTextField txtSearch = new JTextField();
 	private JButton btnSearch = new JButton("Search");
@@ -44,19 +42,17 @@ public class SalePanel extends JPanel implements ActionListener {
 	private JComboBox cboSalesDateDay = new JComboBox();
 	private JComboBox cboSalesDateYear = new JComboBox();
 	
-        private ProductManager productManage = new ProductManager();
-        private SaleManager saleManage = new SaleManager();
-        private DefaultTableModel tm = new DefaultTableModel();
-        private ArrayList<String> prodNameList = new ArrayList<String>();
-        private ArrayList<Integer> prodQtyList = new ArrayList<Integer>();
-        private int sum = 0;
-        private int totalQty = 0;
-        private int sellingprice;
+    private ProductManager productManage = new ProductManager();
+    private SaleManager saleManage = new SaleManager();
+    private DefaultTableModel tm = new DefaultTableModel();
+    private ArrayList<String> prodNameList = new ArrayList<String>();
+    private ArrayList<Integer> prodQtyList = new ArrayList<Integer>();
+    private int sum = 0;
+    private int totalQty = 0;
+    private int sellingprice;
             
         
-	public SalePanel(MainWindow mw) {
-        parent = mw;
-        
+	public SalePanel() {
 		tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
             
 		setBackground(Color.WHITE);
@@ -174,7 +170,7 @@ public class SalePanel extends JPanel implements ActionListener {
                 selectTableField();
 	}
         
-        public void selectTableField()
+    public void selectTableField()
 	{
 		tblSaleSearch.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 		{
@@ -188,8 +184,7 @@ public class SalePanel extends JPanel implements ActionListener {
                 
 	}
         
-        
-        public void searchTable()
+    public void searchTable()
 	{
 		if(txtSearch.getText().toString().equals(""))
 			tblSaleSearch.setModel(productManage.viewProducts());

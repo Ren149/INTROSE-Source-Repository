@@ -23,7 +23,6 @@ import javax.swing.JScrollPane;
 import java.util.Date;
 
 public class ProductListPanel extends JPanel implements ActionListener {
-	private MainWindow parent;
 	private Date currentDate = new Date();
 	private int rowCount = 0;
 
@@ -35,9 +34,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	private JScrollPane scrollPane = new JScrollPane();
 	private ProductManager productManage = new ProductManager();
 	
-	public ProductListPanel(MainWindow mw) {
-		parent = mw;
-		
+	public ProductListPanel() {
 		setBackground(Color.WHITE);
 		setLayout(new MigLayout("", "[][grow]", "[][][][grow][]"));
 		
