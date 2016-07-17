@@ -14,6 +14,148 @@ public class ProductManager {
 		con = new DBConnection();
 	}
 	
+	public int getSellingPrice(int productID)
+	{
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT selling_price "
+				+ "FROM products "
+				+ "WHERE productID = '" + productID + "';";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+				
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	public int getSellingPrice(String productname)
+	{
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT selling_price FROM products WHERE product_name = ?;";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			ps.setString(1, productname);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+				
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	public int getLatestProductID()
+	{
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT MAX(productID) FROM products;";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+				
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	public int getProductID(String productname)
+	{
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT productID FROM products WHERE product_name = ?;";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			ps.setString(1, productname);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+				
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+
+	public int getProductID(int row)
+	{
+	PreparedStatement ps;
+	ResultSet rs;
+	
+	String sQuery = "SELECT p.productID "
+			+ "FROM products p "
+			+ "ORDER BY p.product_name DESC LIMIT 1 OFFSET " + row + ";";
+	
+	try {
+		ps = con.getConnection().prepareStatement(sQuery);
+		ps.executeQuery(sQuery);
+		
+		rs = ps.executeQuery();
+		
+		if(rs.next()) {
+			return rs.getInt(1);
+		}
+	} catch(SQLException e) {
+		e.printStackTrace();
+	}
+	
+	return -1;
+		
+	}
+	
+	public boolean checkDuplicates(String productname)
+	{
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT product_name "
+						+ "FROM products	"
+						+ "WHERE product_name = ?;";
+
+		try {ps = con.getConnection().prepareStatement(sQuery);
+		ps.setString(1, productname);
+		rs = ps.executeQuery();
+		
+
+		if(rs.next()) {
+			return true;
+		}
+		
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public void addProduct(String productname, double sellprice)
 	{
 		PreparedStatement ps;
@@ -69,10 +211,11 @@ public class ProductManager {
 
 		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity"});
 
-		String sQuery = "SELECT p.product_name, b.batch_quantity "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
 				+ "FROM products p, batch b "
-				+ "WHERE product_name LIKE ? "
+				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
+				+ "GROUP BY p.product_name "
 				+ "ORDER BY p.product_name;";
 		
 		try {
@@ -81,7 +224,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2)});
 			}
 			return tm;
 				
@@ -97,12 +241,13 @@ public class ProductManager {
 		ResultSet rs;
 		DefaultTableModel tm = new DefaultTableModel();
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Buying Price", "Selling Price", "Batch Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity", "Buying Price", "Selling Price"});
 		
-		String sQuery = "SELECT p.product_name, b.batch_quantity, b.buying_price, p.selling_price "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
-				+ "WHERE product_name LIKE ? "
+				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
+				+ "GROUP BY p.product_name "
 				+ "ORDER BY p.product_name;";
 		
 		try {
@@ -111,7 +256,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3), rs.getDouble(4)});
 			}
 			return tm;
 				
@@ -129,9 +275,10 @@ public class ProductManager {
 		
 		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity"});
 		
-		String sQuery = "SELECT p.product_name, b.batch_quantity "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
+				+ "GROUP BY p.product_name "
 				+ "ORDER BY p.product_name;";
 		
 		try {
@@ -140,7 +287,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2)});
 			}
 			return tm;
 				
@@ -156,11 +304,12 @@ public class ProductManager {
 		ResultSet rs;
 		DefaultTableModel tm = new DefaultTableModel();
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Buying Price", "Selling Price", "Batch Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity", "Buying Price", "Selling Price"});
 		
-		String sQuery = "SELECT p.product_name, b.batch_quantity, b.buying_price, p.selling_price "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
+				+ "GROUP BY p.product_name "
 				+ "ORDER BY p.product_name;";
 		
 		try {
@@ -169,7 +318,8 @@ public class ProductManager {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				tm.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)});
+				if(rs.getInt(2) > 0)
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3), rs.getDouble(4)});
 			}
 			return tm;
 				
@@ -177,81 +327,6 @@ public class ProductManager {
 			e.printStackTrace();
 		}	
 		return tm;
-	}
-	
-	
-
-	
-	public int getLatestProductID()
-	{
-		PreparedStatement ps;
-		ResultSet rs;
-		String sQuery = "SELECT MAX(productID) FROM products;";
-
-		try {
-			ps = con.getConnection().prepareStatement(sQuery);
-			
-			rs = ps.executeQuery();
-			
-			if(rs.next()) {
-					return rs.getInt(1);
-			}
-				
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return 0;
-	}
-	
-	public int getProductID(String productname)
-	{
-		PreparedStatement ps;
-		ResultSet rs;
-		String sQuery = "SELECT productID FROM products WHERE product_name = ?;";
-
-		try {
-			ps = con.getConnection().prepareStatement(sQuery);
-			ps.setString(2, productname);
-			
-			rs = ps.executeQuery();
-			
-			if(rs.next()) {
-					return rs.getInt(1);
-			}
-				
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return 0;
-	}
-	
-
-	public int getProductID(int row)
-	{
-	PreparedStatement ps;
-	ResultSet rs;
-	
-	String sQuery = "SELECT p.productID "
-			+ "FROM products p "
-			+ "ORDER BY p.product_name DESC LIMIT 1 OFFSET " + row + ";";
-	
-	try {
-		ps = con.getConnection().prepareStatement(sQuery);
-		ps.executeQuery(sQuery);
-		
-		rs = ps.executeQuery();
-		
-		if(rs.next()) {
-			return rs.getInt(1);
-		}
-	} catch(SQLException e) {
-		e.printStackTrace();
-	}
-	
-	return -1;
-		
 	}
 	
 }
