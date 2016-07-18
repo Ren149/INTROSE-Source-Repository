@@ -1,6 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `pharmacy` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `pharmacy`;
--- MySQL dump 10.13  Distrib 5.7.9, for Win32 (AMD64)
+-- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
 --
 -- Host: localhost    Database: pharmacy
 -- ------------------------------------------------------
@@ -34,7 +32,7 @@ CREATE TABLE `batch` (
   `buying_price` int(11) NOT NULL,
   PRIMARY KEY (`batchID`),
   UNIQUE KEY `batchID_UNIQUE` (`batchID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -54,12 +52,12 @@ DROP TABLE IF EXISTS `line_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `line_item` (
-  `lineitemID` int(10) unsigned zerofill NOT NULL,
+  `lineitemID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `salesID` int(11) NOT NULL,
   `productID` int(11) NOT NULL,
   PRIMARY KEY (`lineitemID`),
   UNIQUE KEY `lineitemID_UNIQUE` (`lineitemID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -86,7 +84,7 @@ CREATE TABLE `products` (
   `isDiscontinued` binary(1) NOT NULL,
   PRIMARY KEY (`productID`),
   UNIQUE KEY `productID_UNIQUE` (`productID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,7 +110,7 @@ CREATE TABLE `sales` (
   `date_sold` date NOT NULL,
   PRIMARY KEY (`salesID`),
   UNIQUE KEY `salesID_UNIQUE` (`salesID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,4 +131,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-07-16 20:24:24
+-- Dump completed on 2016-07-18 14:26:44
