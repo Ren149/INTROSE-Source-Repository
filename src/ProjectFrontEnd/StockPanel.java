@@ -27,12 +27,13 @@ import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.ListSelectionModel;
 
-public class StockPanel extends JPanel implements ActionListener{
+public class StockPanel extends JPanel implements ActionListener, ListSelectionListener{
 	//PRODUCTLIST PANEL
 	private JPanel pnlProductList = new JPanel();
 	private JTextField txtSearch = new JTextField();
-	private JButton btnSearch = new JButton("Search");	
+	private JButton btnSearch = new JButton("SEARCH");	
 	private JLabel lblSort = new JLabel("Sort:");
 	private JComboBox cboSort = new JComboBox();
 	private JTable tblProductList = new JTable();
@@ -87,36 +88,55 @@ public class StockPanel extends JPanel implements ActionListener{
 	//MANAGER INITIALIZERS
 	private ProductManager productManage = new ProductManager();
 	private BatchManager batchManage = new BatchManager();
+	private final JButton btnClear = new JButton("CLEAR");
+	private final JLabel lblProductListTitle = new JLabel("Product List as of");
 	
 	public StockPanel() {
-		setBackground(new Color(255, 255, 255));
-		setLayout(new MigLayout("", "[grow][]", "[]"));
+		setBackground(new Color(245, 245, 245));
+		setLayout(new MigLayout("", "[][]", "[grow]"));
 		
 		//ELEMENTS IN THE PRODUCTLIST PANEL
 		txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtSearch.setColumns(10);
 		
-		btnSearch.setForeground(new Color(255, 255, 255));
-		btnSearch.setBackground(new Color(0, 204, 0));
+		btnSearch.setForeground(Color.WHITE);
+		btnSearch.setBackground(new Color(60, 179, 113));
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnSearch.addActionListener(this);
+		tblProductList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tblProductList.setModel(productManage.viewProducts());
+		tblProductList.setModel(new DefaultTableModel(
+			null,
+			new String[] {
+				"Product Name", "Quantity"
+			}
+		));
+		
 		tblProductList.getColumnModel().getColumn(0).setPreferredWidth(100);
 		tblProductList.getColumnModel().getColumn(0).setMinWidth(100);
+		tblProductList.getColumnModel().getColumn(1).setPreferredWidth(80);
 		tblProductList.getColumnModel().getColumn(1).setMinWidth(80);
 		tblProductList.getColumnModel().getColumn(1).setMaxWidth(80);
+		tblProductList.getSelectionModel().addListSelectionListener(this);
 		
 		scrollPane.setViewportView(tblProductList);
 		
-		pnlProductList.setBackground(new Color(255, 255, 255));
-		pnlProductList.setLayout(new MigLayout("", "[grow][][grow][]", "[][grow]"));
-		pnlProductList.add(txtSearch, "cell 0 0,grow");
-		pnlProductList.add(btnSearch, "cell 1 0,alignx left,growy");
-		pnlProductList.add(scrollPane, "cell 0 1 4 1,grow");
+		pnlProductList.setBackground(new Color(245, 245, 245));
+		pnlProductList.setLayout(new MigLayout("", "[][][]", "[][][grow]"));
+		lblProductListTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		
-		pnlForm.setBackground(new Color(255, 255, 255));
+		pnlProductList.add(lblProductListTitle, "cell 0 0 3 1");
+		pnlProductList.add(txtSearch, "cell 0 1,alignx left,growy");
+		pnlProductList.add(btnSearch, "cell 1 1,alignx left,growy");
+		btnClear.setBackground(new Color(0, 139, 139));
+		btnClear.setForeground(Color.WHITE);
+		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		
+		pnlProductList.add(btnClear, "cell 2 1");
+		pnlProductList.add(scrollPane, "cell 0 2 3 1,grow");
+		
+		pnlForm.setBackground(new Color(245, 245, 245));
 		pnlForm.setLayout(new MigLayout("", "[grow]", "[grow]"));
 		
 		//ELEMENTS IN THE ADD NEW ITEM PANEL
@@ -152,9 +172,11 @@ public class StockPanel extends JPanel implements ActionListener{
 		lblPiecesAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		lblExpiryAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		cboExpiryMonthAdd.setBackground(Color.WHITE);
 		
 		cboExpiryMonthAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		cboExpiryMonthAdd.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
+		cboExpiryYearAdd.setBackground(Color.WHITE);
 		
 		cboExpiryYearAdd.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
 		cboExpiryYearAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -168,7 +190,7 @@ public class StockPanel extends JPanel implements ActionListener{
 		btnAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnAdd.addActionListener(this);
 
-		pnlAddNewItemForm.setBackground(Color.WHITE);
+		pnlAddNewItemForm.setBackground(new Color(245, 245, 245));
 		pnlAddNewItemForm.setLayout(new MigLayout("", "[80:80px][grow]", "[][][][][][][][]"));
 		pnlAddNewItemForm.add(lblItemNameAdd, "cell 0 0,alignx right");
 		pnlAddNewItemForm.add(txtItemNameAdd, "cell 1 0,growx");
@@ -225,7 +247,7 @@ public class StockPanel extends JPanel implements ActionListener{
 		lblFeedbackRestock.setForeground(new Color(0, 128, 128));
 		lblFeedbackRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		pnlRestockItemForm.setBackground(Color.WHITE);
+		pnlRestockItemForm.setBackground(new Color(245, 245, 245));
 		pnlRestockItemForm.setLayout(new MigLayout("", "[80:80px][grow][]", "[][][][][][][][]"));
 		pnlRestockItemForm.add(lblItemNameRestock, "cell 0 0,alignx right");
 		pnlRestockItemForm.add(txtItemNameRestock, "cell 1 0 2 1,growx");
@@ -241,9 +263,11 @@ public class StockPanel extends JPanel implements ActionListener{
 		pnlRestockItemForm.add(tglbtnUpdateRestock, "cell 2 1 1 2,growy");
 		
 		lblExpiryRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		cboExpiryMonthRestock.setBackground(new Color(255, 255, 255));
 		
 		cboExpiryMonthRestock.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
 		cboExpiryMonthRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		cboExpiryYearRestock.setBackground(new Color(255, 255, 255));
 
 		cboExpiryYearRestock.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
 		cboExpiryYearRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -266,6 +290,7 @@ public class StockPanel extends JPanel implements ActionListener{
 		pnlRestockItemForm.add(lblFeedbackRestock, "cell 0 6 3 1,alignx right");
 		pnlRestockItemForm.add(btnRestock, "cell 0 7 3 1,alignx right");
 		pnlRestockItemForm.add(cboExpiryYearRestock, "cell 1 3");
+		tabbedPane.setBackground(new Color(245, 245, 245));
 		
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabbedPane.addTab("Add New Item", null, pnlAddNewItemForm, null);
@@ -377,6 +402,16 @@ public class StockPanel extends JPanel implements ActionListener{
 		}
 		else if(e.getSource().equals(btnRestock)) {
 			restockItem();
+		}
+	}
+	
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if(tblProductList.getSelectedRow() > -1) {
+			txtItemNameRestock.setText(tblProductList.getValueAt(tblProductList.getSelectedRow(), 0).toString());			
+		}
+		else {
+			txtItemNameRestock.setText("");
 		}
 	}
 	

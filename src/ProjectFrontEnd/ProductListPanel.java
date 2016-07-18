@@ -29,38 +29,50 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	private JLabel lblProductListDate = new JLabel("Product List as of " + currentDate);
 	private JLabel lblItemCount = new JLabel("Displaying " + rowCount + " items");
 	private JTextField txtProductSearch = new JTextField();
-	private JButton btnSearch = new JButton("Search");
+	private JButton btnSearch = new JButton("SEARCH");
 	private JTable tblProductListTable;
 	private JScrollPane scrollPane = new JScrollPane();
 	private ProductManager productManage = new ProductManager();
+	private final JButton btnClear = new JButton("CLEAR");
+	private final JPanel panel = new JPanel();
 	
 	public ProductListPanel() {
-		setBackground(Color.WHITE);
-		setLayout(new MigLayout("", "[][grow]", "[][][][grow][]"));
+		setBackground(new Color(245, 245, 245));
+		setLayout(new MigLayout("", "[grow]", "[grow]"));
+		panel.setBackground(new Color(245, 245, 245));
 		
-		lblProductListDate.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		add(panel, "cell 0 0,grow");
+		panel.setLayout(new MigLayout("", "[][grow]", "[][][grow][]"));
+		panel.add(lblProductListDate, "cell 0 0 2 1");
+		
+		lblProductListDate.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		panel.add(txtProductSearch, "cell 0 1,growy");
 		
 		txtProductSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtProductSearch.setColumns(10);
-		btnSearch.setForeground(Color.WHITE);
+		panel.add(btnSearch, "flowx,cell 1 1");
 		
+		btnSearch.setForeground(Color.WHITE);
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnSearch.setBackground(new Color(0, 204, 0));
+		btnSearch.setBackground(new Color(60, 179, 113));
 		btnSearch.addActionListener(this);
 		
 		tblProductListTable = new JTable();
+		panel.add(scrollPane, "cell 0 2 2 1,grow");
+		
 		scrollPane.setViewportView(tblProductListTable);
+		
 		tblProductListTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblProductListTable.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		viewTable();
+		panel.add(lblItemCount, "cell 0 3 2 1");
 		
 		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		panel.add(btnClear, "cell 1 1");
 		
-		add(lblProductListDate, "cell 0 0");
-		add(txtProductSearch, "cell 0 1,grow");
-		add(btnSearch, "cell 1 1,alignx left,growy");
-		add(scrollPane, "cell 0 3 2 1,grow");
-		add(lblItemCount, "cell 0 4");
+		btnClear.setBackground(new Color(0, 139, 139));
+		btnClear.setForeground(new Color(255, 255, 255));
+		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 	}
 
 	public void viewTable()
@@ -91,6 +103,8 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	}
 	
 	public void update() {
+		currentDate = new Date();
+		lblProductListDate = new JLabel("Product List as of " + currentDate);
 		viewTable();
 	}
 }

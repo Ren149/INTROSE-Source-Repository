@@ -21,14 +21,14 @@ public class MainWindow extends JFrame implements ChangeListener{
 		setTitle("Farmacia Regine Inventory");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		tabbedPane.setBackground(new Color(255, 255, 255));
+		tabbedPane.setBackground(new Color(245, 245, 245));
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabbedPane.addTab("Sale", salePanel);
 		tabbedPane.addTab("Stock", stockPanel);
 		tabbedPane.addTab("Product List", productListPanel);
 		tabbedPane.addChangeListener(this);
 		
-		getContentPane().setBackground(new Color(255, 255, 255));
+		getContentPane().setBackground(new Color(245, 245, 245));
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
 		getContentPane().add(tabbedPane, "cell 0 0,grow");
 		
@@ -41,10 +41,10 @@ public class MainWindow extends JFrame implements ChangeListener{
 		if(tabbedPane.getSelectedComponent().equals(salePanel)) {
 			salePanel.update();
 		}
-		if(tabbedPane.getSelectedComponent().equals(productListPanel)) {
+		else if(tabbedPane.getSelectedComponent().equals(productListPanel)) {
 			productListPanel.update();
 		}
-		if(tabbedPane.getSelectedComponent().equals(stockPanel)) {
+		else if(tabbedPane.getSelectedComponent().equals(stockPanel)) {
 			stockPanel.update();
 		}
 	}

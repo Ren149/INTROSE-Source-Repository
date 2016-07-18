@@ -17,11 +17,12 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.border.MatteBorder;
 
 public class SalePanel extends JPanel implements ActionListener {
 	private JPanel pnlAddToCart = new JPanel();
 	private JTextField txtSearch = new JTextField();
-	private JButton btnSearch = new JButton("Search");
+	private JButton btnSearch = new JButton("SEARCH");
 	private JTable tblSaleSearch = new JTable();
 	private JLabel lblQuantity = new JLabel("Quantity:");
 	private JTextField txtQuantity = new JTextField();
@@ -30,8 +31,7 @@ public class SalePanel extends JPanel implements ActionListener {
 	private JButton btnAddToCart = new JButton("Add to Cart");
 	private JLabel lblAddToCartFeedback = new JLabel(" ");
 	private JPanel pnlCart = new JPanel();
-	private JLabel lblHelpCart = new JLabel("Select and item and click remove to delete it from the cart");
-	private JButton btnRemove = new JButton("Remove");
+	private JButton btnRemove = new JButton("REMOVE");
 	private JScrollPane scrollPaneCart = new JScrollPane();
 	private JLabel lblSalesDate = new JLabel("Sales Date:");
 	private JLabel lblTotal = new JLabel("Total: ");
@@ -50,123 +50,143 @@ public class SalePanel extends JPanel implements ActionListener {
     private int sum = 0;
     private int totalQty = 0;
     private int sellingprice;
+    private final JButton btnClear = new JButton("CLEAR");
+    private final JLabel lblAddToCartTitle = new JLabel("Item Selection");
+    private final JLabel lblCartTitle = new JLabel("Cart");
+    private final JSeparator separator = new JSeparator();
             
         
 	public SalePanel() {
 		tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
             
-		setBackground(Color.WHITE);
-		setLayout(new MigLayout("", "[300][grow]", "[grow]"));
+		setBackground(new Color(245, 245, 245));
+		setLayout(new MigLayout("", "[300][][grow]", "[grow]"));
 		
-		pnlAddToCart.setBackground(Color.WHITE);
-		pnlAddToCart.setBorder(new TitledBorder(null, "Add to Cart", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlAddToCart.setLayout(new MigLayout("", "[grow][]", "[][grow][][][]"));
+		pnlAddToCart.setBackground(new Color(245, 245, 245));
+		pnlAddToCart.setBorder(null);
+		pnlAddToCart.setLayout(new MigLayout("", "[grow][]", "[][][grow][][][]"));
+		lblAddToCartTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		
+		pnlAddToCart.add(lblAddToCartTitle, "cell 0 0 2 1");
 		
 		txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtSearch.setColumns(10);
 		
-		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnSearch.setBackground(new Color(0, 204, 0));
-		btnSearch.addActionListener(this);
-		
-		pnlAddToCart.add(txtSearch, "cell 0 0,grow");
-		pnlAddToCart.add(btnSearch, "cell 1 0,alignx left");
-		
-				btnSearch.setForeground(new Color(255, 255, 255));
-				btnSearch.setBackground(new Color(0, 204, 0));
-				btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
+		pnlAddToCart.add(txtSearch, "cell 0 1,grow");
+				
 		tblSaleSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblSaleSearch.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"", new Integer(6222)},
 			},
 			new String[] {
 				"Product Name", "Quantity"
 			}
-		));
+		) {
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		});
 		tblSaleSearch.getColumnModel().getColumn(1).setPreferredWidth(65);
 		tblSaleSearch.getColumnModel().getColumn(1).setMinWidth(65);
 		tblSaleSearch.getColumnModel().getColumn(1).setMaxWidth(65);
 		scrollPaneSelectItem.setViewportView(tblSaleSearch);
-		
-		lblQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		btnAddToCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnAddToCart.setMinimumSize(new Dimension(100, 35));
-		btnAddToCart.setBackground(new Color(51, 255, 153));
-                btnAddToCart.addActionListener(this);
                 
 		
 		lblAddToCartFeedback.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		lblAddToCartFeedback.setForeground(Color.RED);
 		
-		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		txtQuantity.setColumns(10);
+		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnSearch.setBackground(new Color(60, 179, 113));
+		btnSearch.setForeground(new Color(255, 255, 255));
+		btnSearch.addActionListener(this);
+		pnlAddToCart.add(btnSearch, "flowx,cell 1 1,alignx left");
+		btnClear.setForeground(Color.WHITE);
+		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnClear.setBackground(new Color(0, 139, 139));
+		
+		pnlAddToCart.add(btnClear, "cell 1 1,alignx right");
                 
-		pnlAddToCart.add(scrollPaneSelectItem, "cell 0 1 2 1,grow");
-		pnlAddToCart.add(lblQuantity, "cell 0 2,alignx right,growy");
-		pnlAddToCart.add(btnAddToCart, "cell 0 3 2 1,alignx right");
+		pnlAddToCart.add(scrollPaneSelectItem, "cell 0 2 2 1,grow");
+		
+		lblQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		pnlAddToCart.add(lblQuantity, "flowx,cell 0 3,alignx left,growy");
 		pnlAddToCart.add(lblAddToCartFeedback, "cell 0 4 2 1,alignx right");
-		pnlAddToCart.add(txtQuantity, "cell 1 2,grow");
 		
-		pnlCart.setBackground(Color.WHITE);
-		pnlCart.setBorder(new TitledBorder(null, "Cart", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlCart.setLayout(new MigLayout("", "[][grow]", "[][grow][][][]"));
-		
-		lblHelpCart.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+		pnlCart.setBackground(new Color(245, 245, 245));
+		pnlCart.setBorder(null);
+		pnlCart.setLayout(new MigLayout("", "[][grow]", "[][][grow][][][]"));
+		btnRemove.setToolTipText("This button deletes any selected item on the cart.");
 		
 		btnRemove.setForeground(Color.WHITE);
 		btnRemove.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnRemove.setBackground(Color.RED);
+		btnRemove.setBackground(new Color(255, 99, 71));
                 btnRemove.addActionListener(this);
 		
 		tblCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblCart.setModel(tm);
 		scrollPaneCart.setViewportView(tblCart);
 		
-		lblTotal.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblTotal.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		
-		lblTotalValue.setFont(new Font("Segoe UI", Font.BOLD, 11));
-		
-		lblSalesDate.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		cboSalesDateMonth.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
-		cboSalesDateMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		cboSalesDateDay.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"}));
-		cboSalesDateDay.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		
-		cboSalesDateYear.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
-		cboSalesDateYear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblTotalValue.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		
 		lblFeedbackCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblFeedbackCart.setForeground(new Color(0, 128, 0));
+		lblCartTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		
-		btnRecord.setForeground(Color.WHITE);
-		btnRecord.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnRecord.setMinimumSize(new Dimension(100, 35));
-		btnRecord.setBackground(new Color(0, 204, 0));
-                btnRecord.addActionListener(this);
+		pnlCart.add(lblCartTitle, "cell 0 0 2 1");
 		
-		pnlCart.add(lblHelpCart, "cell 0 0");
-		pnlCart.add(btnRemove, "cell 1 0,alignx right");
-		pnlCart.add(scrollPaneCart, "cell 0 1 2 1,grow");
-		pnlCart.add(lblSalesDate, "flowx,cell 0 2");
-		pnlCart.add(lblTotal, "flowx,cell 1 2,alignx right");
-		pnlCart.add(lblTotalValue, "cell 1 2,alignx right");
-		pnlCart.add(btnRecord, "flowy,cell 1 3,alignx right");
+		lblSalesDate.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		pnlCart.add(lblSalesDate, "flowx,cell 0 1");
+		pnlCart.add(btnRemove, "cell 1 1,alignx right");
+		pnlCart.add(scrollPaneCart, "cell 0 2 2 1,grow");
+		pnlCart.add(lblTotal, "flowx,cell 1 3,alignx right,aligny center");
+		pnlCart.add(lblTotalValue, "cell 1 3,alignx right,aligny center");
 		pnlCart.add(lblFeedbackCart, "cell 0 4 2 1,alignx right");
-		pnlCart.add(cboSalesDateMonth, "cell 0 2");
-		pnlCart.add(cboSalesDateDay, "cell 0 2");
-		pnlCart.add(cboSalesDateYear, "cell 0 2");
 		
 		add(pnlAddToCart, "cell 0 0,alignx left,growy");
-		add(pnlCart, "cell 1 0,grow");
-                
-                txtQuantity.setEditable(false);
-                btnAddToCart.setEnabled(true);
+		
+		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtQuantity.setColumns(10);
+		pnlAddToCart.add(txtQuantity, "cell 0 3,grow");
+		
+        txtQuantity.setEditable(false);
+        btnAddToCart.setForeground(new Color(255, 255, 255));
+        
+        btnAddToCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        btnAddToCart.setMinimumSize(new Dimension(100, 35));
+        btnAddToCart.setBackground(new Color(65, 105, 225));
+        btnAddToCart.addActionListener(this);
+        pnlAddToCart.add(btnAddToCart, "cell 1 5,alignx right");
+        btnAddToCart.setEnabled(true);
+        
+		separator.setForeground(new Color(211, 211, 211));
+		separator.setOrientation(SwingConstants.VERTICAL);
+		separator.setBackground(new Color(255, 255, 255));
+		
+		add(separator, "cell 1 0,grow");
+		add(pnlCart, "cell 2 0,grow");
+		
+		cboSalesDateMonth.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
+		cboSalesDateMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		pnlCart.add(cboSalesDateMonth, "cell 0 1");
+		
+		cboSalesDateDay.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"}));
+		cboSalesDateDay.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		pnlCart.add(cboSalesDateDay, "cell 0 1");
+		
+		cboSalesDateYear.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
+		cboSalesDateYear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		pnlCart.add(cboSalesDateYear, "cell 0 1");
+		
+		btnRecord.setForeground(new Color(0, 0, 0));
+		btnRecord.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnRecord.setMinimumSize(new Dimension(100, 35));
+		btnRecord.setBackground(new Color(0, 250, 154));
+		btnRecord.addActionListener(this);
+		pnlCart.add(btnRecord, "flowy,cell 1 5,alignx right");
                 selectTableField();
 	}
         
@@ -204,7 +224,7 @@ public class SalePanel extends JPanel implements ActionListener {
                    
                     if(txtQuantity.getText().length() >= 1){
                        
-                        if(Integer.parseInt(txtQuantity.getText()) <= Integer.parseInt(String.valueOf(tblSaleSearch.getModel().getValueAt(tblSaleSearch.getSelectedRow(), 1)))){
+                        if(Integer.parseInt(txtQuantity.getText()) <= Integer.parseInt(String.valueOf(tblSaleSearch.getModel().getValueAt(tblSaleSearch.getSelectedRow(), 1))) && Integer.parseInt(txtQuantity.getText()) > 0){
                             
                             if(saleManage.getDuplicate(prodNameList, String.valueOf(tblSaleSearch.getModel().getValueAt(tblSaleSearch.getSelectedRow(), 0))) == 999){
                                 sellingprice = productManage.getSellingPrice(String.valueOf(tblSaleSearch.getModel().getValueAt(tblSaleSearch.getSelectedRow(), 0)));
@@ -274,7 +294,7 @@ public class SalePanel extends JPanel implements ActionListener {
                         tm.setRowCount(0);
                         tblSaleSearch.setModel(productManage.viewProducts());
                         lblFeedbackCart.setText("Recorded Successfully!");
-                    }
+                    }else lblFeedbackCart.setText("Cart is Empty!");
                 }
                 
             lblTotalValue.setText(String.valueOf(sum));

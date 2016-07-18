@@ -106,7 +106,6 @@ public class ProductManager {
 		return 0;
 	}
 	
-
 	public int getProductID(int row)
 	{
 	PreparedStatement ps;
@@ -207,9 +206,14 @@ public class ProductManager {
 	{
 		PreparedStatement ps;
 		ResultSet rs;
-		DefaultTableModel tm = new DefaultTableModel();
+		DefaultTableModel tm = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		};
 
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity"});
 
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
 				+ "FROM products p, batch b "
@@ -239,9 +243,14 @@ public class ProductManager {
 	{
 		PreparedStatement ps;
 		ResultSet rs;
-		DefaultTableModel tm = new DefaultTableModel();
+		DefaultTableModel tm = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		};
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity", "Buying Price", "Selling Price"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Buying Price", "Selling Price"});
 		
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
@@ -271,9 +280,14 @@ public class ProductManager {
 	{
 		PreparedStatement ps;
 		ResultSet rs;
-		DefaultTableModel tm = new DefaultTableModel();
+		DefaultTableModel tm = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		};
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity"});
 		
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
 				+ "FROM products p, batch b "
@@ -302,9 +316,14 @@ public class ProductManager {
 	{
 		PreparedStatement ps;
 		ResultSet rs;
-		DefaultTableModel tm = new DefaultTableModel();
+		DefaultTableModel tm = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		};
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Batch Quantity", "Buying Price", "Selling Price"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Buying Price", "Selling Price"});
 		
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
