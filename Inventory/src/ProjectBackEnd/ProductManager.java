@@ -14,7 +14,7 @@ public class ProductManager {
 		con = new DBConnection();
 	}
 	
-	public int getSellingPrice(int productID)
+	public float getSellingPrice(int productID)
 	{
 		PreparedStatement ps;
 		ResultSet rs;
@@ -38,7 +38,7 @@ public class ProductManager {
 		return 0;
 	}
 	
-	public int getSellingPrice(String productname)
+	public float getSellingPrice(String productname)
 	{
 		PreparedStatement ps;
 		ResultSet rs;
@@ -117,6 +117,44 @@ public class ProductManager {
 	
 	try {
 		ps = con.getConnection().prepareStatement(sQuery);
+		ps.executeQuery(sQuery);
+		
+		rs = ps.executeQuery();
+		
+		if(rs.next()) {
+			return rs.getInt(1);
+		}
+	} catch(SQLException e) {
+		e.printStackTrace();
+	}
+	
+	return -1;
+		
+	}
+
+	public int getProductID(int row, String searchText)
+	{
+	PreparedStatement ps;
+	ResultSet rs;
+	String sQuery;
+	
+	if(searchText.equals(""))
+	{
+	sQuery = "SELECT p.productID "
+			+ "FROM products p "
+			+ "ORDER BY p.product_name DESC LIMIT 1 OFFSET " + row + ";";
+	}
+	else
+	{
+	sQuery = "SELECT p.productID "
+			+ "FROM products p "
+			+ "WHERE p.product_name LIKE ? "
+			+ "ORDER BY p.product_name DESC LIMIT 1 OFFSET " + row + ";";
+	}
+	
+	try {
+		ps = con.getConnection().prepareStatement(sQuery);
+		ps.setString(1, "%" + searchText + "%");
 		ps.executeQuery(sQuery);
 		
 		rs = ps.executeQuery();
@@ -256,6 +294,9 @@ public class ProductManager {
 				+ "FROM products p, batch b "
 				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
+				+ "AND b.entry_date = (SELECT MAX(ba.entry_date) "
+					+ " FROM batch ba "
+					+ "	WHERE ba.productID = p.productID) "
 				+ "GROUP BY p.product_name "
 				+ "ORDER BY p.product_name;";
 		
@@ -328,6 +369,9 @@ public class ProductManager {
 		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
+				+ " AND b.entry_date = (SELECT MAX(ba.entry_date) "
+				+ " FROM batch ba "
+				+ "	WHERE ba.productID = p.productID) "
 				+ "GROUP BY p.product_name "
 				+ "ORDER BY p.product_name;";
 		

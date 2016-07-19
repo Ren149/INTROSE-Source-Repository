@@ -14,9 +14,9 @@ public class SaleManager {
 		con = new DBConnection();
 	}
     
-    public int getSubtotal(int qty, int sellprice)
+    public float getSubtotal(int qty, float sellprice)
 	{
-            return qty * sellprice;
+            return sellprice * qty;
         }
     
     public int getLatestSalesID()
@@ -41,7 +41,7 @@ public class SaleManager {
 		return 0;
 	}
     
-    public void recordTransaction(int totalQty, int totalSold, String date)
+    public void recordTransaction(int totalQty, float totalSold, String date)
 	{
 		PreparedStatement ps;
 		

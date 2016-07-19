@@ -14,7 +14,7 @@ public class BatchManager {
 		con = new DBConnection();
 	}
 	
-	public int getBuyingPrice(int productID) {
+	public float getBuyingPrice(int productID) {
 		PreparedStatement ps;
 		ResultSet rs;
 		String sQuery = "SELECT buying_price "
@@ -42,7 +42,10 @@ public class BatchManager {
 		ResultSet rs;
 		String sQuery = "SELECT buying_price "
 				+ "FROM batch "
-				+ "WHERE productID = '" + productID + "' AND entry_date = (SELECT MAX(entry_date) FROM batch WHERE batch.productID = productID;);";
+				+ "WHERE productID = '" + productID + "' "
+				+ "AND entry_date = (SELECT MAX(entry_date)"
+				+ " FROM batch "
+				+ "WHERE batch.productID = productID);";
 		
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -97,7 +100,7 @@ public class BatchManager {
 			rs = ps.executeQuery();
 			
 			if(rs.next()) {
-				return (rs.getInt(1)+1);
+				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -129,12 +132,11 @@ public class BatchManager {
 		return 0;
 	}
 	
-	public void addBatch(int batchquantity, double buyingprice, int expiremonth, int expiryyear) {
-		ProductManager getIDmanage = new ProductManager();
+	public void addBatch(int productID, int batchquantity, double buyingprice, int expiremonth, int expiryyear) {
 		PreparedStatement ps;
 		
 		String sQuery = "INSERT INTO batch(productID, batch_quantity, expiry_month, expiry_year, entry_date, buying_price)"
-						+ "VALUES('"+ getIDmanage.getLatestProductID() +"','"+ batchquantity +"','"+ (expiremonth+1) +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "')";
+						+ "VALUES('"+ productID +"','"+ batchquantity +"','"+ expiremonth +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "')";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -148,7 +150,7 @@ public class BatchManager {
 		PreparedStatement ps;
 		
 		String sQuery = "INSERT INTO batch(productID, batch_quantity, expiry_month, expiry_year, entry_date, buying_price) "
-					+ "VALUES('" + productID + "', '" + batchquantity + "','"+ (expiremonth+1) +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "') ";
+					+ "VALUES('" + productID + "', '" + batchquantity + "','"+ expiremonth +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "') ";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
