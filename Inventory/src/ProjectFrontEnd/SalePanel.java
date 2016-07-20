@@ -24,7 +24,7 @@ import org.eclipse.wb.swing.FocusTraversalOnArray;
 public class SalePanel extends JPanel implements ActionListener {
 	private JPanel pnlAddToCart = new JPanel();
 	private JTextField txtSearch = new JTextField();
-	private JButton btnSearch = new JButton("SEARCH");
+	private JButton btnSearch = new JButton("Search");
 	private JTable tblSaleSearch = new JTable();
 	private JLabel lblQuantity = new JLabel("Quantity:");
 	private JTextField txtQuantity = new JTextField();
@@ -33,7 +33,7 @@ public class SalePanel extends JPanel implements ActionListener {
 	private JButton btnAddToCart = new JButton("Add to Cart");
 	private JLabel lblAddToCartFeedback = new JLabel(" ");
 	private JPanel pnlCart = new JPanel();
-	private JButton btnRemove = new JButton("REMOVE");
+	private JButton btnRemove = new JButton("Remove");
 	private JScrollPane scrollPaneCart = new JScrollPane();
 	private JLabel lblSalesDate = new JLabel("Sales Date:");
 	private JLabel lblTotal = new JLabel("Total: ");
@@ -52,7 +52,7 @@ public class SalePanel extends JPanel implements ActionListener {
     private float sum = 0;
     private int totalQty = 0;
     private float sellingprice = 0;
-    private final JButton btnClear = new JButton("CLEAR");
+    private final JButton btnClear = new JButton("Clear");
     private final JLabel lblAddToCartTitle = new JLabel("Item Selection");
     private final JLabel lblCartTitle = new JLabel("Cart");
     private final JSeparator separator = new JSeparator();
@@ -61,10 +61,10 @@ public class SalePanel extends JPanel implements ActionListener {
 	public SalePanel() {
 		tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
             
-		setBackground(new Color(245, 245, 245));
+		setBackground(Color.WHITE);
 		setLayout(new MigLayout("", "[300][][grow]", "[grow]"));
 		
-		pnlAddToCart.setBackground(new Color(245, 245, 245));
+		pnlAddToCart.setBackground(Color.WHITE);
 		pnlAddToCart.setBorder(null);
 		pnlAddToCart.setLayout(new MigLayout("", "[grow][]", "[][][grow][][][]"));
 		lblAddToCartTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -89,13 +89,13 @@ public class SalePanel extends JPanel implements ActionListener {
 		lblAddToCartFeedback.setForeground(Color.RED);
 		
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnSearch.setBackground(new Color(60, 179, 113));
+		btnSearch.setBackground(new Color(51, 153, 0));
 		btnSearch.setForeground(new Color(255, 255, 255));
 		btnSearch.addActionListener(this);
 		pnlAddToCart.add(btnSearch, "flowx,cell 1 1,alignx left");
-		btnClear.setForeground(Color.WHITE);
+		btnClear.setForeground(new Color(0, 0, 0));
 		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnClear.setBackground(new Color(0, 139, 139));
+		btnClear.setBackground(Color.WHITE);
 		btnClear.addActionListener(this);
 		
 		pnlAddToCart.add(btnClear, "cell 1 1,alignx right");
@@ -106,14 +106,14 @@ public class SalePanel extends JPanel implements ActionListener {
 		pnlAddToCart.add(lblQuantity, "flowx,cell 0 3,alignx left,growy");
 		pnlAddToCart.add(lblAddToCartFeedback, "cell 0 4 2 1,alignx right");
 		
-		pnlCart.setBackground(new Color(245, 245, 245));
+		pnlCart.setBackground(Color.WHITE);
 		pnlCart.setBorder(null);
 		pnlCart.setLayout(new MigLayout("", "[][grow]", "[][][grow][][][]"));
 		btnRemove.setToolTipText("This button deletes any selected item on the cart.");
 		
-		btnRemove.setForeground(Color.WHITE);
+		btnRemove.setForeground(new Color(0, 0, 0));
 		btnRemove.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnRemove.setBackground(new Color(255, 99, 71));
+		btnRemove.setBackground(Color.WHITE);
                 btnRemove.addActionListener(this);
 		
 		tblCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -149,7 +149,7 @@ public class SalePanel extends JPanel implements ActionListener {
         
         btnAddToCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         btnAddToCart.setMinimumSize(new Dimension(100, 35));
-        btnAddToCart.setBackground(new Color(65, 105, 225));
+        btnAddToCart.setBackground(new Color(51, 153, 0));
         btnAddToCart.addActionListener(this);
         pnlAddToCart.add(btnAddToCart, "cell 1 5,alignx right");
         btnAddToCart.setEnabled(true);
@@ -173,10 +173,10 @@ public class SalePanel extends JPanel implements ActionListener {
 		cboSalesDateYear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		pnlCart.add(cboSalesDateYear, "cell 0 1");
 		
-		btnRecord.setForeground(new Color(0, 0, 0));
+		btnRecord.setForeground(new Color(255, 255, 255));
 		btnRecord.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnRecord.setMinimumSize(new Dimension(100, 35));
-		btnRecord.setBackground(new Color(0, 250, 154));
+		btnRecord.setBackground(new Color(51, 153, 0));
 		btnRecord.addActionListener(this);
 		pnlCart.add(btnRecord, "flowy,cell 1 5,alignx right");
                 selectTableField();

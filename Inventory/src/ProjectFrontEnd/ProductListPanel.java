@@ -23,19 +23,19 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	private JLabel lblProductListDate = new JLabel("Product List as of " + new Date());
 	private JLabel lblItemCount = new JLabel("Displaying " + rowCount + " items");
 	private JTextField txtProductSearch = new JTextField();
-	private JButton btnSearch = new JButton("SEARCH");
+	private JButton btnSearch = new JButton("Search");
 	private JTable tblProductListTable;
 	private JScrollPane scrollPane = new JScrollPane();
 	private ProductManager productManage = new ProductManager();
-	private final JButton btnClear = new JButton("CLEAR");
+	private final JButton btnClear = new JButton("Clear");
 	private final JPanel panel = new JPanel();
 	
 	public ProductListPanel() {
 		setBackground(new Color(245, 245, 245));
 		setLayout(new MigLayout("", "[grow]", "[grow]"));
 
-		panel.setBackground(new Color(245, 245, 245));
-		panel.setLayout(new MigLayout("", "[][grow]", "[][][grow][]"));
+		panel.setBackground(new Color(255, 255, 255));
+		panel.setLayout(new MigLayout("", "[483.00][grow]", "[][][grow][]"));
 		
 		lblProductListDate.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		
@@ -44,7 +44,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		
 		btnSearch.setForeground(Color.WHITE);
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnSearch.setBackground(new Color(60, 179, 113));
+		btnSearch.setBackground(new Color(51, 153, 0));
 		btnSearch.addActionListener(this);
 		
 		tblProductListTable = new JTable();
@@ -57,13 +57,13 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		
 		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 
-		btnClear.setBackground(new Color(0, 139, 139));
-		btnClear.setForeground(new Color(255, 255, 255));
+		btnClear.setBackground(new Color(255, 255, 255));
+		btnClear.setForeground(new Color(0, 0, 0));
 		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnClear.addActionListener(this);
 		
 		panel.add(lblProductListDate, "cell 0 0 2 1");
-		panel.add(txtProductSearch, "cell 0 1,growy");
+		panel.add(txtProductSearch, "cell 0 1,grow");
 		panel.add(btnSearch, "flowx,cell 1 1");
 		panel.add(scrollPane, "cell 0 2 2 1,grow");
 		panel.add(lblItemCount, "cell 0 3 2 1");

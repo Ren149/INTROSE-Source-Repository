@@ -32,7 +32,7 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 	//PRODUCTLIST PANEL
 	private JPanel pnlProductList = new JPanel();
 	private JTextField txtSearch = new JTextField();
-	private JButton btnSearch = new JButton("SEARCH");	
+	private JButton btnSearch = new JButton("Search");	
 	private JLabel lblSort = new JLabel("Sort:");
 	private JComboBox cboSort = new JComboBox();
 	private JTable tblProductList = new JTable();
@@ -87,11 +87,11 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 	//MANAGER INITIALIZERS
 	private ProductManager productManage = new ProductManager();
 	private BatchManager batchManage = new BatchManager();
-	private final JButton btnClear = new JButton("CLEAR");
+	private final JButton btnClear = new JButton("Clear");
 	private final JLabel lblProductListTitle = new JLabel("Product List");
 	
 	public StockPanel() {
-		setBackground(new Color(245, 245, 245));
+		setBackground(new Color(255, 255, 255));
 		setLayout(new MigLayout("", "[grow][]", "[grow]"));
 		
 		//ELEMENTS IN THE PRODUCTLIST PANEL
@@ -99,7 +99,7 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		txtSearch.setColumns(10);
 		
 		btnSearch.setForeground(Color.WHITE);
-		btnSearch.setBackground(new Color(60, 179, 113));
+		btnSearch.setBackground(new Color(51, 153, 0));
 		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnSearch.addActionListener(this);
 		tblProductList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -116,22 +116,22 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		
 		scrollPane.setViewportView(tblProductList);
 		
-		pnlProductList.setBackground(new Color(245, 245, 245));
-		pnlProductList.setLayout(new MigLayout("", "[][][grow]", "[][][grow]"));
+		pnlProductList.setBackground(new Color(255, 255, 255));
+		pnlProductList.setLayout(new MigLayout("", "[275.00][63.00][grow]", "[][][grow]"));
 		lblProductListTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		
 		pnlProductList.add(lblProductListTitle, "cell 0 0 3 1");
-		pnlProductList.add(txtSearch, "cell 0 1,alignx left,growy");
+		pnlProductList.add(txtSearch, "cell 0 1,grow");
 		pnlProductList.add(btnSearch, "cell 1 1,alignx left,growy");
-		btnClear.setBackground(new Color(0, 139, 139));
-		btnClear.setForeground(Color.WHITE);
+		btnClear.setBackground(new Color(255, 255, 255));
+		btnClear.setForeground(new Color(0, 0, 0));
 		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnClear.addActionListener(this);
 		
 		pnlProductList.add(btnClear, "cell 2 1");
 		pnlProductList.add(scrollPane, "cell 0 2 3 1,grow");
 		
-		pnlForm.setBackground(new Color(245, 245, 245));
+		pnlForm.setBackground(new Color(255, 255, 255));
 		pnlForm.setLayout(new MigLayout("", "[grow]", "[grow]"));
 		
 		//ELEMENTS IN THE ADD NEW ITEM PANEL
@@ -181,11 +181,11 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		
 		btnAdd.setMinimumSize(new Dimension(100, 35));
 		btnAdd.setForeground(new Color(255, 255, 255));
-		btnAdd.setBackground(new Color(0, 204, 0));
+		btnAdd.setBackground(new Color(51, 153, 0));
 		btnAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnAdd.addActionListener(this);
 
-		pnlAddNewItemForm.setBackground(new Color(245, 245, 245));
+		pnlAddNewItemForm.setBackground(new Color(255, 255, 255));
 		pnlAddNewItemForm.setLayout(new MigLayout("", "[80:80px][grow]", "[][][][][][][][]"));
 		pnlAddNewItemForm.add(lblItemNameAdd, "cell 0 0,alignx right");
 		pnlAddNewItemForm.add(txtItemNameAdd, "cell 1 0,growx");
@@ -242,7 +242,7 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		lblFeedbackRestock.setForeground(new Color(0, 128, 128));
 		lblFeedbackRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		pnlRestockItemForm.setBackground(new Color(245, 245, 245));
+		pnlRestockItemForm.setBackground(new Color(255, 255, 255));
 		pnlRestockItemForm.setLayout(new MigLayout("", "[80:80px][grow][]", "[][][][][][][][]"));
 		pnlRestockItemForm.add(lblItemNameRestock, "cell 0 0,alignx right");
 		pnlRestockItemForm.add(txtItemNameRestock, "cell 1 0 2 1,growx");
@@ -250,9 +250,10 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		pnlRestockItemForm.add(txtBuyingPriceRestock, "flowx,cell 1 1,alignx left");
 		pnlRestockItemForm.add(lblSellingPriceRestock, "cell 0 2,alignx trailing");
 		pnlRestockItemForm.add(txtSellingPriceRestock, "flowx,cell 1 2,alignx left");
+		tglbtnUpdateRestock.setForeground(new Color(255, 255, 255));
 		
 		tglbtnUpdateRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tglbtnUpdateRestock.setBackground(new Color(51, 255, 153));
+		tglbtnUpdateRestock.setBackground(new Color(51, 153, 0));
 		tglbtnUpdateRestock.addActionListener(this);
 		
 		pnlRestockItemForm.add(tglbtnUpdateRestock, "cell 2 1 1 2,growy");
@@ -270,7 +271,7 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		btnRestock.setMinimumSize(new Dimension(100, 35));
 		btnRestock.setForeground(Color.WHITE);
 		btnRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnRestock.setBackground(new Color(0, 204, 0));
+		btnRestock.setBackground(new Color(51, 153, 0));
 		btnRestock.addActionListener(this);
 		
 		pnlRestockItemForm.add(cboExpiryMonthRestock, "flowx,cell 1 3,alignx left");
@@ -285,7 +286,7 @@ public class StockPanel extends JPanel implements ActionListener, ListSelectionL
 		pnlRestockItemForm.add(lblFeedbackRestock, "cell 0 6 3 1,alignx right");
 		pnlRestockItemForm.add(btnRestock, "cell 0 7 3 1,alignx right");
 		pnlRestockItemForm.add(cboExpiryYearRestock, "cell 1 3");
-		tabbedPane.setBackground(new Color(245, 245, 245));
+		tabbedPane.setBackground(new Color(255, 255, 255));
 		
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabbedPane.addTab("Add New Item", null, pnlAddNewItemForm, null);

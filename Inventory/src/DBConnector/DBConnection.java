@@ -12,7 +12,7 @@ public class DBConnection {
 		url = "jdbc:mysql://localhost:3306/";
 		database = "pharmacy";
 		username = "root";
-		password = "password";
+		password = "1281";
 	}	
 	
 	public Connection getConnection() {
