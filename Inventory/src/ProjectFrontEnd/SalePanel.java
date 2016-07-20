@@ -14,6 +14,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Calendar;
+
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -161,6 +163,8 @@ public class SalePanel extends JPanel implements ActionListener {
 		add(separator, "cell 1 0,grow");
 		add(pnlCart, "cell 2 0,grow");
 		
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		
 		cboSalesDateMonth.setModel(new DefaultComboBoxModel(new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
 		cboSalesDateMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		pnlCart.add(cboSalesDateMonth, "cell 0 1");
@@ -169,7 +173,7 @@ public class SalePanel extends JPanel implements ActionListener {
 		cboSalesDateDay.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		pnlCart.add(cboSalesDateDay, "cell 0 1");
 		
-		cboSalesDateYear.setModel(new DefaultComboBoxModel(new String[] {"2016", "2017", "2018", "2019", "2020"}));
+		cboSalesDateYear.setModel(new DefaultComboBoxModel(new String[] {Integer.toString(currentYear), Integer.toString(currentYear + 1), Integer.toString(currentYear + 2), Integer.toString(currentYear + 3), Integer.toString(currentYear + 4)}));
 		cboSalesDateYear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		pnlCart.add(cboSalesDateYear, "cell 0 1");
 		
