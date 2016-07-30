@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowAdapter;
+import java.time.*;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -128,20 +131,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 	}
 
 	public void viewTable() {
-		tblProductListTable.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Product Name", "Quantity", "Selling Price"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
+		tblProductListTable.setModel(productManage.viewProducts());
 		rowCount = tblProductListTable.getRowCount();
 		lblItemCount.setText("Displaying " + rowCount + " items");
 	}
@@ -162,13 +152,21 @@ public class ProductListPanel extends JPanel implements ActionListener {
 		}
 		else if(e.getSource().equals(btnAddProduct)) {
 			AddProductPanel frmAddProduct = new AddProductPanel();
+			frmAddProduct.addWindowListener(new WindowAdapter(){
+			    public void windowClosed(WindowEvent e) {
+					viewTable();
+			    }
+			}
+					);
 		}
 	}
 	
+	
+	
 	public void update() {
-		Date d = new Date();
+		LocalDate d = LocalDate.now();
 		String timestamp = "as of ";
-		switch(d.getMonth()) {
+		switch(d.getMonthValue()) {
 			case 1: timestamp += "January "; break;
 			case 2: timestamp += "February "; break;
 			case 3: timestamp += "March "; break;
@@ -182,7 +180,7 @@ public class ProductListPanel extends JPanel implements ActionListener {
 			case 11: timestamp += "November "; break;
 			case 12: timestamp += "December "; break;
 		}
-		timestamp += d.getDate() + ", " + (d.getYear() + 1900);
+		timestamp += d.getDayOfMonth() + " " + d.getYear();
 		lblTimestamp.setText(timestamp);
 		viewTable();
 	}

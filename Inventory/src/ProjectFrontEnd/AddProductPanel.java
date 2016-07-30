@@ -16,6 +16,13 @@ import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import java.time.*;
+import java.util.ArrayList;
+
+import ProjectBackEnd.BatchManager;
+import ProjectBackEnd.ProductManager;
+import net.miginfocom.swing.MigLayout;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 public class AddProductPanel extends JFrame implements ActionListener{
 	
@@ -38,6 +45,15 @@ public class AddProductPanel extends JFrame implements ActionListener{
 	private JComboBox cboExpiryMonth = new JComboBox();
 	private JComboBox cboExpiryYear = new JComboBox();
 	private JPanel panel = new JPanel();
+	
+	//MANAGER INITIALIZERS
+	private ProductManager productManage = new ProductManager();
+	private BatchManager batchManage = new BatchManager();
+	
+	//OTHER VARIABLES
+	private LocalDate currentDate = LocalDate.now();
+	private ArrayList<String> yearList = new ArrayList<String>();
+
 	
 	public AddProductPanel() {
 		setTitle("Add Product");
@@ -73,9 +89,14 @@ public class AddProductPanel extends JFrame implements ActionListener{
 		
 		cboExpiryMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		cboExpiryMonth.setModel(new DefaultComboBoxModel(new String[] {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
-		
+
+		yearList.add(String.valueOf(currentDate.getYear()));
+		yearList.add(String.valueOf(currentDate.getYear()+1));
+		yearList.add(String.valueOf(currentDate.getYear()+2));
+		yearList.add(String.valueOf(currentDate.getYear()+3));
+		yearList.add(String.valueOf(currentDate.getYear()+4));
 		cboExpiryYear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		cboExpiryYear.setModel(new DefaultComboBoxModel(new String[] {"Year"}));
+		cboExpiryYear.setModel(new DefaultComboBoxModel(new String[] {"Year", yearList.get(0), yearList.get(1), yearList.get(2), yearList.get(3), yearList.get(4)}));
 		
 		btnAdd.setForeground(new Color(255, 255, 255));
 		btnAdd.setBackground(new Color(51, 204, 0));
@@ -108,19 +129,55 @@ public class AddProductPanel extends JFrame implements ActionListener{
 		setVisible(true);
 	}
 
-	public boolean allValidInputs() {
-		//insert code for error correction
-		return true;
+	public void addItem() {
+			productManage.addProduct(getProductName(),
+					getSellingPrice());
+			batchManage.addBatch(productManage.getLatestProductID(),
+					getQuantity(),
+					getBuyingPrice(),
+					getExpiryMonth(),
+					getExpiryYear());
+	}
+	
+	//please let Bernard work on this.
+	public boolean allInvalidInputs() {
+		
+		boolean isWrong = false;
+		
+		if(getProductName().equals("")){
+		}
+		else if(productManage.checkDuplicates(getProductName())){
+		}
+		else if(getBuyingPrice() <= 0){
+		}
+		else if(getSellingPrice() <= 0){
+		}
+		else if(getSellingPrice() > getBuyingPrice()){
+		}
+		else if(getQuantity() <= 0){
+		}
+		//insert another JLabel next to the expiry fields too
+		else if(getExpiryMonth() == 0){
+		}
+		else if(cboExpiryYear.getSelectedIndex() == 0){
+		}
+		else if(getExpiryYear() == Integer.parseInt(yearList.get(0))){
+			if(getExpiryMonth() < currentDate.getMonthValue())
+			{
+			}
+		}
+		return isWrong;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(allValidInputs()) {
-			//insert code to add data to database			
+		if(allInvalidInputs() == false) {
+			addItem();
 			dispose();
 		}
 		else {
 			//insert code to set error message text
+			//shouldn't there be another JLabel to indicate that there is an error in the input.
 		}
 	}
 	

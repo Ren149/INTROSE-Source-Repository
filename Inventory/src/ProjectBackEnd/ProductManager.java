@@ -251,9 +251,9 @@ public class ProductManager {
 		    }
 		};
 
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Selling Price"});
 
-		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), p.selling_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
@@ -267,7 +267,7 @@ public class ProductManager {
 			
 			while(rs.next()) {
 				if(rs.getInt(2) > 0)
-				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2)});
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3)});
 			}
 			return tm;
 				
@@ -288,9 +288,9 @@ public class ProductManager {
 		    }
 		};
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Buying Price", "Selling Price"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Buying Price"});
 		
-		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
@@ -307,7 +307,7 @@ public class ProductManager {
 			
 			while(rs.next()) {
 				if(rs.getInt(2) > 0)
-				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3), rs.getDouble(4)});
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3)});
 			}
 			return tm;
 				
@@ -328,9 +328,9 @@ public class ProductManager {
 		    }
 		};
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Selling Price"});
 		
-		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), p.selling_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
 				+ "GROUP BY p.product_name "
@@ -343,7 +343,7 @@ public class ProductManager {
 			
 			while(rs.next()) {
 				if(rs.getInt(2) > 0)
-				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2)});
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3)});
 			}
 			return tm;
 				
@@ -364,9 +364,9 @@ public class ProductManager {
 		    }
 		};
 		
-		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Buying Price", "Selling Price"});
+		tm.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Buying Price"});
 		
-		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price, p.selling_price "
+		String sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
 				+ " AND b.entry_date = (SELECT MAX(ba.entry_date) "
@@ -382,7 +382,7 @@ public class ProductManager {
 			
 			while(rs.next()) {
 				if(rs.getInt(2) > 0)
-				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3), rs.getDouble(4)});
+				tm.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getDouble(3)});
 			}
 			return tm;
 				

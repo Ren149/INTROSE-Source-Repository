@@ -14,7 +14,7 @@ public class MainWindow extends JFrame implements ChangeListener{
 
 	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	private ProductListPanel productListPanel = new ProductListPanel();
-	private StockPanel stockPanel = new StockPanel();
+	//private StockPanel stockPanel = new StockPanel();
 	private SalePanel salePanel = new SalePanel();
 	
 	public MainWindow() {
@@ -24,7 +24,7 @@ public class MainWindow extends JFrame implements ChangeListener{
 		tabbedPane.setBackground(new Color(245, 245, 245));
 		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabbedPane.addTab("Sale", salePanel);
-		tabbedPane.addTab("Stock", stockPanel);
+		//tabbedPane.addTab("Stock", stockPanel);
 		tabbedPane.addTab("Product List", productListPanel);
 		tabbedPane.addChangeListener(this);
 		
@@ -44,8 +44,8 @@ public class MainWindow extends JFrame implements ChangeListener{
 		else if(tabbedPane.getSelectedComponent().equals(productListPanel)) {
 			productListPanel.update();
 		}
-		else if(tabbedPane.getSelectedComponent().equals(stockPanel)) {
-			stockPanel.update();
-		}
+		//else if(tabbedPane.getSelectedComponent().equals(stockPanel)) {
+		//	stockPanel.update();
+		//}
 	}
 }
