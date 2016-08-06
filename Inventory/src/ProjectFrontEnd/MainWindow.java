@@ -1,51 +1,97 @@
 package ProjectFrontEnd;
 
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JMenuBar;
 
-import net.miginfocom.swing.MigLayout;
-
-public class MainWindow extends JFrame implements ChangeListener{
-
-	private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+public class MainWindow extends JFrame implements ActionListener{
 	private ProductListPanel productListPanel = new ProductListPanel();
-	//private StockPanel stockPanel = new StockPanel();
 	private SalePanel salePanel = new SalePanel();
+	private JButton btnSale = new JButton("Sale");
+	private JButton btnProductList = new JButton("Product List");
+	private JButton btnReorderList = new JButton("Reorder List");
+	private JButton btnExpiryList = new JButton("Expiry List");
+	private JMenuBar menuBar = new JMenuBar();
+	
+	private Color selectedButtonColor = new Color(230, 230, 250);
 	
 	public MainWindow() {
 		setTitle("Farmacia Regine Inventory");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		tabbedPane.setBackground(new Color(245, 245, 245));
-		tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tabbedPane.addTab("Sale", salePanel);
-		//tabbedPane.addTab("Stock", stockPanel);
-		tabbedPane.addTab("Product List", productListPanel);
-		tabbedPane.addChangeListener(this);
+		setBackground(new Color(245, 245, 245));
+		setJMenuBar(menuBar);
 		
-		getContentPane().setBackground(new Color(245, 245, 245));
-		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
-		getContentPane().add(tabbedPane, "cell 0 0,grow");
+		btnSale.setBackground(selectedButtonColor);
+		btnSale.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnSale.setSize(new Dimension(100, 35));
+		btnSale.addActionListener(this);
+
+		btnProductList.setBackground(Color.WHITE);
+		btnProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnProductList.addActionListener(this);
+
+		btnReorderList.setBackground(Color.WHITE);
+		btnReorderList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnReorderList.addActionListener(this);
+		
+		btnExpiryList.setBackground(Color.WHITE);
+		btnExpiryList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		btnExpiryList.addActionListener(this);
+		
+		menuBar.setBackground(Color.WHITE);
+		menuBar.setBorderPainted(false);
+		menuBar.add(btnSale);
+		menuBar.add(btnProductList);
+		menuBar.add(btnExpiryList);
+		menuBar.add(btnReorderList);
+
+		getContentPane().setBackground(new Color(255, 255, 255));
+		getContentPane().setLayout(new CardLayout(10, 10));
+		getContentPane().add("SALE", salePanel);
+		getContentPane().add("PRODUCT_LIST", productListPanel);
 		
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
-	public void stateChanged(ChangeEvent e) {
-		if(tabbedPane.getSelectedComponent().equals(salePanel)) {
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(btnSale)) {
 			salePanel.update();
+			((CardLayout)getContentPane().getLayout()).show(getContentPane(), "SALE");
+			btnSale.setBackground(selectedButtonColor);
+			btnProductList.setBackground(Color.WHITE);
+			btnExpiryList.setBackground(Color.WHITE);
+			btnReorderList.setBackground(Color.WHITE);
 		}
-		else if(tabbedPane.getSelectedComponent().equals(productListPanel)) {
+		else if(e.getSource().equals(btnProductList)) {
 			productListPanel.update();
+			((CardLayout)getContentPane().getLayout()).show(getContentPane(), "PRODUCT_LIST");
+			btnSale.setBackground(Color.WHITE);
+			btnProductList.setBackground(selectedButtonColor);
+			btnExpiryList.setBackground(Color.WHITE);
+			btnReorderList.setBackground(Color.WHITE);
 		}
-		//else if(tabbedPane.getSelectedComponent().equals(stockPanel)) {
-		//	stockPanel.update();
-		//}
+		else if(e.getSource().equals(btnExpiryList)) {
+			//expiryListPanel.update();
+			btnSale.setBackground(Color.WHITE);
+			btnProductList.setBackground(Color.WHITE);
+			btnExpiryList.setBackground(selectedButtonColor);
+			btnReorderList.setBackground(Color.WHITE);
+		}
+		else if(e.getSource().equals(btnReorderList)) {
+			//reorderListPanel.update();
+			btnSale.setBackground(Color.WHITE);
+			btnProductList.setBackground(Color.WHITE);
+			btnExpiryList.setBackground(Color.WHITE);
+			btnReorderList.setBackground(selectedButtonColor);
+		}
 	}
 }

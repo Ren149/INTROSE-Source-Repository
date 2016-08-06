@@ -1,9 +1,11 @@
 package ProjectBackEnd;
 
-import java.sql.*;
-import java.util.Date;
-import DBConnector.DBConnection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import DBConnector.DBConnection;
 
 public class SaleManager {
     

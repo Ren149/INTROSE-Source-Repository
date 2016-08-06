@@ -4,184 +4,360 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
-import java.time.*;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Date;
 
+import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import com.mysql.jdbc.StringUtils;
+
+import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
 
-public class ProductListPanel extends JPanel implements ActionListener {
-	private int rowCount = 0;
-
+public class ProductListPanel extends JPanel implements ActionListener, ListSelectionListener, MouseListener, KeyListener, FocusListener {
+	//UI ELEMENTS
 	private JLabel lblProductListTitle = new JLabel("Product List");
-	private JLabel lblItemCount = new JLabel("Displaying " + rowCount + " items");
-	private JTextField txtProductSearch = new JTextField();
-	private JButton btnSearch = new JButton("Search");
-	private JTable tblProductListTable;
-	private JScrollPane scrProduct = new JScrollPane();
-	private ProductManager productManage = new ProductManager();
-	private final JScrollPane scrBatch = new JScrollPane();
-	private final JTable table = new JTable();
-	private final JButton btnRestock = new JButton("Restock");
-	private final JButton btnAddProduct = new JButton("Add Product");
-	private final JLabel lblBatches = new JLabel("Batches");
-	private final JPanel panel_1 = new JPanel();
-	private final JPanel panel_2 = new JPanel();
-	private final JButton btnDiscontinue = new JButton("Discontinue");
+	private JLabel lblItemCount = new JLabel("");
+	private JLabel lblBatchesTitle = new JLabel("Batches");
+	private JTextField txtSearch = new JTextField();
+	private JTable tblProductList = new JTable() {
+		public boolean isCellEditable(int row, int column) {                
+            return false;               
+		}
+	};
+	private JTable tblBatchList = new JTable();
+	private JScrollPane scrProductList = new JScrollPane();
+	private JScrollPane scrBatchList = new JScrollPane();
+	private JButton btnRestock = new JButton("Restock");
+	private JButton btnAddProduct = new JButton("Add Product");
+	private JButton btnDiscontinue = new JButton("Discontinue");
+	
+	//MANAGERS
+	private ProductManager pm = new ProductManager();
+	private BatchManager bm = new BatchManager();
+	private final JLabel lblSearch = new JLabel("Search: ");
 	private final JSeparator separator = new JSeparator();
-	private final JLabel lblTimestamp = new JLabel("New label");
+	private final Box horizontalBox = Box.createHorizontalBox();
+	private final Box horizontalBox_1 = Box.createHorizontalBox();
 	
 	public ProductListPanel() {
 		setBackground(Color.WHITE);
-		setLayout(new MigLayout("", "[grow][][:350px:350px]", "[grow]"));
-		add(panel_2, "cell 0 0,grow");
-		panel_2.setBackground(Color.WHITE);
-		panel_2.setLayout(new MigLayout("", "[][grow]", "[][][][grow][][]"));
-		panel_2.add(lblProductListTitle, "cell 0 0");
+		setLayout(new MigLayout("", "[150px:150px:150px][150px:150px:150px][20px:20px][grow]", "[][][][grow][]"));
 		
-		lblProductListTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-		lblTimestamp.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblProductListTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
 		
-		panel_2.add(lblTimestamp, "cell 0 1 2 1,alignx left");
-		panel_2.add(txtProductSearch, "flowx,cell 0 2,growy");
+		lblBatchesTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 13));
 		
-		txtProductSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		txtProductSearch.setColumns(20);
-		panel_2.add(btnSearch, "cell 1 2,alignx left,growy");
+		lblSearch.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+
+		horizontalBox.add(lblSearch);
+		horizontalBox.add(txtSearch);
 		
-		btnSearch.setForeground(Color.DARK_GRAY);
-		btnSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		btnSearch.setBackground(Color.WHITE);
-		btnSearch.addActionListener(this);
+		txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtSearch.setColumns(20);
+		txtSearch.addKeyListener(this);
+		txtSearch.addFocusListener(this);
 		
-		tblProductListTable = new JTable();
-				panel_2.add(scrProduct, "cell 0 3 2 1,grow");
+		tblBatchList.setRowSelectionAllowed(false);
+		tblBatchList.setEnabled(false);
+		tblBatchList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tblBatchList.getTableHeader().setFont(new Font("Segoe UI",Font.PLAIN, 11));
+		tblBatchList.addMouseListener(this);
+
+		scrBatchList.setEnabled(false);
+		scrBatchList.setViewportView(tblBatchList);
 		
-				scrProduct.setViewportView(tblProductListTable);
-				
-				tblProductListTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-				tblProductListTable.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-				panel_2.add(lblItemCount, "cell 0 4,aligny center");
-				
-				lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-				btnDiscontinue.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-				btnDiscontinue.setBackground(Color.WHITE);
-				btnDiscontinue.setForeground(Color.DARK_GRAY);
-				
-				panel_2.add(btnDiscontinue, "flowx,cell 1 4,alignx right,growy");
-				panel_2.add(btnRestock, "cell 1 4,alignx right,growy");
-				btnRestock.setForeground(Color.DARK_GRAY);
-				btnRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-				btnRestock.setBackground(Color.WHITE);
-				panel_2.add(btnAddProduct, "cell 1 4,alignx right,growy");
-				btnAddProduct.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-				btnAddProduct.setForeground(Color.DARK_GRAY);
-				btnAddProduct.setBackground(new Color(0, 128, 0));
-				btnAddProduct.addActionListener(this);
-				
-		separator.setForeground(new Color(211, 211, 211));
-		separator.setOrientation(SwingConstants.VERTICAL);
+		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 9));
+		
+		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tblProductList.getTableHeader().setFont(new Font("Segoe UI",Font.PLAIN, 11));
+		tblProductList.getSelectionModel().addListSelectionListener(this);
+		tblProductList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblProductList.addKeyListener(this);
+
+		scrProductList.setViewportView(tblProductList);
+
+		separator.setForeground(Color.LIGHT_GRAY);
 		separator.setBackground(new Color(255, 255, 255));
+		separator.setOrientation(SwingConstants.VERTICAL);
+	
+		btnDiscontinue.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		btnDiscontinue.setBackground(Color.WHITE);
+		btnDiscontinue.setForeground(Color.DARK_GRAY);
+		btnDiscontinue.addActionListener(this);
+		btnDiscontinue.setEnabled(false);
 		
-		add(separator, "cell 1 0,alignx center,growy");
-		add(panel_1, "cell 2 0,growy");
-		panel_1.setBackground(Color.WHITE);
-		panel_1.setLayout(new MigLayout("", "[]", "[][grow]"));
-		panel_1.add(lblBatches, "cell 0 0,alignx left");
-		lblBatches.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		table.setEnabled(false);
-		table.setFillsViewportHeight(true);
-		table.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-			},
-			new String[] {
-				"BatchID", "Entry Date", "Buying Price", "Expiry Date"
-			}
-		));
-		table.getColumnModel().getColumn(0).setPreferredWidth(55);
-		table.getColumnModel().getColumn(0).setMinWidth(55);
-		table.getColumnModel().getColumn(1).setResizable(false);
-		table.getColumnModel().getColumn(1).setPreferredWidth(70);
-		table.getColumnModel().getColumn(1).setMinWidth(20);
-		table.getColumnModel().getColumn(2).setMinWidth(75);
-		table.getColumnModel().getColumn(3).setPreferredWidth(70);
-		table.getColumnModel().getColumn(3).setMinWidth(20);
+		horizontalBox_1.add(btnDiscontinue);
+		horizontalBox_1.add(btnRestock);
 		
-		panel_1.add(scrBatch, "cell 0 1,alignx center,growy");
+		btnRestock.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		btnRestock.setBackground(Color.WHITE);
+		btnRestock.setForeground(Color.DARK_GRAY);
+		btnRestock.addActionListener(this);
+		btnRestock.setEnabled(false);
 		
-		scrBatch.setViewportView(table);
+		btnAddProduct.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		btnAddProduct.setForeground(Color.WHITE);
+		btnAddProduct.setBackground(new Color(51, 204, 0));
+		btnAddProduct.addActionListener(this);
 		
-		viewTable();
+		add(lblBatchesTitle, "cell 3 0,aligny bottom");
+		add(lblProductListTitle, "cell 0 0 2 1");
+		add(horizontalBox, "flowx,cell 0 1 2 1,grow");
+		add(scrBatchList, "cell 3 1 1 4,grow");
+		add(lblItemCount, "cell 0 2");
+		add(scrProductList, "cell 0 3 2 1,grow");
+		add(separator, "cell 2 0 1 5,alignx center,growy");
+		add(horizontalBox_1, "flowx,cell 0 4,alignx left");
+		add(btnAddProduct, "cell 1 4,alignx right");
+
+		addMouseListener(this);
+
+		loadProductList();
+		loadBatchList();
 	}
 
-	public void viewTable() {
-		tblProductListTable.setModel(productManage.viewProducts());
-		rowCount = tblProductListTable.getRowCount();
-		lblItemCount.setText("Displaying " + rowCount + " items");
+	private void loadBatchList() {
+		ArrayList<Integer> id;
+		DefaultTableModel batchListTableModel = new DefaultTableModel();
+		batchListTableModel.setColumnIdentifiers(new String[] {"BatchID", "Entry Date", "Quantity", "Buying Price", "Expiry Date"});
+		
+		if(tblProductList.getSelectedRow() != -1) {
+			id = bm.getBatchIDList(pm.getProductID(tblProductList.getSelectedRow(), txtSearch.getText().trim()));
+		}
+		else {
+			id = new ArrayList<Integer>();
+		}
+		
+		for(int i : id) {
+			String batchID = i + "";
+			Date entryDateTemp = bm.getEntryDate(i);
+			String entryDate = "";
+
+			switch(entryDateTemp.getMonth()) {
+			case 0: entryDate += "Jan "; break;
+			case 1: entryDate += "Feb "; break;
+			case 2: entryDate += "Mar "; break;
+			case 3: entryDate += "Apr "; break;
+			case 4: entryDate += "May "; break;
+			case 5: entryDate += "Jun "; break;
+			case 6: entryDate += "Jul "; break;
+			case 7: entryDate += "Aug "; break;
+			case 8: entryDate += "Sep "; break;
+			case 9: entryDate += "Oct "; break;
+			case 10: entryDate += "Nov "; break;
+			case 11: entryDate += "Dec "; break;
+			}
+			
+			entryDate += String.format("%02d", entryDateTemp.getDate()) + ", " + (entryDateTemp.getYear() + 1900);
+			
+			String quantity = bm.getEachBatchQuantity(i) + "";
+			String buyingPrice = String.format("%.2f", bm.getBuyingPrice(i));
+			String expiryDate = bm.getExpiryMonth(i) + "-" + bm.getExpiryYear(i);
+			
+			batchListTableModel.addRow(new Object[] {batchID, entryDate, quantity, buyingPrice, expiryDate});
+		}
+		
+		tblBatchList.setModel(batchListTableModel);
+		tblBatchList.getColumnModel().getColumn(0).setMinWidth(55);
+		tblBatchList.getColumnModel().getColumn(0).setMaxWidth(55);
+		tblBatchList.getColumnModel().getColumn(2).setMinWidth(55);
+		tblBatchList.getColumnModel().getColumn(2).setMaxWidth(55);
+		
+		DefaultTableCellRenderer rendererRight = new DefaultTableCellRenderer();
+		rendererRight.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		tblBatchList.getColumnModel().getColumn(0).setCellRenderer(rendererRight);
+		tblBatchList.getColumnModel().getColumn(1).setCellRenderer(rendererRight);
+		tblBatchList.getColumnModel().getColumn(2).setCellRenderer(rendererRight);
+		tblBatchList.getColumnModel().getColumn(3).setCellRenderer(rendererRight);
+		tblBatchList.getColumnModel().getColumn(4).setCellRenderer(rendererRight);
 	}
 	
-	public void searchTableWithPrices() {
-		if(txtProductSearch.getText().toString().equals("")) {
-			viewTable();
+	private void loadProductList() {
+		ArrayList<Integer> id;
+		DefaultTableModel productListTableModel = new DefaultTableModel();
+		productListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Selling Price", "Quantity"});
+		
+		if(StringUtils.isEmptyOrWhitespaceOnly(txtSearch.getText())) {
+			id = pm.getProductIDList();
 		}
-		else
-			tblProductListTable.setModel(productManage.searchProductWithPrice(txtProductSearch.getText()));
-			rowCount = tblProductListTable.getRowCount();
-			lblItemCount.setText("Displaying " + rowCount + " items");
-	}
+		else {
+			id = pm.getProductIDList(txtSearch.getText().trim());
+		}
 
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(btnSearch)) {
-			searchTableWithPrices();
+		for(int i : id) {
+			String productName = pm.getProductName(i);
+			String sellingPrice = String.format("%.2f", pm.getSellingPrice(i));
+			String quantity = bm.getTotalQuantity(i) + "";
+			
+			productListTableModel.addRow(new Object[] {productName, sellingPrice, quantity});
 		}
-		else if(e.getSource().equals(btnAddProduct)) {
+		
+		tblProductList.setModel(productListTableModel);
+		tblProductList.getColumnModel().getColumn(1).setMinWidth(90);
+		tblProductList.getColumnModel().getColumn(1).setMaxWidth(90);
+		tblProductList.getColumnModel().getColumn(2).setMaxWidth(60);
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		tblProductList.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		tblProductList.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		
+		int rowCount = tblProductList.getRowCount();
+		
+		switch(rowCount) {
+			case 0 : lblItemCount.setText("No items displayed."); break;
+			case 1 : lblItemCount.setText("Displaying " + rowCount + " product"); break;
+			default: lblItemCount.setText("Displaying " + rowCount + " products"); break;
+		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(btnAddProduct)) {
 			AddProductPanel frmAddProduct = new AddProductPanel();
 			frmAddProduct.addWindowListener(new WindowAdapter(){
 			    public void windowClosed(WindowEvent e) {
-					viewTable();
+					loadProductList();
 			    }
-			}
-					);
+			});
+		}
+		else if(e.getSource().equals(btnRestock)) {
+			int productID = pm.getProductID(tblProductList.getSelectedRow(), txtSearch.getText());
+			
+			RestockPanel frmRestockProduct = new RestockPanel(productID);
+			frmRestockProduct.addWindowListener(new WindowAdapter(){
+				public void windowClosed(WindowEvent e) {
+					loadProductList();
+					loadBatchList();
+				}
+			});
 		}
 	}
 	
-	
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if(e.getSource().equals(tblProductList.getSelectionModel())) {
+			btnRestock.setEnabled(true);
+			btnDiscontinue.setEnabled(true);
+			loadBatchList();
+		}
+	}
 	
 	public void update() {
-		LocalDate d = LocalDate.now();
-		String timestamp = "as of ";
-		switch(d.getMonthValue()) {
-			case 1: timestamp += "January "; break;
-			case 2: timestamp += "February "; break;
-			case 3: timestamp += "March "; break;
-			case 4: timestamp += "April "; break;
-			case 5: timestamp += "May "; break;
-			case 6: timestamp += "June "; break;
-			case 7: timestamp += "July "; break;
-			case 8: timestamp += "August "; break;
-			case 9: timestamp += "September "; break;
-			case 10: timestamp += "October "; break;
-			case 11: timestamp += "November "; break;
-			case 12: timestamp += "December "; break;
+		loadProductList();
+		btnRestock.setEnabled(false);
+		btnDiscontinue.setEnabled(false);
+	}
+	
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource().equals(this)) {
+			if(e.getID() == MouseEvent.MOUSE_CLICKED) {
+				tblProductList.clearSelection();
+				tblProductList.transferFocusUpCycle();
+				btnRestock.setEnabled(false);
+				btnDiscontinue.setEnabled(false);
+			} 
 		}
-		timestamp += d.getDayOfMonth() + " " + d.getYear();
-		lblTimestamp.setText(timestamp);
-		viewTable();
+		else if(e.getSource().equals(scrBatchList)) {
+			if(e.getID() == MouseEvent.MOUSE_CLICKED) {
+				tblProductList.clearSelection();
+				tblProductList.transferFocusUpCycle();
+				btnRestock.setEnabled(false);
+				btnDiscontinue.setEnabled(false);
+			}
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getSource().equals(txtSearch)) {
+			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+				if(tblProductList.getRowCount() > 0) {
+					tblProductList.requestFocusInWindow();
+					tblProductList.setRowSelectionInterval(0, 0);
+				}
+			}
+			else {
+				loadProductList();
+			}
+		}
+		else if(e.getSource().equals(tblProductList)) {
+			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+				btnRestock.doClick();
+			}
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		if(e.getSource().equals(txtSearch)) {
+			tblProductList.clearSelection();
+			loadProductList();
+			btnRestock.setEnabled(false);
+			btnDiscontinue.setEnabled(false);
+		}
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+
 	}
 }
