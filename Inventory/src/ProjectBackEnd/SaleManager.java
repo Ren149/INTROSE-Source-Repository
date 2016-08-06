@@ -10,11 +10,30 @@ import DBConnector.DBConnection;
 public class SaleManager {
     
     private DBConnection con;
+	private PreparedStatement ps;
+	private	ResultSet rs;
+	private String sQuery;
 	
 	public SaleManager()
 	{
 		con = new DBConnection();
 	}
+	
+
+	
+	public void closeConnection(DBConnection con, ResultSet rs, PreparedStatement ps)
+	{
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { ps.close(); } catch (Exception e) { /* ignored */ }
+		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
+	}
+
+	public void closeConnection(DBConnection con, PreparedStatement ps)
+	{
+		    try { ps.close(); } catch (Exception e) { /* ignored */ }
+		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
+	}
+	
     
     public float getSubtotal(int qty, float sellprice)
 	{
@@ -23,9 +42,7 @@ public class SaleManager {
     
     public int getLatestSalesID()
 	{
-		PreparedStatement ps;
-		ResultSet rs;
-		String sQuery = "SELECT MAX(salesID) FROM sales;";
+    	sQuery = "SELECT MAX(salesID) FROM sales;";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -33,21 +50,21 @@ public class SaleManager {
 			rs = ps.executeQuery();
 			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 					return rs.getInt(1);
 			}
 				
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		closeConnection(con, rs, ps);
 		return 0;
 	}
     
     public void recordTransaction(int totalQty, float totalSold, String date)
 	{
-		PreparedStatement ps;
-		
-		String sQuery = "INSERT INTO sales(quantity_sold, total_price_sold, date_sold)"
+    	sQuery = "INSERT INTO sales(quantity_sold, total_price_sold, date_sold)"
 						+ "VALUES('"+ totalQty +"','"+ totalSold + "', '"+date+"')";
 
 		try {
@@ -56,9 +73,11 @@ public class SaleManager {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+		closeConnection(con, rs, ps);
 	}
+
     
+    //to be deleted
     public void deductProductBatchQty(ArrayList<String> prodNameList, ArrayList<Integer> prodQtyList){
         ProductManager productManage = new ProductManager();
         BatchManager batchManage = new BatchManager();
@@ -88,7 +107,8 @@ public class SaleManager {
         
         
     }
-    
+
+    //to be deleted
     public void recordLineItem(ArrayList<String> prodNameList)
 	{
             SaleManager saleManage = new SaleManager();

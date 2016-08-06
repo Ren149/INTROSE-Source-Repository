@@ -18,6 +18,19 @@ public class BatchManager {
 		con = new DBConnection();
 	}
 	
+	public void closeConnection(DBConnection con, ResultSet rs, PreparedStatement ps)
+	{
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { ps.close(); } catch (Exception e) { /* ignored */ }
+		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
+	}
+
+	public void closeConnection(DBConnection con, PreparedStatement ps)
+	{
+		    try { ps.close(); } catch (Exception e) { /* ignored */ }
+		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
+	}
+	
 	public float getBuyingPrice(int batchID) {
 		sQuery = "SELECT buying_price "
 				+ "FROM batch "
@@ -29,16 +42,14 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
 			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getFloat(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
 		return 0;
 	}
 	
@@ -56,16 +67,14 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
-			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getFloat(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -80,16 +89,15 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
-			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -104,16 +112,16 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
 			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getDate(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		closeConnection(con, rs, ps);
 		return null;
 	}
 	
@@ -128,16 +136,15 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
-			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -152,16 +159,16 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
 			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -176,16 +183,15 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
 			
 			while(rs.next()) {
 				searchResults.add(rs.getInt(1));
 			}
-				
+			closeConnection(con, rs, ps);
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		closeConnection(con, rs, ps);
 		return searchResults;
 	}
 	
@@ -196,12 +202,11 @@ public class BatchManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
-
-			con.getConnection().close();
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		closeConnection(con, ps);
 	}
 	
 	public void restockBatch(int productID, int quantity, double buyingPrice, int expiryMonth, int expiryYear) {
@@ -212,11 +217,10 @@ public class BatchManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
 			
-			con.getConnection().close();
-			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		closeConnection(con, ps);
 	}
 
     public void changeBatchQtyToZero(int batchID) {
@@ -228,11 +232,11 @@ public class BatchManager {
         	ps = con.getConnection().prepareStatement(sQuery);
         	ps.executeUpdate(sQuery);
         	
-        	con.getConnection().close();
 			
         } catch(SQLException e) {
         	e.printStackTrace();
         }
+		closeConnection(con, ps);
     }
     
     public ArrayList<Integer> getBatchIDofProductList(int productID){
@@ -248,18 +252,15 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
-			
 			while(rs.next()) {
 				BatchIDofProductList.add(rs.getInt(1));
 			}
-	            
+			closeConnection(con, rs, ps);
 			return BatchIDofProductList;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+		closeConnection(con, rs, ps);
 		return null;
     }
     
@@ -274,16 +275,15 @@ public class BatchManager {
 			
 			rs = ps.executeQuery();
 			
-			con.getConnection().close();
-			
-			
 			if(rs.next()) {
+				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		closeConnection(con, rs, ps);
 		return 0;
 	}
     
@@ -298,10 +298,9 @@ public class BatchManager {
         	ps = con.getConnection().prepareStatement(sQuery);
         	ps.executeUpdate(sQuery);
         	
-        	con.getConnection().close();
-			
         } catch(SQLException e) {
         	e.printStackTrace();
         }
+		closeConnection(con, rs, ps);
     }
 }
