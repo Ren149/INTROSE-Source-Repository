@@ -9,6 +9,8 @@ import DBConnector.DBConnection;
 
 public class BatchManager {
 	
+	//this
+	
 	private DBConnection con;
 	private PreparedStatement ps;
 	private ResultSet rs;

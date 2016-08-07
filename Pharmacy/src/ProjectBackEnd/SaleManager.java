@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import DBConnector.DBConnection;
 
 public class SaleManager {
+	
+	//this
+	
     
     private DBConnection con;
 	private PreparedStatement ps;

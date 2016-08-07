@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import DBConnector.DBConnection;
 
 public class ProductManager {
+	
+	//this
+	
 	private DBConnection con;
 	private PreparedStatement ps;
 	private	ResultSet rs;
