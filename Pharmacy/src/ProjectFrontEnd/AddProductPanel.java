@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -55,11 +56,6 @@ public class AddProductPanel extends JFrame implements ActionListener {
 	    + "This will be treated as a restocking.</html>");
 	private JLabel lblProductAdded = new JLabel();
 	private JLabel lblRestockSuccessful = new JLabel();
-	
-	//MANAGER INITIALIZERS
-	private ProductManager pm = new ProductManager();
-	private BatchManager bm = new BatchManager();
-	
 	//OTHER VARIABLES
 	private LocalDate currentDate = LocalDate.now();
 	private ArrayList<String> yearList = new ArrayList<String>();
@@ -162,6 +158,12 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
+	
+	
+	//MANAGER INITIALIZERS
+	private ProductManager pm;
+	private BatchManager bm;
+	
 	
 	public boolean allValidInputs() {
 		boolean valid = true;
@@ -291,9 +293,19 @@ public class AddProductPanel extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(allValidInputs()) {
+			pm = new ProductManager();
+			bm = new BatchManager();
+			
 			if(pm.getProductID(getProductName()) == 0) {
 				pm.addProduct(getProductName(), getSellingPrice());
 				bm.addBatch(pm.getLatestProductID(), getQuantity(), getBuyingPrice(), getExpiryMonth(), getExpiryYear());
+				try {
+					pm.getDBConnection().getConnection().close();
+					bm.getDBConnection().getConnection().close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				dispose();
 				
 				lblProductAdded.setText(getProductName() + " added to the database.");
@@ -309,6 +321,13 @@ public class AddProductPanel extends JFrame implements ActionListener {
 					int expiryYear = Integer.parseInt(cboExpiryYear.getSelectedItem().toString());
 					
 					bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear);
+					try {
+						pm.getDBConnection().getConnection().close();
+						bm.getDBConnection().getConnection().close();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					
 					dispose();
 					

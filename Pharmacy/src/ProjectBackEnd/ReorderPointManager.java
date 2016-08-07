@@ -19,5 +19,10 @@ public class ReorderPointManager {
 	{
 		con = new DBConnection();
 	}
+	
+	public DBConnection getDBConnection()
+	{
+		return con;
+	}
 
 }

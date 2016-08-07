@@ -19,6 +19,11 @@ public class ProductManager {
 		con = new DBConnection();
 	}
 	
+	public DBConnection getDBConnection()
+	{
+		return con;
+	}
+	
 	
 	public float getSellingPrice(int productID) {
 		sQuery = "SELECT selling_price "

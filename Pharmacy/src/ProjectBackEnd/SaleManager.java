@@ -22,6 +22,11 @@ public class SaleManager {
 		con = new DBConnection();
 	}
 	
+	public DBConnection getDBConnection()
+	{
+		return con;
+	}
+	
 
 	
     

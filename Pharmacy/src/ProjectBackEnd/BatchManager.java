@@ -20,6 +20,11 @@ public class BatchManager {
 		con = new DBConnection();
 	}
 	
+	public DBConnection getDBConnection()
+	{
+		return con;
+	}
+	
 	public float getBuyingPrice(int batchID) {
 		sQuery = "SELECT buying_price "
 				+ "FROM batch "

@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,11 +63,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
     private Box horizontalBox = Box.createHorizontalBox();
     private Box horizontalBox_1 = Box.createHorizontalBox();
     private Component verticalStrut = Box.createVerticalStrut(20);
-    
-	//MANAGERS
-    private ProductManager pm = new ProductManager();
-    private SaleManager sm = new SaleManager();
-    private BatchManager bm = new BatchManager();
     
     //OTHER VARIABLES
     private DefaultTableModel tm = new DefaultTableModel();
@@ -176,8 +172,19 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         
 		loadItemSelection();
 	}
+	
+
+	//MANAGERS
+    private ProductManager pm;
+    private SaleManager sm;
+    private BatchManager bm;
+    
         
 	public void loadItemSelection() {
+		 pm = new ProductManager();
+		 sm = new SaleManager();
+		 bm = new BatchManager();
+		 
 		ArrayList<Integer> id;
 		DefaultTableModel itemSelectionTableModel = new DefaultTableModel();
 		itemSelectionTableModel.setColumnIdentifiers(new String[] {"Product Name", "Selling Price", "Quantity"});
@@ -213,6 +220,14 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 			case 0 : lblItemCount.setText("No items displayed."); break;
 			case 1 : lblItemCount.setText("Displaying " + rowCount + " product"); break;
 			default: lblItemCount.setText("Displaying " + rowCount + " products"); break;
+		}
+		try {
+			pm.getDBConnection().getConnection().close();
+			bm.getDBConnection().getConnection().close();
+			sm.getDBConnection().getConnection().close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 
@@ -295,6 +310,14 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	        txtQuantity.setText("");
 	        txtQuantity.setEditable(false);
 	        btnAddToCart.setEnabled(true);
+			try {
+				pm.getDBConnection().getConnection().close();
+				bm.getDBConnection().getConnection().close();
+				sm.getDBConnection().getConnection().close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
 		
         if(e.getSource().equals(btnRemove)){
@@ -307,6 +330,14 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
             }
             
             tblCart.clearSelection();
+			try {
+				pm.getDBConnection().getConnection().close();
+				bm.getDBConnection().getConnection().close();
+				sm.getDBConnection().getConnection().close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
@@ -329,6 +360,14 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
                 sum = 0;
                 tm.setRowCount(0);
                 //tblSaleSearch.setModel(pm.viewProducts());
+				try {
+					pm.getDBConnection().getConnection().close();
+					bm.getDBConnection().getConnection().close();
+					sm.getDBConnection().getConnection().close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             }
         }
         

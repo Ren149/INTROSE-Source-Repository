@@ -18,6 +18,11 @@ public class LineItemManager {
 		con = new DBConnection();
 	}
 	
+	public DBConnection getDBConnection()
+	{
+		return con;
+	}
+	
     public void recordTransaction(int salesID, int productID, int totalQty)
 	{
 		sQuery = "INSERT INTO line_item(salesID, productID, quantity_sold)"

@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -53,14 +54,16 @@ public class RestockPanel extends JFrame implements ActionListener{
 	private Component verticalGlue = Box.createVerticalGlue();
 	
 	//MANAGERS
-	private ProductManager pm = new ProductManager();
-	private BatchManager bm = new BatchManager();
+	private ProductManager pm;
+	private BatchManager bm;
 	
 	//OTHER VARIABLES
 	private ArrayList<String> yearList = new ArrayList<String>();
 	private int productID;
 	
 	public RestockPanel(int productID){
+		 pm = new ProductManager();
+		 bm = new BatchManager();
 		this.productID = productID;
 		
 		setTitle("Restock Product");
@@ -161,6 +164,14 @@ public class RestockPanel extends JFrame implements ActionListener{
 		panel.add(verticalStrut, "cell 0 12");
 		panel.add(btnRestock, "cell 0 13 2 1,alignx right,growy");
 		panel.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtQuantity, cboExpiryMonth, cboExpiryYear, btnRestock, chckbxUpdateBuyingPrice, txtBuyingPrice, chckbxUpdateSellingPrice, txtSellingPrice}));
+
+		try {
+			pm.getDBConnection().getConnection().close();
+			bm.getDBConnection().getConnection().close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		pack();
 		setLocationRelativeTo(null);
@@ -298,6 +309,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		if(e.getSource().equals(chckbxUpdateBuyingPrice)) {
 			if(chckbxUpdateBuyingPrice.isSelected()) {
 				txtBuyingPrice.setEditable(true);
@@ -328,12 +340,23 @@ public class RestockPanel extends JFrame implements ActionListener{
 		}
 		else if(e.getSource().equals(btnRestock)) {
 			if(allValidInputs()) {
+
+				 pm = new ProductManager();
+				 bm = new BatchManager();
+				 
 				int quantity = getQuantity();
 				float buyingPrice = Float.parseFloat(txtBuyingPrice.getText());
 				int expiryMonth = getExpiryMonth();
 				int expiryYear = getExpiryYear();
 				
 				bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear);
+				try {
+					pm.getDBConnection().getConnection().close();
+					bm.getDBConnection().getConnection().close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				dispose();
 			}
 		}
