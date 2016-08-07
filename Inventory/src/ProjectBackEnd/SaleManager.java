@@ -21,19 +21,6 @@ public class SaleManager {
 	
 
 	
-	public void closeConnection(DBConnection con, ResultSet rs, PreparedStatement ps)
-	{
-		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		    try { ps.close(); } catch (Exception e) { /* ignored */ }
-		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
-	}
-
-	public void closeConnection(DBConnection con, PreparedStatement ps)
-	{
-		    try { ps.close(); } catch (Exception e) { /* ignored */ }
-		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
-	}
-	
     
     public float getSubtotal(int qty, float sellprice)
 	{
@@ -50,15 +37,13 @@ public class SaleManager {
 			rs = ps.executeQuery();
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
+				con.getConnection().close();
 					return rs.getInt(1);
 			}
 				
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-
-		closeConnection(con, rs, ps);
 		return 0;
 	}
     
@@ -70,10 +55,10 @@ public class SaleManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
+			con.getConnection().close();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		closeConnection(con, rs, ps);
 	}
 
     

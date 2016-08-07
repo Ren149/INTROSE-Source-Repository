@@ -16,19 +16,6 @@ public class ProductManager {
 		con = new DBConnection();
 	}
 	
-	public void closeConnection(DBConnection con, ResultSet rs, PreparedStatement ps)
-	{
-		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		    try { ps.close(); } catch (Exception e) { /* ignored */ }
-		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
-	}
-
-	public void closeConnection(DBConnection con, PreparedStatement ps)
-	{
-		    try { ps.close(); } catch (Exception e) { /* ignored */ }
-		    try { con.getConnection().close(); } catch (Exception e) { /* ignored */ }
-	}
-	
 	
 	public float getSellingPrice(int productID) {
 		sQuery = "SELECT selling_price "
@@ -39,17 +26,15 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return rs.getFloat(1);
 			}
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-
-		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -61,17 +46,16 @@ public class ProductManager {
 			ps.setString(1, productname);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return rs.getFloat(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -84,16 +68,15 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return rs.getString(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return "";
 	}
 	
@@ -104,17 +87,16 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return 0;
 	}
 	
@@ -126,16 +108,14 @@ public class ProductManager {
 			ps.setString(1, productname);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-
-		closeConnection(con, rs, ps);
 		return 0;
 	}
 
@@ -150,17 +130,16 @@ public class ProductManager {
 			ps.executeQuery(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return rs.getInt(1);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return -1;
 	}
 
@@ -173,6 +152,7 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			while(rs.next()) {
 				searchResults.add(rs.getInt(1));
@@ -182,7 +162,6 @@ public class ProductManager {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return searchResults;
 	}
 	
@@ -194,6 +173,7 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			while(rs.next()) {
 				searchResults.add(rs.getInt(1));
@@ -202,7 +182,6 @@ public class ProductManager {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return searchResults;
 	}
 	
@@ -216,16 +195,15 @@ public class ProductManager {
 			ps.setString(1, productname);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			if(rs.next()) {
-				closeConnection(con, rs, ps);
 				return true;
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return false;
 	}
 	
@@ -236,11 +214,11 @@ public class ProductManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
+			con.getConnection().close();
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		closeConnection(con, rs, ps);
 	}
 
 	public void restockProduct(String productname, double sellprice, int productID) {
@@ -251,11 +229,11 @@ public class ProductManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
+			con.getConnection().close();
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		closeConnection(con, ps);
 	}
 	
 	public void discontinueProduct(int productID) {
@@ -266,11 +244,11 @@ public class ProductManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
+			con.getConnection().close();
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		closeConnection(con, rs, ps);
 	}
 
 	public ResultSet searchProduct(String productname) {
@@ -286,15 +264,14 @@ public class ProductManager {
 			ps.setString(1, "%" + productname + "%");
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 
-			closeConnection(con, rs, ps);
 			return rs;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return null;
 	}
 
@@ -314,14 +291,13 @@ public class ProductManager {
 			ps.setString(1, "%" + productname + "%");
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 
-			closeConnection(con, rs, ps);
 			return rs;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return null;
 	}
 
@@ -342,15 +318,14 @@ public class ProductManager {
 			ps.setString(1, "%" + productname + "%");
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 
-			closeConnection(con, rs, ps);
 			return rs;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return null;
 	}
 
@@ -365,15 +340,14 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 
-			closeConnection(con, rs, ps);
 			return rs;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return null;
 	}
 
@@ -391,14 +365,13 @@ public class ProductManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
-
-			closeConnection(con, rs, ps);
+			con.getConnection().close();
+			
 			return rs;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 
-		closeConnection(con, rs, ps);
 		return null;
 	}
 }

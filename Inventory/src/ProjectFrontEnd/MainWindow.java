@@ -14,6 +14,7 @@ import javax.swing.JMenuBar;
 public class MainWindow extends JFrame implements ActionListener{
 	private ProductListPanel productListPanel = new ProductListPanel();
 	private SalePanel salePanel = new SalePanel();
+	private ExpiryPanel expiryListPanel = new ExpiryPanel();
 	private JButton btnSale = new JButton("Sale");
 	private JButton btnProductList = new JButton("Product List");
 	private JButton btnReorderList = new JButton("Reorder List");
@@ -80,7 +81,7 @@ public class MainWindow extends JFrame implements ActionListener{
 			btnReorderList.setBackground(Color.WHITE);
 		}
 		else if(e.getSource().equals(btnExpiryList)) {
-			//expiryListPanel.update();
+			expiryListPanel.update();
 			btnSale.setBackground(Color.WHITE);
 			btnProductList.setBackground(Color.WHITE);
 			btnExpiryList.setBackground(selectedButtonColor);
