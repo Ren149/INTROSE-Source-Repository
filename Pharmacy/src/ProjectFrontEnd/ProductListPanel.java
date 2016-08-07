@@ -175,7 +175,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 			entryDate += String.format("%02d", entryDateTemp.getDate()) + ", " + (entryDateTemp.getYear() + 1900);
 			
 			String quantity = bm.getEachBatchQuantity(i) + "";
-			String buyingPrice = String.format("%.2f", bm.getBuyingPrice(i));
+			String buyingPrice = "₱" + String.format("%.2f", bm.getBuyingPrice(i));
 			String expiryDate = bm.getExpiryMonth(i) + "-" + bm.getExpiryYear(i);
 			
 			batchListTableModel.addRow(new Object[] {batchID, entryDate, quantity, buyingPrice, expiryDate});
@@ -211,7 +211,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 
 		for(int i : id) {
 			String productName = pm.getProductName(i);
-			String sellingPrice = String.format("%.2f", pm.getSellingPrice(i));
+			String sellingPrice = "₱" + String.format("%.2f", pm.getSellingPrice(i));
 			String quantity = bm.getTotalQuantity(i) + "";
 			
 			productListTableModel.addRow(new Object[] {productName, sellingPrice, quantity});

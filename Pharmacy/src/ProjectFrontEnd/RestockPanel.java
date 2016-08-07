@@ -209,6 +209,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 			if(StringUtils.isEmptyOrWhitespaceOnly(txtSellingPrice.getText())) {
 				lblSellingPriceError.setText("Product must have a selling price.");
 				txtSellingPrice.setBackground(Color.YELLOW);
+				txtSellingPrice.setText("");
 				valid = false;
 			}
 			else {
@@ -216,6 +217,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 					if(Float.parseFloat(txtSellingPrice.getText()) <= 0){
 						lblSellingPriceError.setText("Selling price must be greater than 0.");
 						txtSellingPrice.setBackground(Color.YELLOW);
+						txtSellingPrice.setText("");
 						valid = false;
 					}
 					else {
@@ -225,6 +227,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 				} catch(NumberFormatException e) {
 					lblSellingPriceError.setText("Selling price must be numeric.");
 					txtSellingPrice.setBackground(Color.YELLOW);
+					txtSellingPrice.setText("");
 					valid = false;
 				}
 			}
@@ -239,6 +242,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 				if(getBuyingPrice() >= getSellingPrice()) {
 					lblSellingPriceError.setText("Selling price must be greater than buying price.");
 					txtSellingPrice.setBackground(Color.YELLOW);
+					txtSellingPrice.setText("");
 					valid = false;
 				}
 				else {
@@ -260,6 +264,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 				if(getQuantity() <= 0){
 					lblQuantityError.setText("Quantity must be greater than 0.");
 					txtQuantity.setBackground(Color.YELLOW);
+					txtQuantity.setText("");
 					valid = false;
 				}
 				else {
@@ -269,6 +274,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 			} catch(NumberFormatException e) {
 				lblQuantityError.setText("Quantity must be a positive whole number.");
 				txtQuantity.setBackground(Color.YELLOW);
+				txtQuantity.setText("");
 				valid = false;
 			}
 		}

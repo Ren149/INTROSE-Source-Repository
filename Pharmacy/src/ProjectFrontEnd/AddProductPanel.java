@@ -60,6 +60,10 @@ public class AddProductPanel extends JFrame implements ActionListener {
 	private LocalDate currentDate = LocalDate.now();
 	private ArrayList<String> yearList = new ArrayList<String>();
 	
+	//MANAGER INITIALIZERS
+	private ProductManager pm;
+	private BatchManager bm;
+	
 	public AddProductPanel() {
 		setTitle("Add Product");
 		
@@ -158,13 +162,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-	
-	
-	//MANAGER INITIALIZERS
-	private ProductManager pm;
-	private BatchManager bm;
-	
-	
+
 	public boolean allValidInputs() {
 		boolean valid = true;
 		
@@ -188,6 +186,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 				if(Float.parseFloat(txtBuyingPrice.getText()) <= 0){
 					lblBuyingPriceError.setText("Buying price must be greater than 0.");
 					txtBuyingPrice.setBackground(Color.YELLOW);
+					txtBuyingPrice.setText("");
 					valid = false;
 				}
 				else {
@@ -197,6 +196,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			} catch(NumberFormatException e) {
 				lblBuyingPriceError.setText("Buying price must be numeric.");
 				txtBuyingPrice.setBackground(Color.YELLOW);
+				txtBuyingPrice.setText("");
 				valid = false;
 			}
 		}
@@ -211,6 +211,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 				if(Float.parseFloat(txtSellingPrice.getText()) <= 0){
 					lblSellingPriceError.setText("Selling price must be greater than 0.");
 					txtSellingPrice.setBackground(Color.YELLOW);
+					txtSellingPrice.setText("");
 					valid = false;
 				}
 				else {
@@ -220,6 +221,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			} catch(NumberFormatException e) {
 				lblSellingPriceError.setText("Selling price must be numeric.");
 				txtSellingPrice.setBackground(Color.YELLOW);
+				txtSellingPrice.setText("");
 				valid = false;
 			}
 		}
@@ -229,6 +231,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 				if(getBuyingPrice() >= getSellingPrice()) {
 					lblSellingPriceError.setText("Selling price must be greater than buying price.");
 					txtSellingPrice.setBackground(Color.YELLOW);
+					txtSellingPrice.setText("");
 					valid = false;
 				}
 				else {
@@ -250,6 +253,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 				if(Integer.parseInt(txtQuantity.getText()) <= 0){
 					lblQuantityError.setText("Quantity must be greater than 0.");
 					txtQuantity.setBackground(Color.YELLOW);
+					txtQuantity.setText("");
 					valid = false;
 				}
 				else {
@@ -259,6 +263,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			} catch(NumberFormatException e) {
 				lblQuantityError.setText("Quantity must be a positive whole number.");
 				txtQuantity.setBackground(Color.YELLOW);
+				txtQuantity.setText("");
 				valid = false;
 			}
 		}
@@ -296,7 +301,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			pm = new ProductManager();
 			bm = new BatchManager();
 			
-			if(pm.getProductID(getProductName()) == 0) {
+			if(pm.getProductID(getProductName()) == -1) {
 				pm.addProduct(getProductName(), getSellingPrice());
 				bm.addBatch(pm.getLatestProductID(), getQuantity(), getBuyingPrice(), getExpiryMonth(), getExpiryYear());
 				
