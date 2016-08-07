@@ -38,9 +38,9 @@ public class SaleManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
+			con.getConnection().close();
 			
 			if(rs.next()) {
-				con.getConnection().close();
 					return rs.getInt(1);
 			}
 				
