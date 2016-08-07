@@ -65,7 +65,7 @@ public class BatchManager {
 	}
 	
 	public int getTotalQuantity (int productID) {
-		sQuery = "SELECT SUM(batch_quantity) "
+		sQuery = "SELECT SUM(total_batch_quantity) "
 				+ "FROM batch "
 				+ "WHERE productID = '" + productID + "';";
 		
@@ -177,8 +177,8 @@ public class BatchManager {
 	}
 	
 	public void addBatch(int productID, int batchquantity, double buyingprice, int expiremonth, int expiryyear) {
-		sQuery = "INSERT INTO batch(productID, batch_quantity, expiry_month, expiry_year, entry_date, buying_price)"
-						+ "VALUES('"+ productID +"','"+ batchquantity +"','"+ expiremonth +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "')";
+		sQuery = "INSERT INTO batch(productID, total_batch_quantity, batch_quantity_left, expiry_month, expiry_year, entry_date, buying_price)"
+						+ "VALUES('"+ productID +"','"+ batchquantity +"','"+ batchquantity +"','"+ expiremonth +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "')";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -191,8 +191,8 @@ public class BatchManager {
 	}
 	
 	public void restockBatch(int productID, int quantity, double buyingPrice, int expiryMonth, int expiryYear) {
-		sQuery = "INSERT INTO batch(productID, batch_quantity, expiry_month, expiry_year, entry_date, buying_price) "
-					+ "VALUES('" + productID + "', '" + quantity + "','"+ expiryMonth +"','"+ expiryYear +"', CURDATE(), '"+ buyingPrice + "') ";
+		sQuery = "INSERT INTO batch(productID, total_batch_quantity, batch_quantity_left, expiry_month, expiry_year, entry_date, buying_price) "
+					+ "VALUES('" + productID + "', '" + quantity + "', '" + quantity + "','"+ expiryMonth +"','"+ expiryYear +"', CURDATE(), '"+ buyingPrice + "') ";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -206,7 +206,8 @@ public class BatchManager {
 
     public void changeBatchQtyToZero(int batchID) {
         sQuery = "UPDATE batch "
-				+ "SET batch_quantity = '0'"
+				+ "SET total_batch_quantity = '0'"
+				+ "AND batch_quantity_left = '0'"
 				+ "WHERE batchID = "+ batchID +";";
         
         try {
@@ -245,7 +246,7 @@ public class BatchManager {
     }
     
     public int getEachBatchQuantity (int batchID) {
-		sQuery = "SELECT batch_quantity "
+		sQuery = "SELECT total_batch_quantity "
 				+ "FROM batch "
 				+ "WHERE batchID = '" + batchID + "';";
 		
@@ -270,7 +271,7 @@ public class BatchManager {
         int difference = batchQty - QtySold;
         
         sQuery = "UPDATE batch "
-				+ "SET batch_quantity = '"+ difference +"'"
+				+ "SET batch_quantity_left = '"+ difference +"'"
 				+ "WHERE batchID = "+ batchID +";";
        
         try {

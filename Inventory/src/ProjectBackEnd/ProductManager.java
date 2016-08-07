@@ -252,7 +252,7 @@ public class ProductManager {
 	}
 
 	public ResultSet searchProduct(String productname) {
-		sQuery = "SELECT p.product_name, SUM(b.batch_quantity), p.selling_price "
+		sQuery = "SELECT p.product_name, SUM(b.total_batch_quantity), p.selling_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
@@ -276,7 +276,7 @@ public class ProductManager {
 	}
 
 	public ResultSet searchProductWithPrice(String productname) {
-		sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price "
+		sQuery = "SELECT p.product_name, SUM(b.total_batch_quantity), b.buying_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
@@ -302,7 +302,7 @@ public class ProductManager {
 	}
 
 	public ResultSet searchProductOutofStock(String productname) {
-		sQuery = "SELECT p.product_name, SUM(b.batch_quantity) "
+		sQuery = "SELECT p.product_name, SUM(b.total_batch_quantity) "
 				+ "FROM products p, batch b "
 				+ "WHERE p.product_name LIKE ? "
 				+ "AND p.productID = b.productID AND isDiscontinued = '0' "
@@ -330,7 +330,7 @@ public class ProductManager {
 	}
 
 	public ResultSet viewProducts() {
-		sQuery = "SELECT p.product_name, SUM(b.batch_quantity), p.selling_price "
+		sQuery = "SELECT p.product_name, SUM(b.total_batch_quantity), p.selling_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
 				+ "GROUP BY p.product_name "
@@ -352,7 +352,7 @@ public class ProductManager {
 	}
 
 	public ResultSet viewProductsWithPrice() {
-		sQuery = "SELECT p.product_name, SUM(b.batch_quantity), b.buying_price "
+		sQuery = "SELECT p.product_name, SUM(b.total_batch_quantity), b.buying_price "
 				+ "FROM products p, batch b "
 				+ "WHERE p.productID = b.productID AND isDiscontinued = '0' "
 				+ " AND b.entry_date = (SELECT MAX(ba.entry_date) "
