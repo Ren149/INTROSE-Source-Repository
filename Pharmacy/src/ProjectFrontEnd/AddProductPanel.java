@@ -299,13 +299,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			if(pm.getProductID(getProductName()) == 0) {
 				pm.addProduct(getProductName(), getSellingPrice());
 				bm.addBatch(pm.getLatestProductID(), getQuantity(), getBuyingPrice(), getExpiryMonth(), getExpiryYear());
-				try {
-					pm.getDBConnection().getConnection().close();
-					bm.getDBConnection().getConnection().close();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				
 				dispose();
 				
 				lblProductAdded.setText(getProductName() + " added to the database.");
@@ -321,14 +315,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 					int expiryYear = Integer.parseInt(cboExpiryYear.getSelectedItem().toString());
 					
 					bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear);
-					try {
-						pm.getDBConnection().getConnection().close();
-						bm.getDBConnection().getConnection().close();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
+				
 					dispose();
 					
 					lblRestockSuccessful.setText(getQuantity() + " units of " + getProductName() + " added.");
