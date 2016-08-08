@@ -6,20 +6,19 @@ import java.sql.SQLException;
 public class DBConnection {
 
 	private String driverName, url, database, username, password;
-	private Connection con;
 	
 	public DBConnection() {
 		driverName = "com.mysql.jdbc.Driver";
 		url = "jdbc:mysql://localhost:3306/";
 		database = "pharmacy";
 		username = "root";
-		password = "password";
+		password = "1281";
 	}	
 	
 	public Connection getConnection() {
 		try {
-			con = DriverManager.getConnection(getUrl() + getDatabase(), getUsername(), getPassword());
-			return con;
+			Connection con = DriverManager.getConnection(getUrl() + getDatabase(), getUsername(), getPassword());
+			return con;	
 		} catch(SQLException e) {
 			//TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,7 +39,7 @@ public class DBConnection {
 		return url;
 	}
 	
-	public void setUrl(String url) {
+	public void setUrl() {
 		this.url = url;
 	}
 	
@@ -62,14 +61,6 @@ public class DBConnection {
 	
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	
-	public void disconnect() {
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 } 
 

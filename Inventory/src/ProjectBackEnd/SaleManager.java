@@ -1,34 +1,18 @@
 package ProjectBackEnd;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Date;
+import DBConnector.DBConnection;
 import java.util.ArrayList;
 
-import DBConnector.DBConnection;
-
 public class SaleManager {
-	
-	//this
-	
     
     private DBConnection con;
-	private PreparedStatement ps;
-	private	ResultSet rs;
-	private String sQuery;
 	
 	public SaleManager()
 	{
 		con = new DBConnection();
 	}
-	
-	public DBConnection getDBConnection()
-	{
-		return con;
-	}
-	
-
-	
     
     public float getSubtotal(int qty, float sellprice)
 	{
@@ -37,13 +21,14 @@ public class SaleManager {
     
     public int getLatestSalesID()
 	{
-    	sQuery = "SELECT MAX(salesID) FROM sales;";
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT MAX(salesID) FROM sales;";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
-			con.getConnection().close();
 			
 			if(rs.next()) {
 					return rs.getInt(1);
@@ -52,25 +37,26 @@ public class SaleManager {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		
 		return 0;
 	}
     
     public void recordTransaction(int totalQty, float totalSold, String date)
 	{
-    	sQuery = "INSERT INTO sales(quantity_sold, total_price_sold, date_sold)"
+		PreparedStatement ps;
+		
+		String sQuery = "INSERT INTO sales(quantity_sold, total_price_sold, date_sold)"
 						+ "VALUES('"+ totalQty +"','"+ totalSold + "', '"+date+"')";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
-			con.getConnection().close();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		
 	}
-
     
-    //to be deleted
     public void deductProductBatchQty(ArrayList<String> prodNameList, ArrayList<Integer> prodQtyList){
         ProductManager productManage = new ProductManager();
         BatchManager batchManage = new BatchManager();
@@ -100,8 +86,7 @@ public class SaleManager {
         
         
     }
-
-    //to be deleted
+    
     public void recordLineItem(ArrayList<String> prodNameList)
 	{
             SaleManager saleManage = new SaleManager();

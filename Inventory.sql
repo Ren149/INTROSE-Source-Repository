@@ -25,8 +25,7 @@ DROP TABLE IF EXISTS `batch`;
 CREATE TABLE `batch` (
   `batchID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `productID` int(10) NOT NULL,
-  `total_batch_quantity` int(11) NOT NULL,
-  `batch_quantity_left` int(11) NOT NULL,
+  `batch_quantity` int(11) NOT NULL,
   `expiry_month` int(11) NOT NULL,
   `expiry_year` year(4) NOT NULL,
   `entry_date` date NOT NULL,
@@ -106,8 +105,6 @@ DROP TABLE IF EXISTS `reorder_point`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `reorder_point` (
   `reorderpointID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `item_type` varchar(45) NOT NULL,
-  `quantity` int(11) NOT NULL,
   PRIMARY KEY (`reorderpointID`),
   UNIQUE KEY `reorderpointID_UNIQUE` (`reorderpointID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -156,4 +153,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-04 15:48:55
+-- Dump completed on 2016-08-04 12:52:41
