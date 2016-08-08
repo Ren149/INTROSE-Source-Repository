@@ -60,10 +60,6 @@ public class AddProductPanel extends JFrame implements ActionListener {
 	private LocalDate currentDate = LocalDate.now();
 	private ArrayList<String> yearList = new ArrayList<String>();
 	
-	//MANAGER INITIALIZERS
-	private ProductManager pm;
-	private BatchManager bm;
-	
 	public AddProductPanel() {
 		setTitle("Add Product");
 		
@@ -162,7 +158,13 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-
+	
+	
+	//MANAGER INITIALIZERS
+	private ProductManager pm;
+	private BatchManager bm;
+	
+	
 	public boolean allValidInputs() {
 		boolean valid = true;
 		
@@ -301,7 +303,7 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			pm = new ProductManager();
 			bm = new BatchManager();
 			
-			if(pm.getProductID(getProductName()) == -1) {
+			if(pm.getProductID(getProductName()) == 0) {
 				pm.addProduct(getProductName(), getSellingPrice());
 				bm.addBatch(pm.getLatestProductID(), getQuantity(), getBuyingPrice(), getExpiryMonth(), getExpiryYear());
 				

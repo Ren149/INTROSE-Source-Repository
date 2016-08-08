@@ -83,7 +83,7 @@ public class BatchManager {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
-		String sQuery = "SELECT SUM(total_batch_quantity) "
+		String sQuery = "SELECT SUM(batch_quantity_left) "
 				+ "FROM batch "
 				+ "WHERE productID = '" + productID + "';";
 		int totalQuantity = -1;
@@ -316,7 +316,7 @@ public class BatchManager {
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
-    	String sQuery = "SELECT total_batch_quantity "
+    	String sQuery = "SELECT batch_quantity_left "
 				+ "FROM batch "
 				+ "WHERE batchID = '" + batchID + "';";
 		int batchQuantity = -1;
@@ -343,10 +343,10 @@ public class BatchManager {
 		return 0;
 	}
     
-    public void subtractBatchQty(int batchID, int batchQty, int QtySold) {
+    public void subtractBatchQty(int batchID, int difference) {
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
-		int difference = batchQty - QtySold;
+		
         String sQuery = "UPDATE batch "
 				+ "SET batch_quantity_left = '"+ difference +"'"
 				+ "WHERE batchID = "+ batchID +";";

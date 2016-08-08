@@ -79,6 +79,7 @@ public class MainWindow extends JFrame implements ActionListener{
 			btnProductList.setBackground(selectedButtonColor);
 			btnExpiryList.setBackground(Color.WHITE);
 			btnReorderList.setBackground(Color.WHITE);
+			
 		}
 		else if(e.getSource().equals(btnExpiryList)) {
 			expiryListPanel.update();
@@ -94,5 +95,7 @@ public class MainWindow extends JFrame implements ActionListener{
 			btnExpiryList.setBackground(Color.WHITE);
 			btnReorderList.setBackground(selectedButtonColor);
 		}
+		
+		getContentPane().requestFocusInWindow();
 	}
 }

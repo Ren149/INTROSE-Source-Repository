@@ -98,8 +98,8 @@ public class RestockPanel extends JFrame implements ActionListener{
 		lblBuyingPriceError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
 		lblSellingPrice.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+	
 		txtSellingPrice.setEditable(false);
-
 		txtSellingPrice.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtSellingPrice.setColumns(10);
 		txtSellingPrice.setText(Float.toString(pm.getSellingPrice(productID)));
@@ -119,8 +119,8 @@ public class RestockPanel extends JFrame implements ActionListener{
 		lblQuantityError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
 		lblExpiryDate.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+	
 		cboExpiryMonth.setBackground(new Color(255, 255, 255));
-		
 		cboExpiryMonth.setModel(new DefaultComboBoxModel(new String[] {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}));
 		cboExpiryMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
@@ -187,6 +187,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 					if(Float.parseFloat(txtBuyingPrice.getText()) <= 0){
 						lblBuyingPriceError.setText("Buying price must be greater than 0.");
 						txtBuyingPrice.setBackground(Color.YELLOW);
+						txtBuyingPrice.setText("");
 						valid = false;
 					}
 					else {
@@ -196,6 +197,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 				} catch(NumberFormatException e) {
 					lblBuyingPriceError.setText("Buying price must be numeric.");
 					txtBuyingPrice.setBackground(Color.YELLOW);
+					txtBuyingPrice.setText("");
 					valid = false;
 				}
 			}
@@ -209,7 +211,6 @@ public class RestockPanel extends JFrame implements ActionListener{
 			if(StringUtils.isEmptyOrWhitespaceOnly(txtSellingPrice.getText())) {
 				lblSellingPriceError.setText("Product must have a selling price.");
 				txtSellingPrice.setBackground(Color.YELLOW);
-				txtSellingPrice.setText("");
 				valid = false;
 			}
 			else {
@@ -348,6 +349,8 @@ public class RestockPanel extends JFrame implements ActionListener{
 				int expiryYear = getExpiryYear();
 				
 				bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear);
+				
+				RestockSuccessDialog rsd = new RestockSuccessDialog(pm.getProductName(productID), quantity);
 				
 				dispose();
 			}

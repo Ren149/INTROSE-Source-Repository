@@ -40,7 +40,7 @@ public class ProductManager {
 			e.printStackTrace();
 		}
 		
-		return -1;
+		return 0;
 	}
 	
 	public float getSellingPrice(String productname) {
@@ -69,7 +69,7 @@ public class ProductManager {
 			e.printStackTrace();
 		}
 
-		return -1;
+		return 0;
 	}
 	
 	public String getProductName(int productID) {
@@ -135,7 +135,7 @@ public class ProductManager {
 		PreparedStatement ps;
 		ResultSet rs;
 		String sQuery = "SELECT productID FROM products WHERE product_name = ?;";
-		int productID = -1;
+		int productID = 0;
 		
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -156,7 +156,7 @@ public class ProductManager {
 			e.printStackTrace();
 		}
 		
-		return -1;
+		return 0;
 	}
 
 	public int getProductID(int row, String searchText) {

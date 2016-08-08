@@ -15,8 +15,10 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -97,6 +99,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 		tblProductList.getSelectionModel().addListSelectionListener(this);
 		tblProductList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblProductList.addKeyListener(this);
+		tblProductList.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
 
 		scrProductList.setViewportView(tblProductList);
 
@@ -138,6 +141,8 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 
 		loadProductList();
 		loadBatchList();
+		
+		txtSearch.requestFocusInWindow();
 	}
 
 	private void loadBatchList() {
@@ -273,9 +278,9 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 		loadProductList();
 		btnRestock.setEnabled(false);
 		btnDiscontinue.setEnabled(false);
+		txtSearch.grabFocus();
 	}
 	
-
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource().equals(this)) {
@@ -318,7 +323,11 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-
+		if(e.getSource().equals(tblProductList)) {
+			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+				btnRestock.doClick();
+			}
+		}
 	}
 
 	@Override
@@ -334,11 +343,6 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 				loadProductList();
 			}
 		}
-		else if(e.getSource().equals(tblProductList)) {
-			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
-				btnRestock.doClick();
-			}
-		}
 	}
 
 	@Override
@@ -350,9 +354,9 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 	public void focusGained(FocusEvent e) {
 		if(e.getSource().equals(txtSearch)) {
 			tblProductList.clearSelection();
-			loadProductList();
 			btnRestock.setEnabled(false);
 			btnDiscontinue.setEnabled(false);
+			loadProductList();
 		}
 	}
 

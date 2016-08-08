@@ -68,9 +68,15 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
     private DefaultTableModel tm = new DefaultTableModel();
     private ArrayList<String> prodNameList = new ArrayList<String>();
     private ArrayList<Integer> prodQtyList = new ArrayList<Integer>();
+    private ArrayList<Integer> batchIDList = new ArrayList<Integer>();
     private float sum = 0;
     private float sellingprice = 0;
     private int totalQty = 0;
+    
+	//MANAGERS
+    private ProductManager pm = new ProductManager();
+    private SaleManager sm = new SaleManager();
+    private BatchManager bm = new BatchManager();
     
 	public SalePanel() {
 		tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
@@ -78,113 +84,121 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		setBackground(Color.WHITE);
 		setLayout(new MigLayout("", "[150px:150px:150px][150px:150px:150px][20px:20px][grow][]", "[][][][grow][][][]"));
 		
-		add(lblAddToCartTitle, "cell 0 0 2 1");
-		
 		lblAddToCartTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
-		add(lblCartTitle, "cell 3 0");
 		
 		lblCartTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
 		
-		add(horizontalBox, "flowx,cell 0 1 2 1,grow");
 		horizontalBox.add(lblSearch);
-		lblSearch.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		horizontalBox.add(txtSearch);
+
+		lblSearch.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
 		txtSearch.setBackground(Color.WHITE);
 		txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtSearch.setColumns(20);
 		txtSearch.addKeyListener(this);
+
 		tblItemSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
 		tblItemSelection.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblItemSelection.getSelectionModel().addListSelectionListener(this);
 		tblItemSelection.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblItemSelection.addKeyListener(this);
-		add(lblSalesDate, "flowx,cell 3 1");
 		
 		lblSalesDate.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		add(btnRemove, "cell 4 0 1 2,aligny bottom");
 		
 		btnRemove.setToolTipText("This button deletes any selected item on the cart.");
-		
 		btnRemove.setForeground(new Color(0, 0, 0));
 		btnRemove.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		btnRemove.setBackground(Color.WHITE);
 		btnRemove.addActionListener(this);
+
 		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 9));
-		
-		add(lblItemCount, "cell 0 2 2 1");
-		add(scrollPaneItemSelection, "cell 0 3 2 1,grow");
 		
 		scrollPaneItemSelection.setViewportView(tblItemSelection);
 		scrollPaneItemSelection.setFocusable(false);
 		
 		tblCart.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
 		tblCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblCart.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblCart.setModel(tm);
-		add(scrollPaneCart, "cell 3 2 2 2,grow");
 		
 		scrollPaneCart.setViewportView(tblCart);
-		add(lblQuantity, "flowx,cell 1 4,alignx right");
 		
 		lblQuantity.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		
 		separator_1.setOrientation(SwingConstants.VERTICAL);
 		separator_1.setForeground(Color.LIGHT_GRAY);
 		
-		add(separator_1, "cell 2 0 1 7,alignx center,growy");
-		add(lblTotal, "cell 3 4,alignx right");
-		
 		lblTotal.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		add(lblItemSelectionError, "cell 0 5 2 1,alignx right,aligny top");
 		
 		lblItemSelectionError.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblItemSelectionError.setForeground(Color.RED);
 		
-		add(verticalStrut, "cell 3 5");
-		
-		add(horizontalBox_1, "flowx,cell 0 6 2 1,alignx right");
 		horizontalBox_1.add(btnAddToCart);
-		btnAddToCart.setBackground(Color.WHITE);
 		
+		btnAddToCart.setBackground(Color.WHITE);
 		btnAddToCart.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		btnAddToCart.addActionListener(this);
-		add(btnRecord, "flowx,cell 3 6 2 1,alignx right");
+		
 		btnRecord.setForeground(Color.WHITE);
 		btnRecord.setBackground(new Color(51, 204, 0));
 		btnRecord.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		add(lblTotalValue, "cell 4 4,alignx right");
+		btnRecord.addActionListener(this);
 		
 		lblTotalValue.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		add(spinner, "cell 3 1,growy");
 		
 		spinner.setFont(new Font("Segoe UI", Font.PLAIN, 10));
 		spinner.setModel(new SpinnerDateModel());
 		spinner.setEditor(new JSpinner.DateEditor(spinner, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
 		spinner.setSize(new Dimension(30, 15));
-		add(txtQuantity, "cell 1 4,alignx right");
 		
 		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtQuantity.setColumns(5);
 		txtQuantity.setEditable(false);
+		
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtSearch, txtQuantity}));
         
+		add(lblAddToCartTitle, "cell 0 0 2 1");
+		add(lblCartTitle, "cell 3 0");
+		add(horizontalBox, "flowx,cell 0 1 2 1,grow");
+		add(lblSalesDate, "flowx,cell 3 1");
+		add(btnRemove, "cell 4 0 1 2,aligny bottom");
+		add(lblItemCount, "cell 0 2 2 1");
+		add(scrollPaneItemSelection, "cell 0 3 2 1,grow");
+		add(lblQuantity, "flowx,cell 1 4,alignx right");
+		add(separator_1, "cell 2 0 1 7,alignx center,growy");
+		add(lblTotal, "cell 3 4,alignx right");
+		add(lblItemSelectionError, "cell 0 5 2 1,alignx right,aligny top");
+		add(verticalStrut, "cell 3 5");
+		add(horizontalBox_1, "flowx,cell 0 6 2 1,alignx right");
+		add(btnRecord, "flowx,cell 3 6 2 1,alignx right");
+		add(lblTotalValue, "cell 4 4,alignx right");
+		add(spinner, "cell 3 1,growy");
+		add(txtQuantity, "cell 1 4,alignx right");
+		add(scrollPaneCart, "cell 3 2 2 2,grow");
+		
+		txtSearch.requestFocusInWindow();
+	
 		loadItemSelection();
 	}
-	
 
-	//MANAGERS
-    private ProductManager pm;
-    private SaleManager sm;
-    private BatchManager bm;
-    
-        
+	public void loadCart() {
+		DefaultTableModel cartTableModel = new DefaultTableModel();
+		cartTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Selling Price", "Subtotal"});
+
+		for(int i = 0; i < prodNameList.size(); i++){
+			int productID = pm.getProductID(prodNameList.get(i));
+			String productName = prodNameList.get(i);
+			int quantity = prodQtyList.get(i);
+			float sellingprice = pm.getSellingPrice(productID);
+			float subtotal = prodQtyList.get(i) * sellingprice;
+	
+			cartTableModel.addRow(new Object[] {productName, quantity, sellingprice, subtotal});
+		}
+		
+	}
+	
 	public void loadItemSelection() {
-		 pm = new ProductManager();
-		 sm = new SaleManager();
-		 bm = new BatchManager();
-		 
 		ArrayList<Integer> id;
 		DefaultTableModel itemSelectionTableModel = new DefaultTableModel();
 		itemSelectionTableModel.setColumnIdentifiers(new String[] {"Product Name", "Selling Price", "Quantity"});
@@ -236,11 +250,27 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 			valid = false;
 		}
 		else {
+			String prodName = String.valueOf(tblItemSelection.getValueAt(tblItemSelection.getSelectedRow(), 0));
+			int prodQtyLeft = Integer.parseInt(String.valueOf(tblItemSelection.getValueAt(tblItemSelection.getSelectedRow(), 2)));
+			
+			
 			try {
 				if(Integer.parseInt(txtQuantity.getText()) <= 0){
 					lblItemSelectionError.setText("Quantity must be greater than 0.");
 					txtQuantity.setBackground(Color.YELLOW);
 					valid = false;
+				}
+				else if(Integer.parseInt(txtQuantity.getText()) > Integer.parseInt(String.valueOf(tblItemSelection.getValueAt(tblItemSelection.getSelectedRow(), 2)))) {
+					lblItemSelectionError.setText("Insufficient stock.");
+					txtQuantity.setBackground(Color.YELLOW);
+					valid = false;
+				}
+				else if(prodNameList.indexOf(prodName) != -1){
+					if(prodQtyList.get(prodNameList.indexOf(prodName)) + Integer.parseInt(txtQuantity.getText()) > prodQtyLeft){
+						lblItemSelectionError.setText("Insufficient stock1.");
+						txtQuantity.setBackground(Color.YELLOW);
+						valid = false;
+					}
 				}
 				else {
 					lblItemSelectionError.setText("");
@@ -258,11 +288,29 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	
 	public void actionPerformed(ActionEvent e) {
         if(e.getSource().equals(btnAddToCart)){
-            if(txtQuantity.getText().length() >= 1) {
-                if(Integer.parseInt(txtQuantity.getText()) <= Integer.parseInt(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 1)))
-                		&& Integer.parseInt(txtQuantity.getText()) > 0){
-                    if(sm.getDuplicate(prodNameList, String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0))) == 999){
+        	
+            
+            
+            if(allValidInputs() ) {
+            	
+            
+                    if(prodNameList.contains(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)))){
+                    	int index;
+                        index = prodNameList.indexOf(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
+                        System.out.println(prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText()));
+                        
                         sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
+                        sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
+                        totalQty += Integer.parseInt(txtQuantity.getText());
+                        int newQty = prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText());
+                        tm.setValueAt(newQty,index ,1);
+                        tm.setValueAt(sm.getSubtotal(newQty, sellingprice), index, 3);
+                        prodQtyList.set(index, (prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText())));
+                        System.out.println("Valid Qty");
+                    }
+                    else{
+
+                    	sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
                         totalQty += Integer.parseInt(txtQuantity.getText());
               
                         sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
@@ -274,29 +322,10 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
                 
                         prodNameList.add(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
                         prodQtyList.add(Integer.parseInt(txtQuantity.getText()));
+                        
+                        
                     }
-                    else{
-                        int index;
-                        index = sm.getDuplicate(prodNameList, String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                        System.out.println(prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText()));
-                        if((prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText())) <= Integer.parseInt(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 1)))){
-                        sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                        sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
-                        totalQty += Integer.parseInt(txtQuantity.getText());
-                        int newQty = prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText());
-                        tm.setValueAt(newQty,index ,1);
-                        tm.setValueAt(sm.getSubtotal(newQty, sellingprice), index, 3);
-                        prodQtyList.set(index, (prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText())));
-                        System.out.println("Valid Qty");
-                        }
-                        else lblItemSelectionError.setText("It exceeded the quantity of the product!");
-                    }
-                }
-                else lblItemSelectionError.setText("Invalid Quantity!");
-            }
-            else {
-            	lblItemSelectionError.setText("Please fill in all fields!");
-            }
+            }    
             
 	        tblItemSelection.clearSelection();
 	        txtQuantity.setText("");
@@ -317,7 +346,26 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         }
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
-                StringBuilder preferredDate = new StringBuilder();
+            	int prodID;
+            	for(int i = 0; i < prodNameList.size(); i++){
+            		prodID = pm.getProductID(prodNameList.get(i));
+            		batchIDList = bm.getBatchIDofProductList(prodID);
+            		
+            		for(int j = 0; j < batchIDList.size(); j++){
+            			int batchQty = bm.getEachBatchQuantity(batchIDList.get(j));
+            			if(prodQtyList.get(i) > batchQty){
+            				bm.changeBatchQtyToZero(batchIDList.get(j));
+            				prodQtyList.set(i, batchQty);
+            			}
+            			else{
+            				int difference = batchQty - prodQtyList.get(i);
+            				bm.subtractBatchQty(batchIDList.get(j), difference);
+            			}
+            		}
+            	}
+                
+                
+                
                 
                 /*
                 preferredDate.append(cboSalesDateYear.getSelectedItem().toString());
@@ -326,10 +374,11 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
                 preferredDate.append("-");
                 preferredDate.append(String.valueOf(cboSalesDateDay.getSelectedIndex()+1));
                 */
+                String preferreddate = "12-12-2012";
+                sm.recordTransaction(sum, preferreddate);
+               
                 
-                sm.recordTransaction(totalQty, sum, preferredDate.toString());
-                sm.deductProductBatchQty(prodNameList, prodQtyList);
-                sm.recordLineItem(prodNameList);
+                //sm.recordLineItem(prodNameList);
                 prodNameList.clear();
                 prodQtyList.clear();
                 totalQty = 0;
@@ -337,6 +386,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
                 tm.setRowCount(0);
                 //tblSaleSearch.setModel(pm.viewProducts());
             }
+           
         }
         
         lblTotalValue.setText(String.valueOf(sum));
@@ -344,6 +394,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	
 	public void update() {
 		loadItemSelection();
+		txtSearch.requestFocusInWindow();
 	}
 
 	@Override
@@ -376,4 +427,5 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	public void keyTyped(KeyEvent e) {
 		
 	}
+	
 }

@@ -55,10 +55,10 @@ public class SaleManager {
 		return 0;
 	}
     
-    public void recordTransaction(int totalQty, float totalSold, String date)
+    public void recordTransaction(float totalSold, String date)
 	{
-    	sQuery = "INSERT INTO sales(quantity_sold, total_price_sold, date_sold)"
-						+ "VALUES('"+ totalQty +"','"+ totalSold + "', '"+date+"')";
+    	sQuery = "INSERT INTO sales(total_price_sold, date_sold)"
+						+ "VALUES('"+ totalSold + "', '"+date+"')";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -71,35 +71,7 @@ public class SaleManager {
 
     
     //to be deleted
-    public void deductProductBatchQty(ArrayList<String> prodNameList, ArrayList<Integer> prodQtyList){
-        ProductManager productManage = new ProductManager();
-        BatchManager batchManage = new BatchManager();
-        ArrayList<Integer> batchID = new ArrayList<>(); 
-        
-
-        for(int i=0; i < prodNameList.size(); i++){
-            batchID = batchManage.getBatchIDofProductList(productManage.getProductID(prodNameList.get(i)));
-            int sentinel = 0;
-            for(int j=0; j < batchID.size(); j++){
-                
-                if(prodQtyList.get(i) >= batchManage.getEachBatchQuantity(batchID.get(j))){
-                    prodQtyList.set(i, prodQtyList.get(i) - batchManage.getEachBatchQuantity(batchID.get(j)));
-                    batchManage.changeBatchQtyToZero(batchID.get(j));
-                }
-                else if(prodQtyList.get(i) < batchManage.getEachBatchQuantity(batchID.get(j))){
-                    if(sentinel == 0){
-                    
-                    batchManage.subtractBatchQty(batchID.get(j), batchManage.getEachBatchQuantity(batchID.get(j)), prodQtyList.get(i));
-                    sentinel = 1;
-                    }
-                    
-                }
-            
-            }
-        }
-        
-        
-    }
+    
 
     //to be deleted
     public void recordLineItem(ArrayList<String> prodNameList)
@@ -120,13 +92,5 @@ public class SaleManager {
 		}
                 }
 	}
-    
-    public int getDuplicate(ArrayList<String> prodNameList, String prodName){
-        int x = 999;
-        for(int i = 0; i < prodNameList.size(); i++){
-            if(prodNameList.get(i).compareTo(prodName) == 0)
-                x = i;
-        }
-        return x;
-    }
+
 }

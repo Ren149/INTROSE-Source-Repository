@@ -1,4 +1,6 @@
--- MySQL dump 10.13  Distrib 5.7.9, for Win32 (AMD64)
+CREATE DATABASE  IF NOT EXISTS `pharmacy` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `pharmacy`;
+-- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
 --
 -- Host: localhost    Database: pharmacy
 -- ------------------------------------------------------
@@ -30,10 +32,10 @@ CREATE TABLE `batch` (
   `expiry_month` int(11) NOT NULL,
   `expiry_year` year(4) NOT NULL,
   `entry_date` date NOT NULL,
-  `buying_price` int(11) NOT NULL,
+  `buying_price` float NOT NULL,
   PRIMARY KEY (`batchID`),
   UNIQUE KEY `batchID_UNIQUE` (`batchID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,6 +44,7 @@ CREATE TABLE `batch` (
 
 LOCK TABLES `batch` WRITE;
 /*!40000 ALTER TABLE `batch` DISABLE KEYS */;
+INSERT INTO `batch` VALUES (0000000001,1,30,23,1,2018,'2016-08-08',10),(0000000002,2,0,0,1,2018,'2016-08-08',1),(0000000003,3,30,30,1,2018,'2016-08-08',10),(0000000004,3,20,20,1,2018,'2016-08-08',10),(0000000005,3,10,10,1,2018,'2016-08-08',10),(0000000006,2,0,0,3,2020,'2016-08-08',1),(0000000007,2,5,3,2,2019,'2016-08-08',1),(0000000008,2,20,18,2,2019,'2016-08-08',1),(0000000009,2,5,3,1,2018,'2016-08-08',1),(0000000010,2,5,3,1,2018,'2016-08-08',1),(0000000011,2,5,3,1,2018,'2016-08-08',1),(0000000012,1,5,4,2,2019,'2016-08-08',10),(0000000013,2,10,8,1,2018,'2016-08-08',2),(0000000014,3,12,12,1,2018,'2016-08-08',11),(0000000015,1,10,10,3,2020,'2016-08-08',12.6),(0000000016,1,1,1,1,2018,'2016-08-08',12.6),(0000000017,3,8,8,1,2018,'2016-08-08',13.789);
 /*!40000 ALTER TABLE `batch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,7 +88,7 @@ CREATE TABLE `products` (
   `isDiscontinued` binary(1) NOT NULL,
   PRIMARY KEY (`productID`),
   UNIQUE KEY `productID_UNIQUE` (`productID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,6 +97,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (0000000001,'CEELIN PLUS',20,'0'),(0000000002,'B-COMPLEX (PHAREX)',2,'0'),(0000000003,'APPEBON',20,'0');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,4 +160,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-04 15:48:55
+-- Dump completed on 2016-08-08 15:05:07
