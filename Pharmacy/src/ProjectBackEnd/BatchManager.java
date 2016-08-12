@@ -1,3 +1,4 @@
+//MILESTONE
 package ProjectBackEnd;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -232,11 +233,11 @@ public class BatchManager {
 		return searchResults;
 	}
 	
-	public void addBatch(int productID, int batchquantity, double buyingprice, int expiremonth, int expiryyear) {
+	public void addBatch(int productID, int batchquantity, double buyingprice, int expiremonth, int expiryyear, String lotnumber) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
-		String sQuery = "INSERT INTO batch(productID, total_batch_quantity, batch_quantity_left, expiry_month, expiry_year, entry_date, buying_price)"
-						+ "VALUES('"+ productID +"','"+ batchquantity +"','"+ batchquantity +"','"+ expiremonth +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "')";
+		String sQuery = "INSERT INTO batch(productID, total_batch_quantity, batch_quantity_left, expiry_month, expiry_year, entry_date, buying_price, lot_number)"
+						+ "VALUES('"+ productID +"','"+ batchquantity +"','"+ batchquantity +"','"+ expiremonth +"','"+ expiryyear +"', CURDATE(), '"+ buyingprice + "', '"+ lotnumber + "')";
 		
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -248,11 +249,11 @@ public class BatchManager {
 		}
 	}
 	
-	public void restockBatch(int productID, int quantity, double buyingPrice, int expiryMonth, int expiryYear) {
+	public void restockBatch(int productID, int quantity, double buyingPrice, int expiryMonth, int expiryYear, String lotnumber) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
-		String sQuery = "INSERT INTO batch(productID, total_batch_quantity, batch_quantity_left, expiry_month, expiry_year, entry_date, buying_price) "
-					+ "VALUES('" + productID + "', '" + quantity + "', '" + quantity + "','"+ expiryMonth +"','"+ expiryYear +"', CURDATE(), '"+ buyingPrice + "') ";
+		String sQuery = "INSERT INTO batch(productID, total_batch_quantity, batch_quantity_left, expiry_month, expiry_year, entry_date, buying_price, lot_number) "
+					+ "VALUES('" + productID + "', '" + quantity + "', '" + quantity + "','"+ expiryMonth +"','"+ expiryYear +"', CURDATE(), '"+ buyingPrice + "', '"+ lotnumber + "') ";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -359,5 +360,36 @@ public class BatchManager {
         } catch(SQLException e) {
         	e.printStackTrace();
         }
+    }
+    
+    public String getLotNumber(int batchID) {
+    	DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT lot_number "
+				+ "FROM batch "
+				+ "WHERE batchID = '" + batchID + "';";
+		String lotNumber = null;
+		
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			ps.executeQuery(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				lotNumber = rs.getString(1);
+			}
+		
+			con.disconnect();
+
+			rs.close();
+			
+			return lotNumber;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
     }
 }

@@ -1,3 +1,4 @@
+//MILESTONE
 package ProjectFrontEnd;
 
 import java.awt.Color;
@@ -26,6 +27,7 @@ import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
 
 public class AddProductPanel extends JFrame implements ActionListener {
+	//UI ELEMENTS
 	private JPanel panel = new JPanel();
 	private JLabel lblTitle = new JLabel("Add Product");
 	private JLabel lblProductName = new JLabel("Product Name:");
@@ -53,12 +55,22 @@ public class AddProductPanel extends JFrame implements ActionListener {
 	private JOptionPane dialogProductAdded = new JOptionPane();
 	private JOptionPane dialogRestockSuccessful = new JOptionPane();
 	private JLabel lblProductAlreadyExists = new JLabel("<html>Product already exists in the database.<br>"
-	    + "This will be treated as a restocking.</html>");
+			+ "This will be treated as a restocking.</html>");
+	private JLabel lblProductDiscontinuedRestock = new JLabel("<html>Product was previously discontinued.<br>"
+			+ "Clicking OK will bring back the product to the Product List.</html>");
 	private JLabel lblProductAdded = new JLabel();
 	private JLabel lblRestockSuccessful = new JLabel();
+	
 	//OTHER VARIABLES
 	private LocalDate currentDate = LocalDate.now();
 	private ArrayList<String> yearList = new ArrayList<String>();
+	
+	//MANAGER INITIALIZERS
+	private ProductManager pm;
+	private BatchManager bm;
+	private final JLabel lblLotNumber = new JLabel("Lot Number:");
+	private final JTextField txtLotNumber = new JTextField();
+	private final JLabel lblLotNumberError = new JLabel("");
 	
 	public AddProductPanel() {
 		setTitle("Add Product");
@@ -94,13 +106,20 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		lblSellingPriceError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
 		lblQuantity.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		txtQuantity.setBackground(Color.WHITE);
 		
+		txtQuantity.setBackground(Color.WHITE);
 		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtQuantity.setColumns(10);
 		
 		lblQuantityError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+
+		lblLotNumber.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
+		txtLotNumber.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtLotNumber.setColumns(10);
+		
+		lblLotNumberError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+
 		lblExpiryDate.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
 		cboExpiryMonth.setBackground(new Color(255, 255, 255));
@@ -124,9 +143,8 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		btnAdd.addActionListener(this);
 		
 		panel.setBackground(Color.WHITE);
-		panel.setLayout(new MigLayout("", "[][grow]", "[][][][][][][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[][grow]", "[][][][][][][][][][][][][][][][]"));
 		panel.add(lblTitle, "cell 0 0 2 1");
-		
 		panel.add(verticalGlue, "cell 0 1");
 		panel.add(lblProductName, "cell 0 2,alignx right");
 		panel.add(txtProductName, "cell 1 2,aligny center");
@@ -140,17 +158,21 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		panel.add(lblQuantity, "cell 0 8,alignx right");
 		panel.add(txtQuantity, "cell 1 8,aligny center");
 		panel.add(lblQuantityError, "cell 1 9,aligny top");
-		panel.add(lblExpiryDate, "cell 0 10,alignx right");
-		panel.add(cboExpiryMonth, "flowx,cell 1 10,alignx left,aligny center");
-		panel.add(lblExpiryDateError, "cell 1 11,aligny top");
-		panel.add(verticalStrut, "cell 0 12");
-		panel.add(btnAdd, "cell 1 13,alignx right,aligny bottom");
-		panel.add(cboExpiryYear, "cell 1 10,aligny center");
+		panel.add(lblLotNumber, "cell 0 10,alignx trailing");
+		panel.add(txtLotNumber, "cell 1 10,alignx left");
+		panel.add(lblLotNumberError, "cell 1 11");
+		panel.add(lblExpiryDate, "cell 0 12,alignx right");
+		panel.add(cboExpiryMonth, "flowx,cell 1 12,alignx left,aligny center");
+		panel.add(lblExpiryDateError, "cell 1 13,aligny top");
+		panel.add(verticalStrut, "cell 0 14");
+		panel.add(btnAdd, "cell 1 15,alignx right,aligny bottom");
+		panel.add(cboExpiryYear, "cell 1 12,aligny center");
 		
 		getRootPane().setDefaultButton(btnAdd);
 
 		//DIALOG
 		lblProductAlreadyExists.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblProductDiscontinuedRestock.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblProductAdded.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblRestockSuccessful.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
@@ -158,12 +180,6 @@ public class AddProductPanel extends JFrame implements ActionListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-	
-	
-	//MANAGER INITIALIZERS
-	private ProductManager pm;
-	private BatchManager bm;
-	
 	
 	public boolean allValidInputs() {
 		boolean valid = true;
@@ -270,6 +286,16 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			}
 		}
 		
+		if(StringUtils.isEmptyOrWhitespaceOnly(txtLotNumber.getText())) {
+			lblLotNumberError.setText("Product must have a lot number.");
+			txtLotNumber.setBackground(Color.YELLOW);
+			valid = false;
+		}
+		else {
+			lblLotNumberError.setText("");
+			txtLotNumber.setBackground(Color.WHITE);
+		}
+		
 		if(cboExpiryMonth.getSelectedIndex() == 0) {
 			cboExpiryMonth.setBackground(Color.YELLOW);
 			valid = false;
@@ -303,30 +329,54 @@ public class AddProductPanel extends JFrame implements ActionListener {
 			pm = new ProductManager();
 			bm = new BatchManager();
 			
-			if(pm.getProductID(getProductName()) == 0) {
+			if(pm.getProductID(getProductName()) == -1) { //if the product is not in record
 				pm.addProduct(getProductName(), getSellingPrice());
-				bm.addBatch(pm.getLatestProductID(), getQuantity(), getBuyingPrice(), getExpiryMonth(), getExpiryYear());
+				bm.addBatch(pm.getLatestProductID(), getQuantity(), getBuyingPrice(), getExpiryMonth(), getExpiryYear(), getLotNumber());
 				
 				dispose();
 				
 				lblProductAdded.setText(getProductName() + " added to the database.");
-				dialogProductAdded.showMessageDialog(this, lblProductAdded, "Product Added", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						lblProductAdded,
+						"Product Added",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
-			else {
-				int n = dialogProductAlreadyExists.showConfirmDialog(this, lblProductAlreadyExists, "Product Already Exists", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			else { //if the product is in the record
+				int productID = pm.getProductID(getProductName());
+				int n;
+				
+				if(pm.isDiscontinued(productID)) {
+					n = JOptionPane.showConfirmDialog(this,
+							lblProductDiscontinuedRestock,
+							"Product Previously Discontinued",
+							JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.WARNING_MESSAGE);
+					
+					pm.setDiscontinued(productID, false);
+				}
+				else {
+					n = JOptionPane.showConfirmDialog(this,
+						lblProductAlreadyExists,
+						"Product Already Exists",
+						JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+				}
+				
 				if(n == 0) {
-					int productID = pm.getProductID(txtProductName.getText());
 					int quantity = Integer.parseInt(txtQuantity.getText());
 					float buyingPrice = Float.parseFloat(txtBuyingPrice.getText());
+					float sellingPrice = Float.parseFloat(txtSellingPrice.getText());
 					int expiryMonth = cboExpiryMonth.getSelectedIndex();
 					int expiryYear = Integer.parseInt(cboExpiryYear.getSelectedItem().toString());
+					String lotNumber = txtLotNumber.getText();
 					
-					bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear);
+					pm.setSellingPrice(productID, sellingPrice);
+					bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear, lotNumber);
 				
 					dispose();
 					
 					lblRestockSuccessful.setText(getQuantity() + " units of " + getProductName() + " added.");
-					dialogProductAdded.showMessageDialog(this, lblRestockSuccessful, "Restock Successful", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(this, lblRestockSuccessful, "Restock Successful", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		}
@@ -346,6 +396,10 @@ public class AddProductPanel extends JFrame implements ActionListener {
 	
 	private int getQuantity() {
 		return Integer.parseInt(txtQuantity.getText());
+	}
+	
+	private String getLotNumber() {
+		return txtLotNumber.getText();
 	}
 	
 	private int getExpiryMonth() {

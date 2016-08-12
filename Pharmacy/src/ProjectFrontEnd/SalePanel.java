@@ -6,12 +6,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.sql.SQLException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -27,6 +30,7 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -35,11 +39,12 @@ import org.eclipse.wb.swing.FocusTraversalOnArray;
 import com.mysql.jdbc.StringUtils;
 
 import ProjectBackEnd.BatchManager;
+import ProjectBackEnd.LineItemManager;
 import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
 import net.miginfocom.swing.MigLayout;
 
-public class SalePanel extends JPanel implements ActionListener, ListSelectionListener, KeyListener {
+public class SalePanel extends JPanel implements ActionListener, ListSelectionListener, KeyListener, MouseListener, FocusListener {
 	private JTextField txtSearch = new JTextField();
 	private JTextField txtQuantity = new JTextField();
 	private JScrollPane scrollPaneItemSelection = new JScrollPane();
@@ -65,7 +70,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
     private Component verticalStrut = Box.createVerticalStrut(20);
     
     //OTHER VARIABLES
-    private DefaultTableModel tm = new DefaultTableModel();
     private ArrayList<String> prodNameList = new ArrayList<String>();
     private ArrayList<Integer> prodQtyList = new ArrayList<Integer>();
     private ArrayList<Integer> batchIDList = new ArrayList<Integer>();
@@ -77,10 +81,9 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
     private ProductManager pm = new ProductManager();
     private SaleManager sm = new SaleManager();
     private BatchManager bm = new BatchManager();
+    private LineItemManager lm = new LineItemManager();
     
 	public SalePanel() {
-		tm.setColumnIdentifiers(new String[] {"Item Name", "Quantity", "Selling Price", "Subtotal"});
-            
 		setBackground(Color.WHITE);
 		setLayout(new MigLayout("", "[150px:150px:150px][150px:150px:150px][20px:20px][grow][]", "[][][][grow][][][]"));
 		
@@ -97,12 +100,14 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtSearch.setColumns(20);
 		txtSearch.addKeyListener(this);
+		txtSearch.addFocusListener(this);
 
 		tblItemSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblItemSelection.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblItemSelection.getSelectionModel().addListSelectionListener(this);
 		tblItemSelection.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblItemSelection.addKeyListener(this);
+		tblItemSelection.addMouseListener(this);
 		
 		lblSalesDate.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
@@ -115,12 +120,11 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		lblItemCount.setFont(new Font("Segoe UI", Font.PLAIN, 9));
 		
 		scrollPaneItemSelection.setViewportView(tblItemSelection);
-		scrollPaneItemSelection.setFocusable(false);
 		
 		tblCart.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblCart.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblCart.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tblCart.setModel(tm);
+		tblCart.addMouseListener(this);
 		
 		scrollPaneCart.setViewportView(tblCart);
 		
@@ -139,11 +143,12 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		btnAddToCart.setBackground(Color.WHITE);
 		btnAddToCart.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		btnAddToCart.addActionListener(this);
+		btnAddToCart.setEnabled(false);
 		
 		btnRecord.setForeground(Color.WHITE);
-		btnRecord.setBackground(new Color(51, 204, 0));
 		btnRecord.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		btnRecord.addActionListener(this);
+		btnRecord.setEnabled(false);
 		
 		lblTotalValue.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		
@@ -155,6 +160,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtQuantity.setColumns(5);
 		txtQuantity.setEditable(false);
+		txtQuantity.addKeyListener(this);
 		
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtSearch, txtQuantity}));
         
@@ -176,33 +182,26 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		add(spinner, "cell 3 1,growy");
 		add(txtQuantity, "cell 1 4,alignx right");
 		add(scrollPaneCart, "cell 3 2 2 2,grow");
+		addMouseListener(this);
 		
 		txtSearch.requestFocusInWindow();
 	
 		loadItemSelection();
-	}
-
-	public void loadCart() {
-		DefaultTableModel cartTableModel = new DefaultTableModel();
-		cartTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Selling Price", "Subtotal"});
-
-		for(int i = 0; i < prodNameList.size(); i++){
-			int productID = pm.getProductID(prodNameList.get(i));
-			String productName = prodNameList.get(i);
-			int quantity = prodQtyList.get(i);
-			float sellingprice = pm.getSellingPrice(productID);
-			float subtotal = prodQtyList.get(i) * sellingprice;
-	
-			cartTableModel.addRow(new Object[] {productName, quantity, sellingprice, subtotal});
-		}
+		loadCart();
+		
 		
 	}
 	
-	public void loadItemSelection() {
+	public void update() {
+		loadItemSelection();
+		txtSearch.requestFocusInWindow();
+		txtQuantity.setEditable(false);
+		txtQuantity.setBackground(new Color(238, 238, 238));
+	}
+	
+ 	public void loadItemSelection() {
 		ArrayList<Integer> id;
-		DefaultTableModel itemSelectionTableModel = new DefaultTableModel();
-		itemSelectionTableModel.setColumnIdentifiers(new String[] {"Product Name", "Selling Price", "Quantity"});
-		
+
 		if(StringUtils.isEmptyOrWhitespaceOnly(txtSearch.getText())) {
 			id = pm.getProductIDList();
 		}
@@ -210,9 +209,13 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 			id = pm.getProductIDList(txtSearch.getText().trim());
 		}
 
+		DefaultTableModel itemSelectionTableModel = new DefaultTableModel();
+		
+		itemSelectionTableModel.setColumnIdentifiers(new String[] {"Product Name", "Selling Price", "Quantity"});
+		
 		for(int i : id) {
 			String productName = pm.getProductName(i);
-			String sellingPrice = Float.toString(pm.getSellingPrice(i));
+			String sellingPrice = "₱" + String.format("%.2f", pm.getSellingPrice(i));
 			String quantity = bm.getTotalQuantity(i) + "";
 			
 			itemSelectionTableModel.addRow(new Object[] {productName, sellingPrice, quantity});
@@ -237,10 +240,33 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		}
 	}
 
-	public void valueChanged(ListSelectionEvent e) {
-		txtQuantity.setEditable(true);
+	public void loadCart() {
+		DefaultTableModel cartTableModel = new DefaultTableModel();
+
+		cartTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity", "Selling Price", "Subtotal"});
+
+		for(int i = 0; i < prodNameList.size(); i++){
+			int productID = pm.getProductID(prodNameList.get(i));
+			String productName = prodNameList.get(i);
+			int quantity = prodQtyList.get(i);
+			float sellingprice = pm.getSellingPrice(productID);
+			float subtotal = prodQtyList.get(i) * sellingprice;
+	
+			cartTableModel.addRow(new Object[] {productName, quantity, sellingprice, subtotal});
+		}
+
+		if(cartTableModel.getRowCount() == 0) {
+			btnRecord.setEnabled(false);
+			btnRecord.setBackground(Color.WHITE);
+		}
+		else {
+			btnRecord.setEnabled(true);
+			btnRecord.setBackground(new Color(51, 204, 0));
+		}
+		
+		tblCart.setModel(cartTableModel);
 	}
-    
+ 	
 	private boolean allValidInputs() {
 		boolean valid = true;
 		
@@ -252,7 +278,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		else {
 			String prodName = String.valueOf(tblItemSelection.getValueAt(tblItemSelection.getSelectedRow(), 0));
 			int prodQtyLeft = Integer.parseInt(String.valueOf(tblItemSelection.getValueAt(tblItemSelection.getSelectedRow(), 2)));
-			
 			
 			try {
 				if(Integer.parseInt(txtQuantity.getText()) <= 0){
@@ -274,7 +299,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 				}
 				else {
 					lblItemSelectionError.setText("");
-					txtQuantity.setBackground(Color.WHITE);
+					txtQuantity.setBackground(new Color(238, 238, 238));
 				}
 			} catch(NumberFormatException e) {
 				lblItemSelectionError.setText("Quantity must be a positive whole number.");
@@ -288,115 +313,113 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	
 	public void actionPerformed(ActionEvent e) {
         if(e.getSource().equals(btnAddToCart)){
-        	
+            if(allValidInputs()) {
+                if(prodNameList.contains(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)))){
+                	int index;
+ 
+                	index = prodNameList.indexOf(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
+                    
+                    
+                    sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
+                    sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
+                    totalQty += Integer.parseInt(txtQuantity.getText());
+                    int newQty = prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText());
+                    tblCart.setValueAt(newQty,index ,1);
+                    tblCart.setValueAt(sm.getSubtotal(newQty, sellingprice), index, 3);
+                    prodQtyList.set(index, (prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText())));
+                    
+                }
+                else {
+                	sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
+                    totalQty += Integer.parseInt(txtQuantity.getText());
+          
+                    sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
+                    loadCart();
             
-            
-            if(allValidInputs() ) {
-            	
-            
-                    if(prodNameList.contains(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)))){
-                    	int index;
-                        index = prodNameList.indexOf(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                        System.out.println(prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText()));
-                        
-                        sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                        sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
-                        totalQty += Integer.parseInt(txtQuantity.getText());
-                        int newQty = prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText());
-                        tm.setValueAt(newQty,index ,1);
-                        tm.setValueAt(sm.getSubtotal(newQty, sellingprice), index, 3);
-                        prodQtyList.set(index, (prodQtyList.get(index)+Integer.parseInt(txtQuantity.getText())));
-                        System.out.println("Valid Qty");
-                    }
-                    else{
-
-                    	sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                        totalQty += Integer.parseInt(txtQuantity.getText());
-              
-                        sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
-                        tm.addRow(new Object[]{tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0), 
-                                       txtQuantity.getText(), 
-                                       sellingprice, 
-                                       sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice)
-                                      });
-                
-                        prodNameList.add(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                        prodQtyList.add(Integer.parseInt(txtQuantity.getText()));
-                        
-                        
-                    }
-            }    
-            
-	        tblItemSelection.clearSelection();
-	        txtQuantity.setText("");
-	        txtQuantity.setEditable(false);
-	        btnAddToCart.setEnabled(true);
+                    prodNameList.add(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
+                    prodQtyList.add(Integer.parseInt(txtQuantity.getText()));
+                }
+             
+                tblItemSelection.clearSelection();
+    	     
+                txtQuantity.setText("");
+    	        txtQuantity.setEditable(false);
+    	        
+    	        txtSearch.requestFocusInWindow();
+    	        
+    	        btnAddToCart.setEnabled(true);
+    	        
+    	        loadCart();
+            }
         }
 		
         if(e.getSource().equals(btnRemove)){
             if(tblCart.getSelectedRow() != -1){
-                sum -= Integer.parseInt(String.valueOf(tblCart.getModel().getValueAt(tblCart.getSelectedRow(), 3)));
+                sum -= Float.parseFloat(String.valueOf(tblCart.getModel().getValueAt(tblCart.getSelectedRow(), 3)));
                 totalQty -= Integer.parseInt(String.valueOf(tblCart.getModel().getValueAt(tblCart.getSelectedRow(), 1)));
                 prodNameList.remove(tblCart.getSelectedRow());
                 prodQtyList.remove(tblCart.getSelectedRow());
-                tm.removeRow(tblCart.getSelectedRow());
+                loadCart();
             }
             
             tblCart.clearSelection();
         }
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
-            	int prodID;
-            	for(int i = 0; i < prodNameList.size(); i++){
-            		prodID = pm.getProductID(prodNameList.get(i));
-            		batchIDList = bm.getBatchIDofProductList(prodID);
-            		
-            		for(int j = 0; j < batchIDList.size(); j++){
-            			int batchQty = bm.getEachBatchQuantity(batchIDList.get(j));
-            			if(prodQtyList.get(i) > batchQty){
-            				bm.changeBatchQtyToZero(batchIDList.get(j));
-            				prodQtyList.set(i, batchQty);
-            			}
-            			else{
-            				int difference = batchQty - prodQtyList.get(i);
-            				bm.subtractBatchQty(batchIDList.get(j), difference);
-            			}
-            		}
+            	String preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(spinner.getValue());
+
+        		Date today = new Date();
+        		String date1 = new SimpleDateFormat("yyyy-MM-dd").format(today);
+        		
+            	if(date1.compareTo(preferreddate) != -1){
+	            	int prodID, prodQty;
+	            	
+	            	//Reduce Batch Qty
+	            	for(int i = 0; i < prodNameList.size(); i++){
+	            		prodID = pm.getProductID(prodNameList.get(i));
+	            		batchIDList = bm.getBatchIDofProductList(prodID);
+	            		
+	            		for(int j = 0; j < batchIDList.size(); j++){
+	            			int batchQty = bm.getEachBatchQuantity(batchIDList.get(j));
+	            			if(prodQtyList.get(i) > batchQty){
+	            				bm.changeBatchQtyToZero(batchIDList.get(j));
+	            				prodQtyList.set(i, batchQty);
+	            			}
+	            			else{
+	            				int difference = batchQty - prodQtyList.get(i);
+	            				bm.subtractBatchQty(batchIDList.get(j), difference);
+	            			}
+	            		}
+	            	}
+	                
+	            	//Record Sales
+	                sm.recordTransaction(sum, preferreddate);
+	                
+	                //Record Sales Manager
+	                int salesID = sm.getLatestSalesID();
+	                
+	                for(int i = 0; i < prodNameList.size(); i++){
+	                	prodID = pm.getProductID(prodNameList.get(i));
+	                	prodQty = Integer.parseInt(String.valueOf(tblCart.getModel().getValueAt(i, 1)));
+	                	lm.recordTransaction(salesID, prodID, prodQty);
+	                }
+	                
+	                prodNameList.clear();
+	                prodQtyList.clear();
+	                totalQty = 0;
+	                sum = 0;
+	                loadCart();
+	                //tblSaleSearch.setModel(pm.viewProducts());
             	}
-                
-                
-                
-                
-                /*
-                preferredDate.append(cboSalesDateYear.getSelectedItem().toString());
-                preferredDate.append("-");
-                preferredDate.append(String.valueOf(cboSalesDateMonth.getSelectedIndex()+1));
-                preferredDate.append("-");
-                preferredDate.append(String.valueOf(cboSalesDateDay.getSelectedIndex()+1));
-                */
-                String preferreddate = "12-12-2012";
-                sm.recordTransaction(sum, preferreddate);
-               
-                
-                //sm.recordLineItem(prodNameList);
-                prodNameList.clear();
-                prodQtyList.clear();
-                totalQty = 0;
-                sum = 0;
-                tm.setRowCount(0);
-                //tblSaleSearch.setModel(pm.viewProducts());
+            	else{
+            		//INSERT FEEDBACK IF INVALID DATE HERE
+        			
+            	}
             }
-           
         }
-        
         lblTotalValue.setText(String.valueOf(sum));
 	}
 	
-	public void update() {
-		loadItemSelection();
-		txtSearch.requestFocusInWindow();
-	}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getSource().equals(tblItemSelection)) {
@@ -409,7 +432,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(e.getSource().equals(txtSearch)) {
-			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+			if(e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
 				loadItemSelection();
 				
 				if(tblItemSelection.getRowCount() > 0) {
@@ -419,13 +442,97 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 			}
 			else {
 				loadItemSelection();
+				txtQuantity.setEditable(false);
+				txtQuantity.setBackground(new Color(238, 238, 238));
+			}
+		}
+		else if(e.getSource().equals(txtQuantity)) {
+			if(StringUtils.isEmptyOrWhitespaceOnly(txtQuantity.getText())) {
+				btnAddToCart.setEnabled(false);
+			}
+			else {
+				btnAddToCart.setEnabled(true);
 			}
 		}
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource().equals(this)) {
+			tblItemSelection.clearSelection();
+			tblItemSelection.transferFocusUpCycle();
+			
+			tblCart.clearSelection();
+			
+			txtQuantity.setEditable(false);
+			txtQuantity.setBackground(new Color(238, 238, 238));
+			txtQuantity.setText("");
+			
+			btnAddToCart.setEnabled(false);
+		}
+		else if(e.getSource().equals(tblCart)) {
+			tblItemSelection.clearSelection();
+			tblItemSelection.transferFocusUpCycle();
+			
+			btnAddToCart.setEnabled(false);
+		}
+		else if(e.getSource().equals(tblItemSelection)) {
+			tblCart.clearSelection();
+			tblCart.transferFocusUpCycle();
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
 		
 	}
 	
+	@Override
+	public void focusGained(FocusEvent e) {
+		if(e.getSource().equals(txtSearch)) {
+			tblItemSelection.clearSelection();
+			
+			tblCart.clearSelection();
+			
+			txtQuantity.setText("");
+			txtQuantity.setEditable(false);
+			txtQuantity.setBackground(new Color(238, 238, 238));
+			
+			btnAddToCart.setEnabled(false);
+		}
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+
+	}
+	
+	public void valueChanged(ListSelectionEvent e) {
+		if(e.getSource().equals(tblItemSelection.getSelectionModel())) {
+			txtQuantity.setEditable(true);
+			txtQuantity.setBackground(Color.WHITE);
+			txtQuantity.setText("");
+			lblItemSelectionError.setText("");
+		}
+	}
 }

@@ -41,10 +41,13 @@ public class RestockPanel extends JFrame implements ActionListener{
 	private JLabel lblQuantityError = new JLabel("");
 	private JLabel lblExpiryDate = new JLabel("Expiry Date:");
 	private JLabel lblExpiryDateError = new JLabel("");
+	private JLabel lblLotNumber = new JLabel("Lot Number:");
+	private JLabel lblLotNumberError = new JLabel("");
 	private JTextField txtProductName = new JTextField();
 	private JTextField txtQuantity = new JTextField();
 	private JTextField txtBuyingPrice = new JTextField();
 	private JTextField txtSellingPrice = new JTextField();
+	private JTextField txtLotNumber = new JTextField();
 	private JComboBox cboExpiryYear = new JComboBox();
 	private JComboBox cboExpiryMonth = new JComboBox();
 	private JButton btnRestock = new JButton("Restock");
@@ -52,18 +55,16 @@ public class RestockPanel extends JFrame implements ActionListener{
 	private JCheckBox chckbxUpdateBuyingPrice = new JCheckBox("Update");
 	private JCheckBox chckbxUpdateSellingPrice = new JCheckBox("Update");
 	private Component verticalGlue = Box.createVerticalGlue();
-	
-	//MANAGERS
-	private ProductManager pm;
-	private BatchManager bm;
-	
+
 	//OTHER VARIABLES
 	private ArrayList<String> yearList = new ArrayList<String>();
 	private int productID;
 	
+	//MANAGERS
+	private ProductManager pm = new ProductManager();
+	private BatchManager bm = new BatchManager();
+	
 	public RestockPanel(int productID){
-		 pm = new ProductManager();
-		 bm = new BatchManager();
 		this.productID = productID;
 		
 		setTitle("Restock Product");
@@ -116,6 +117,13 @@ public class RestockPanel extends JFrame implements ActionListener{
 		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtQuantity.setColumns(10);
 		
+		lblLotNumber.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		
+		txtLotNumber.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtLotNumber.setColumns(10);
+		
+		lblLotNumberError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+		
 		lblQuantityError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
 		lblExpiryDate.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
@@ -141,7 +149,7 @@ public class RestockPanel extends JFrame implements ActionListener{
 		btnRestock.addActionListener(this);
 		
 		panel.setBackground(Color.WHITE);
-		panel.setLayout(new MigLayout("", "[][grow]", "[][][][][][][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[][grow]", "[][][][][][][][][][][][][][][][]"));
 		panel.add(lblRestockProductTitle, "cell 0 0 2 1");
 		panel.add(verticalGlue, "cell 0 1");
 		panel.add(lblProductName, "cell 0 2,alignx right,growy");
@@ -157,12 +165,15 @@ public class RestockPanel extends JFrame implements ActionListener{
 		panel.add(lblQuantity, "cell 0 8,alignx trailing,growy");
 		panel.add(txtQuantity, "cell 1 8,alignx left,aligny center");
 		panel.add(lblQuantityError, "cell 1 9,aligny top");
-		panel.add(lblExpiryDate, "cell 0 10,alignx trailing,growy");
-		panel.add(cboExpiryMonth, "flowx,cell 1 10,alignx left,aligny center");
-		panel.add(cboExpiryYear, "cell 1 10,aligny center");
-		panel.add(lblExpiryDateError, "cell 1 11,aligny top");
-		panel.add(verticalStrut, "cell 0 12");
-		panel.add(btnRestock, "cell 0 13 2 1,alignx right,growy");
+		panel.add(lblLotNumber, "cell 0 10,alignx trailing");
+		panel.add(txtLotNumber, "cell 1 10,alignx left");
+		panel.add(lblLotNumberError, "cell 1 11");
+		panel.add(lblExpiryDate, "cell 0 12,alignx trailing,growy");
+		panel.add(cboExpiryMonth, "flowx,cell 1 12,alignx left,aligny center");
+		panel.add(cboExpiryYear, "cell 1 12,aligny center");
+		panel.add(lblExpiryDateError, "cell 1 13,aligny top");
+		panel.add(verticalStrut, "cell 0 14");
+		panel.add(btnRestock, "cell 0 15 2 1,alignx right,growy");
 		panel.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{txtQuantity, cboExpiryMonth, cboExpiryYear, btnRestock, chckbxUpdateBuyingPrice, txtBuyingPrice, chckbxUpdateSellingPrice, txtSellingPrice}));
 
 		pack();
@@ -280,6 +291,16 @@ public class RestockPanel extends JFrame implements ActionListener{
 			}
 		}
 		
+		if(StringUtils.isEmptyOrWhitespaceOnly(txtLotNumber.getText())) {
+			lblLotNumberError.setText("Product must have a lot number.");
+			txtLotNumber.setBackground(Color.YELLOW);
+			valid = false;
+		}
+		else {
+			lblLotNumberError.setText("");
+			txtLotNumber.setBackground(Color.WHITE);
+		}
+		
 		if(cboExpiryMonth.getSelectedIndex() == 0) {
 			cboExpiryMonth.setBackground(Color.YELLOW);
 			valid = false;
@@ -308,7 +329,6 @@ public class RestockPanel extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
 		if(e.getSource().equals(chckbxUpdateBuyingPrice)) {
 			if(chckbxUpdateBuyingPrice.isSelected()) {
 				txtBuyingPrice.setEditable(true);
@@ -339,16 +359,15 @@ public class RestockPanel extends JFrame implements ActionListener{
 		}
 		else if(e.getSource().equals(btnRestock)) {
 			if(allValidInputs()) {
-
-				 pm = new ProductManager();
-				 bm = new BatchManager();
-				 
 				int quantity = getQuantity();
 				float buyingPrice = Float.parseFloat(txtBuyingPrice.getText());
+				float sellingPrice = Float.parseFloat(txtSellingPrice.getText());
 				int expiryMonth = getExpiryMonth();
 				int expiryYear = getExpiryYear();
+				String lotNumber = getLotNumber();
 				
-				bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear);
+				pm.setSellingPrice(productID, sellingPrice);
+				bm.restockBatch(productID, quantity, buyingPrice, expiryMonth, expiryYear, lotNumber);
 				
 				RestockSuccessDialog rsd = new RestockSuccessDialog(pm.getProductName(productID), quantity);
 				
@@ -369,6 +388,10 @@ public class RestockPanel extends JFrame implements ActionListener{
 	
 	private int getQuantity() {
 		return Integer.parseInt(txtQuantity.getText());
+	}
+	
+	private String getLotNumber() {
+		return txtLotNumber.getText();
 	}
 	
 	private int getExpiryMonth() {

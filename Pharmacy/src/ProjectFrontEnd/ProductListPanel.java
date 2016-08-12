@@ -109,7 +109,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 	
 		btnDiscontinue.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		btnDiscontinue.setBackground(Color.WHITE);
-		btnDiscontinue.setForeground(Color.DARK_GRAY);
+		btnDiscontinue.setForeground(Color.BLACK);
 		btnDiscontinue.addActionListener(this);
 		btnDiscontinue.setEnabled(false);
 		
@@ -118,7 +118,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 		
 		btnRestock.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		btnRestock.setBackground(Color.WHITE);
-		btnRestock.setForeground(Color.DARK_GRAY);
+		btnRestock.setForeground(Color.BLACK);
 		btnRestock.addActionListener(this);
 		btnRestock.setEnabled(false);
 		
@@ -148,7 +148,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 	private void loadBatchList() {
 		ArrayList<Integer> id;
 		DefaultTableModel batchListTableModel = new DefaultTableModel();
-		batchListTableModel.setColumnIdentifiers(new String[] {"BatchID", "Entry Date", "Quantity", "Buying Price", "Expiry Date"});
+		batchListTableModel.setColumnIdentifiers(new String[] {"Lot No.", "Entry Date", "Quantity", "Buying Price", "Expiry Date"});
 		
 		if(tblProductList.getSelectedRow() != -1) {
 			id = bm.getBatchIDList(pm.getProductID(tblProductList.getSelectedRow(), txtSearch.getText().trim()));
@@ -163,27 +163,45 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 			String entryDate = "";
 
 			switch(entryDateTemp.getMonth()) {
-			case 0: entryDate += "Jan "; break;
-			case 1: entryDate += "Feb "; break;
-			case 2: entryDate += "Mar "; break;
-			case 3: entryDate += "Apr "; break;
-			case 4: entryDate += "May "; break;
-			case 5: entryDate += "Jun "; break;
-			case 6: entryDate += "Jul "; break;
-			case 7: entryDate += "Aug "; break;
-			case 8: entryDate += "Sep "; break;
-			case 9: entryDate += "Oct "; break;
-			case 10: entryDate += "Nov "; break;
-			case 11: entryDate += "Dec "; break;
+				case 1: entryDate += "Jan "; break;
+				case 2: entryDate += "Feb "; break;
+				case 3: entryDate += "Mar "; break;
+				case 4: entryDate += "Apr "; break;
+				case 5: entryDate += "May "; break;
+				case 6: entryDate += "Jun "; break;
+				case 7: entryDate += "Jul "; break;
+				case 8: entryDate += "Aug "; break;
+				case 9: entryDate += "Sep "; break;
+				case 10: entryDate += "Oct "; break;
+				case 11: entryDate += "Nov "; break;
+				case 12: entryDate += "Dec "; break;
 			}
 			
 			entryDate += String.format("%02d", entryDateTemp.getDate()) + ", " + (entryDateTemp.getYear() + 1900);
 			
+			String lotNumber = bm.getLotNumber(i);
 			String quantity = bm.getEachBatchQuantity(i) + "";
-			String buyingPrice = "₱" + String.format("%.2f", bm.getBuyingPrice(i));
-			String expiryDate = bm.getExpiryMonth(i) + "-" + bm.getExpiryYear(i);
+			String buyingPrice = "P" + String.format("%.2f", bm.getBuyingPrice(i));
+			String expiryDate = "";
 			
-			batchListTableModel.addRow(new Object[] {batchID, entryDate, quantity, buyingPrice, expiryDate});
+			switch(bm.getExpiryMonth(i)) {
+				case 1: expiryDate += "Jan "; break;
+				case 2: expiryDate += "Feb "; break;
+				case 3: expiryDate += "Mar "; break;
+				case 4: expiryDate += "Apr "; break;
+				case 5: expiryDate += "May "; break;
+				case 6: expiryDate += "Jun "; break;
+				case 7: expiryDate += "Jul "; break;
+				case 8: expiryDate += "Aug "; break;
+				case 9: expiryDate += "Sep "; break;
+				case 10: expiryDate += "Oct "; break;
+				case 11: expiryDate += "Nov "; break;
+				case 12: expiryDate += "Dec "; break;
+			}
+			
+			expiryDate += bm.getExpiryYear(i);
+			
+			batchListTableModel.addRow(new Object[] {lotNumber, entryDate, quantity, buyingPrice, expiryDate});
 		}
 		
 		tblBatchList.setModel(batchListTableModel);
@@ -216,7 +234,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 
 		for(int i : id) {
 			String productName = pm.getProductName(i);
-			String sellingPrice = "₱" + String.format("%.2f", pm.getSellingPrice(i));
+			String sellingPrice = "P" + String.format("%.2f", pm.getSellingPrice(i));
 			String quantity = bm.getTotalQuantity(i) + "";
 			
 			productListTableModel.addRow(new Object[] {productName, sellingPrice, quantity});
@@ -263,19 +281,34 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 				}
 			});
 		}
+		else if(e.getSource().equals(btnDiscontinue)) {
+			int productID = pm.getProductID(tblProductList.getSelectedRow(), txtSearch.getText());
+			
+			pm.setDiscontinued(productID, true);
+			
+			loadProductList();
+		}
 	}
 	
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if(e.getSource().equals(tblProductList.getSelectionModel())) {
-			btnRestock.setEnabled(true);
-			btnDiscontinue.setEnabled(true);
-			loadBatchList();
+			if(tblProductList.getSelectedRow() == -1) {
+				btnRestock.setEnabled(false);
+				btnDiscontinue.setEnabled(false);
+				loadBatchList();
+			}
+			else {
+				btnRestock.setEnabled(true);
+				btnDiscontinue.setEnabled(true);
+				loadBatchList();
+			}
 		}
 	}
 	
 	public void update() {
 		loadProductList();
+		loadBatchList();
 		btnRestock.setEnabled(false);
 		btnDiscontinue.setEnabled(false);
 		txtSearch.grabFocus();
@@ -289,6 +322,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 				tblProductList.transferFocusUpCycle();
 				btnRestock.setEnabled(false);
 				btnDiscontinue.setEnabled(false);
+				loadBatchList();
 			} 
 		}
 		else if(e.getSource().equals(scrBatchList)) {
@@ -297,6 +331,7 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 				tblProductList.transferFocusUpCycle();
 				btnRestock.setEnabled(false);
 				btnDiscontinue.setEnabled(false);
+				loadBatchList();
 			}
 		}
 	}

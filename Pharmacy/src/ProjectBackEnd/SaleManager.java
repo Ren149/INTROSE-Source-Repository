@@ -1,3 +1,4 @@
+//MILESTONE
 package ProjectBackEnd;
 
 import java.sql.PreparedStatement;
@@ -67,30 +68,6 @@ public class SaleManager {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-    
-    //to be deleted
-    
-
-    //to be deleted
-    public void recordLineItem(ArrayList<String> prodNameList)
-	{
-            SaleManager saleManage = new SaleManager();
-            ProductManager prodManage = new ProductManager();
-                for(int i=0; i < prodNameList.size(); i++){
-		PreparedStatement ps;
-		
-		String sQuery = "INSERT INTO line_item(salesID, productID)"
-						+ "VALUES('"+(saleManage.getLatestSalesID()+1)+"','"+ prodManage.getProductID(prodNameList.get(i))+"')";
-
-		try {
-			ps = con.getConnection().prepareStatement(sQuery);
-			ps.executeUpdate(sQuery);
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-                }
 	}
 
 }

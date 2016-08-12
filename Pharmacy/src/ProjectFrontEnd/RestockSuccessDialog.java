@@ -24,11 +24,13 @@ public class RestockSuccessDialog extends JFrame implements ActionListener {
 		setTitle("Restock Success");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBackground(Color.WHITE);
+		
+		
 		getContentPane().setLayout(new CardLayout(10, 10));
 		
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, "name_43730872969978");
-		panel.setLayout(new MigLayout("", "[213px]", "[15px][23px]"));
+		panel.setLayout(new MigLayout("", "[]", "[][]"));
 		panel.add(lblPrompt, "cell 0 0,alignx center,aligny top");
 		
 		lblPrompt.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));

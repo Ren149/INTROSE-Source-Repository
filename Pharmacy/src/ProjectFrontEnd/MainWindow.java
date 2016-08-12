@@ -1,3 +1,4 @@
+//MILESTONE
 package ProjectFrontEnd;
 
 import java.awt.CardLayout;
@@ -57,6 +58,7 @@ public class MainWindow extends JFrame implements ActionListener{
 		getContentPane().setLayout(new CardLayout(10, 10));
 		getContentPane().add("SALE", salePanel);
 		getContentPane().add("PRODUCT_LIST", productListPanel);
+		getContentPane().add("EXPIRY_LIST", expiryListPanel);
 		
 		pack();
 		setLocationRelativeTo(null);
@@ -83,10 +85,12 @@ public class MainWindow extends JFrame implements ActionListener{
 		}
 		else if(e.getSource().equals(btnExpiryList)) {
 			expiryListPanel.update();
+			((CardLayout)getContentPane().getLayout()).show(getContentPane(), "EXPIRY_LIST");
 			btnSale.setBackground(Color.WHITE);
 			btnProductList.setBackground(Color.WHITE);
 			btnExpiryList.setBackground(selectedButtonColor);
 			btnReorderList.setBackground(Color.WHITE);
+			
 		}
 		else if(e.getSource().equals(btnReorderList)) {
 			//reorderListPanel.update();
