@@ -15,6 +15,7 @@ import javax.swing.JMenuBar;
 public class MainWindow extends JFrame implements ActionListener{
 	private ProductListPanel productListPanel = new ProductListPanel();
 	private SalePanel salePanel = new SalePanel();
+	private ReorderListPanel reorderListPanel = new ReorderListPanel();
 	private ExpiryPanel expiryListPanel = new ExpiryPanel();
 	private JButton btnSale = new JButton("Sale");
 	private JButton btnProductList = new JButton("Product List");
@@ -59,6 +60,7 @@ public class MainWindow extends JFrame implements ActionListener{
 		getContentPane().add("SALE", salePanel);
 		getContentPane().add("PRODUCT_LIST", productListPanel);
 		getContentPane().add("EXPIRY_LIST", expiryListPanel);
+		getContentPane().add("REORDER_LIST", reorderListPanel);
 		
 		pack();
 		setLocationRelativeTo(null);
@@ -94,6 +96,7 @@ public class MainWindow extends JFrame implements ActionListener{
 		}
 		else if(e.getSource().equals(btnReorderList)) {
 			//reorderListPanel.update();
+			((CardLayout)getContentPane().getLayout()).show(getContentPane(), "REORDER_LIST");
 			btnSale.setBackground(Color.WHITE);
 			btnProductList.setBackground(Color.WHITE);
 			btnExpiryList.setBackground(Color.WHITE);
