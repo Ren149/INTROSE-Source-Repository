@@ -279,6 +279,38 @@ public class ProductManager {
 		return null;
 	}
 	
+	public ArrayList<Integer> getProductIDList(int startmonth, int endmonth) {	
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT DISTINCT b.productID "
+				+ "FROM products p, batch b "
+				+ "WHERE p.isDiscontinued = false "
+				+ "AND b.expiry_month >= " + startmonth + " AND b.expiry_month <= " +endmonth + " ;";
+		ArrayList<Integer> productIDList = new ArrayList<>();
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				productIDList.add(rs.getInt(1));
+			}
+			
+			con.disconnect();
+
+			rs.close();
+			
+			return productIDList;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	
 	public boolean checkDuplicates(String productname) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;

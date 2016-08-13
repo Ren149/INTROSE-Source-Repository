@@ -113,14 +113,16 @@ public class ExpiryPanel extends JPanel implements ItemListener {
 		ArrayList<Integer> id;
 		DefaultTableModel expiryListTableModel = new DefaultTableModel();
 		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Expiry Date", "Quantity"});
-		int monthdistance = currentDate.getMonthValue();
 		if(distanceReceived == true)
 		{
+			int monthdistance = currentDate.getMonthValue();
 			monthdistance += cboMonth.getSelectedIndex()+1;
 			if(monthdistance > 12)
 				monthdistance -= 12;
+			id = pm.getProductIDList(currentDate.getMonthValue(), monthdistance);
 		}
-			id = pm.getProductIDList(monthdistance);
+		else
+			id = pm.getProductIDList(currentDate.getMonthValue());
 			
 			for(int i : id) {
 				String productName = pm.getProductName(i);
