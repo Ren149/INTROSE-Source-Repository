@@ -3,8 +3,11 @@ package ProjectFrontEnd;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
@@ -39,6 +42,8 @@ public class ExpiryPanel extends JPanel implements ItemListener {
 	private final JComboBox comboBox = new JComboBox();
 	private final JComboBox cboMonth = new JComboBox();
 	private final JLabel lblMonths = new JLabel("month");
+	private LocalDate currentDate = LocalDate.now();
+	private boolean distanceReceived = false;
 	
 	public ExpiryPanel() {
 		setBackground(Color.WHITE);
@@ -55,12 +60,18 @@ public class ExpiryPanel extends JPanel implements ItemListener {
 
 		rdbtnThisMonth.setBackground(Color.WHITE);
 		rdbtnThisMonth.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		rdbtnThisMonth.setActionCommand("This month");
+		rdbtnThisMonth.setSelected(true);
 		
 		rdbtnWithinTheNext.setBackground(Color.WHITE);
 		rdbtnWithinTheNext.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		rdbtnWithinTheNext.setActionCommand("Within the next");
+		rdbtnWithinTheNext.setSelected(false);
 
 		buttonGroup.add(rdbtnThisMonth);
 		buttonGroup.add(rdbtnWithinTheNext);
+		rdbtnThisMonth.addItemListener(this);
+		rdbtnWithinTheNext.addItemListener(this);
 		
 		cboMonth.setBackground(Color.WHITE);
 		cboMonth.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"}));
@@ -77,15 +88,39 @@ public class ExpiryPanel extends JPanel implements ItemListener {
 		add(cboMonth, "cell 0 1,growy");
 		add(lblMonths, "cell 0 1,growy");
 		
-		loadExpiryList();
+
+
+		rdbtnThisMonth.addActionListener(new ActionListener() {
+	        @Override
+			public void actionPerformed(ActionEvent arg0) {
+				distanceReceived = false;
+				update();
+				
+			}
+	    });
+
+		rdbtnWithinTheNext.addActionListener(new ActionListener(){
+	        @Override
+			public void actionPerformed(ActionEvent arg0) {
+				distanceReceived = true;
+				update();
+				
+			}
+	    });
 	}
 	
-	public void loadExpiryList() {
+	public void loadExpiryList(boolean distanceReceived) {
 		ArrayList<Integer> id;
 		DefaultTableModel expiryListTableModel = new DefaultTableModel();
 		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Expiry Date", "Quantity"});
-		
-			id = pm.getProductIDList(1);
+		int monthdistance = currentDate.getMonthValue();
+		if(distanceReceived == true)
+		{
+			monthdistance += cboMonth.getSelectedIndex()+1;
+			if(monthdistance > 12)
+				monthdistance -= 12;
+		}
+			id = pm.getProductIDList(monthdistance);
 			
 			for(int i : id) {
 				String productName = pm.getProductName(i);
@@ -95,20 +130,19 @@ public class ExpiryPanel extends JPanel implements ItemListener {
 				String expiryDate = "";
 				
 				switch(bm.getExpiryMonth(i)) {
-					case 0: expiryDate += "Jan "; break;
-					case 1: expiryDate += "Feb "; break;
-					case 2: expiryDate += "Mar "; break;
-					case 3: expiryDate += "Apr "; break;
-					case 4: expiryDate += "May "; break;
-					case 5: expiryDate += "Jun "; break;
-					case 6: expiryDate += "Jul "; break;
-					case 7: expiryDate += "Aug "; break;
-					case 8: expiryDate += "Sep "; break;
-					case 9: expiryDate += "Oct "; break;
-					case 10: expiryDate += "Nov "; break;
-					case 11: expiryDate += "Dec "; break;
+					case 1: expiryDate += "Jan "; break;
+					case 2: expiryDate += "Feb "; break;
+					case 3: expiryDate += "Mar "; break;
+					case 4: expiryDate += "Apr "; break;
+					case 5: expiryDate += "May "; break;
+					case 6: expiryDate += "Jun "; break;
+					case 7: expiryDate += "Jul "; break;
+					case 8: expiryDate += "Aug "; break;
+					case 9: expiryDate += "Sep "; break;
+					case 10: expiryDate += "Oct "; break;
+					case 11: expiryDate += "Nov "; break;
+					case 12: expiryDate += "Dec "; break;
 				}
-				
 				expiryDate += bm.getExpiryYear(i);
 				
 				expiryListTableModel.addRow(new Object[] {productName, lotnumber, expiryDate, quantity});
@@ -137,21 +171,24 @@ public class ExpiryPanel extends JPanel implements ItemListener {
 		}
 	
 	public void update() {
-		loadExpiryList();
+		loadExpiryList(distanceReceived);
 	}
-
+	
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource().equals(cboMonth)) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
+				rdbtnWithinTheNext.setSelected(true);
 				if(cboMonth.getSelectedIndex() == 0) {
 					lblMonths.setText("month");
+					update();
 				}
 				else {
 					lblMonths.setText("months");
+					update();
 				}
-			}
 		}
+	}
 	}
 }
