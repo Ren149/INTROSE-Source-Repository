@@ -1,4 +1,4 @@
-﻿//MILESTONE
+//MILESTONE
 package ProjectFrontEnd;
 
 import java.awt.Color;
@@ -43,6 +43,7 @@ import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.LineItemManager;
 import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
+import java.util.Calendar;
 import net.miginfocom.swing.MigLayout;
 
 public class SalePanel extends JPanel implements ActionListener, ListSelectionListener, KeyListener, MouseListener, FocusListener {
@@ -178,8 +179,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	
 		loadItemSelection();
 		loadCart();
-		
-		
+             
 	}
 	
 	public void update() {
@@ -356,16 +356,25 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         }
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
-            	/*
-            	 
-            	String preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(spinner.getValue());
 
-        		Date today = new Date();
-        		String date1 = new SimpleDateFormat("yyyy-MM-dd").format(today);
-        		
-            	if(date1.compareTo(preferreddate) != -1){
-	            	int prodID, prodQty;
-	            	
+                        String preferreddate = "";
+                        Date today = new Date();
+                        
+                        String timeCheck = new SimpleDateFormat("HH:mm:ss").format(today);
+                        
+                        if(timeCheck.compareTo("18:00:00") < 0){
+                            preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                        }
+                        else{
+                            Date nextDay = new Date();
+                            Calendar c = Calendar.getInstance(); 
+                            c.setTime(nextDay); 
+                            c.add(Calendar.DATE, 1);
+                            nextDay = c.getTime();
+                            preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
+                        }
+                
+	            	int prodID, prodQty;       	
 	            	//Reduce Batch Qty
 	            	for(int i = 0; i < prodNameList.size(); i++){
 	            		prodID = pm.getProductID(prodNameList.get(i));
@@ -402,13 +411,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	                sum = 0;
 	                loadCart();
 	                //tblSaleSearch.setModel(pm.viewProducts());
-            	}
-            	else{
-            		//INSERT FEEDBACK IF INVALID DATE HERE
-        			
-            	}
-            	
-            	*/
+            	            	
             }
         }
         lblTotalValue.setText(String.valueOf(sum));
