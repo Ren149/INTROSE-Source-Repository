@@ -56,7 +56,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	private JLabel lblItemCount = new JLabel("");
 	private JLabel lblItemSelectionError = new JLabel("");
 	private JLabel lblQuantity = new JLabel("Quantity:");
-	private JLabel lblSalesDate = new JLabel("Sales Date:");
 	private JLabel lblTotal = new JLabel("Total:");
 	private JLabel lblTotalValue = new JLabel("0.00");
 	private JLabel lblAddToCartTitle = new JLabel("Item Selection");
@@ -64,7 +63,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton btnRemove = new JButton("Remove");
 	private JButton btnAddToCart = new JButton("Add to Cart");
 	private JButton btnRecord = new JButton("Record");
-	private JSpinner spinner = new JSpinner();
     private JSeparator separator_1 = new JSeparator();
     private Box horizontalBox = Box.createHorizontalBox();
     private Box horizontalBox_1 = Box.createHorizontalBox();
@@ -110,8 +108,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		tblItemSelection.addKeyListener(this);
 		tblItemSelection.addMouseListener(this);
 		
-		lblSalesDate.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		
 		btnRemove.setToolTipText("This button deletes any selected item on the cart.");
 		btnRemove.setForeground(new Color(0, 0, 0));
 		btnRemove.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
@@ -153,11 +149,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		
 		lblTotalValue.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		
-		spinner.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-		spinner.setModel(new SpinnerDateModel());
-		spinner.setEditor(new JSpinner.DateEditor(spinner, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
-		spinner.setSize(new Dimension(30, 15));
-		
 		txtQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtQuantity.setColumns(5);
 		txtQuantity.setEditable(false);
@@ -168,7 +159,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		add(lblAddToCartTitle, "cell 0 0 2 1");
 		add(lblCartTitle, "cell 3 0");
 		add(horizontalBox, "flowx,cell 0 1 2 1,grow");
-		add(lblSalesDate, "flowx,cell 3 1");
 		add(btnRemove, "cell 4 0 1 2,aligny bottom");
 		add(lblItemCount, "cell 0 2 2 1");
 		add(scrollPaneItemSelection, "cell 0 3 2 1,grow");
@@ -180,7 +170,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		add(horizontalBox_1, "flowx,cell 0 6 2 1,alignx right");
 		add(btnRecord, "flowx,cell 3 6 2 1,alignx right");
 		add(lblTotalValue, "cell 4 4,alignx right");
-		add(spinner, "cell 3 1,growy");
 		add(txtQuantity, "cell 1 4,alignx right");
 		add(scrollPaneCart, "cell 3 2 2 2,grow");
 		addMouseListener(this);
@@ -367,6 +356,8 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         }
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
+            	/*
+            	 
             	String preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(spinner.getValue());
 
         		Date today = new Date();
@@ -416,6 +407,8 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
             		//INSERT FEEDBACK IF INVALID DATE HERE
         			
             	}
+            	
+            	*/
             }
         }
         lblTotalValue.setText(String.valueOf(sum));
