@@ -1,5 +1,4 @@
-﻿//MILESTONE
-package ProjectFrontEnd;
+﻿package ProjectFrontEnd;
 
 import java.awt.Color;
 import java.awt.Component;
