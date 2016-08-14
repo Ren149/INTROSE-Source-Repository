@@ -44,7 +44,6 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	private JComboBox cboMonth = new JComboBox();
 	private JLabel lblMonths = new JLabel("month");
 	private LocalDate currentDate = LocalDate.now();
-	private boolean distanceReceived = false;
 	private JButton btnRemove = new JButton("Remove");
 	
 	private ArrayList<Integer> id;
@@ -68,12 +67,14 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		rdbtnThisMonth.setActionCommand("This month");
 		rdbtnThisMonth.setSelected(true);
 		rdbtnThisMonth.addActionListener(this);
+		rdbtnThisMonth.addItemListener(this);
 		
 		rdbtnWithinTheNext.setBackground(Color.WHITE);
 		rdbtnWithinTheNext.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		rdbtnWithinTheNext.setActionCommand("Within the next");
 		rdbtnWithinTheNext.setSelected(false);
 		rdbtnWithinTheNext.addActionListener(this);
+		rdbtnWithinTheNext.addItemListener(this);
 
 		buttonGroup.add(rdbtnThisMonth);
 		buttonGroup.add(rdbtnWithinTheNext);
@@ -100,51 +101,20 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		add(lblMonths, "cell 0 1,growy");
 		add(btnRemove, "cell 1 3,alignx right");
 		
-		//loadExpiryList();
 	}
 	
-	private void loadExpiryList(boolean distanceReceived) {
+	private void loadExpiryList() {
 		DefaultTableModel expiryListTableModel = new DefaultTableModel();
 		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Expiry Date", "Quantity"});
 		
-		/*
-		 *   Write a query in the batch manager that accepts month distance
-		 *   and returns an ArrayList of batch ids whose expiry dates
-		 *   fall from this month to x months from now.
-		 *   Can you at least name that query something clearer,
-		 *   not just getProductIDList.
-		 *   
-		 *   It doesn't even get the ProductIDs, but the BatchIDs.
-		 *   Name it something like getExpiredBatchIDList(int month)
-		 *   
-		 * if(rdbtnThisMonth.isSelected()) {
-		 *   Use that query, accepting 0 as parameter.  
-		 * }
-		 * else {
-		 *   Use that getExpiredBatchIDList(month), accepting the parsed integer from cboMonth, I don't recommend using the index.
-		 *   If the query accepts 1, the manager must return the ids of batches whose expiry fall are either
-		 *   this month or next month.
-		 * }
-		 * 
-		 * 
-		 * And then remove this distanceReceived fluff from here...
-		 */
+
+		 if(rdbtnThisMonth.isSelected()) {
+			 id = bm.getExpiredBatchIDList(0);
+		 }
+		 else{
+			 id = bm.getExpiredBatchIDList(Integer.parseInt((String) cboMonth.getSelectedItem()));
+		  }
 		
-		if(distanceReceived == true) {
-			int monthdistance = currentDate.getMonthValue();
-			monthdistance += cboMonth.getSelectedIndex()+1;
-			if(monthdistance > 12)
-				monthdistance -= 12;
-			id = pm.getProductIDList(currentDate.getMonthValue(), monthdistance);
-		}
-		else {
-			id = pm.getProductIDList(currentDate.getMonthValue());
-		}
-		
-		/*
-		 * to here.
-		 */
-			
 		for(int i : id) {
 			String productName = pm.getProductName(i);
 			String lotnumber = bm.getLotNumber(i);
@@ -188,7 +158,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	}
 	
 	public void update() {
-		loadExpiryList(distanceReceived);
+		loadExpiryList();
 	}
 	
 	@Override
@@ -206,14 +176,23 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 				}
 			}
 		}
+		else if(e.getSource().equals(rdbtnThisMonth))
+		{
+			update();			
+		}
+		else if(e.getSource().equals(rdbtnWithinTheNext))
+		{
+			update();
+		}
+		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnRemove)) {
-			//get batch id of selected batch from ArrayList id.
-			//calls the batch manager to empty the batch by setting quantity_left to 0, maybe call it emptyBatch(int batchID)
-			//update();
+			int batchID = bm.getBatchID(tblExpiryList.getSelectedRow());
+			bm.emptyBatch(batchID);
+			update();
 		}
 	}
 
@@ -225,7 +204,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 				btnRemove.setBackground(Color.WHITE);
 				btnRemove.setForeground(Color.BLACK);
 			}
-			else {
+			else {				
 				btnRemove.setEnabled(true);
 				btnRemove.setBackground(new Color(51, 204, 0));
 				btnRemove.setForeground(Color.WHITE);
