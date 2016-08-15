@@ -9,6 +9,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -31,6 +33,8 @@ import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.ListSelectionModel;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.Component;
 
 public class ExpiryPanel extends JPanel implements ItemListener, ActionListener, ListSelectionListener, MouseListener {
 	private JTable tblExpiryList = new JTable();;
@@ -111,18 +115,17 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		DefaultTableModel expiryListTableModel = new DefaultTableModel();
 		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Expiry Date", "Quantity"});
 		
-
 		 if(rdbtnThisMonth.isSelected()) {
 			 id = bm.getExpiredBatchIDList(0);
 		 }
 		 else{
 			 id = bm.getExpiredBatchIDList(Integer.parseInt((String) cboMonth.getSelectedItem()));
-		  }
+		 }
 		
 		for(int i : id) {
-			String productName = pm.getProductName(i);
+			String productName = pm.getProductName(bm.getProductID(i));
 			String lotnumber = bm.getLotNumber(i);
-			String quantity = bm.getTotalQuantity(i) + "";
+			String quantity = bm.getTotalQuantity(bm.getProductID(i)) + "";
 			String expiryDate = "";
 			
 			switch(bm.getExpiryMonth(i)) {
@@ -184,7 +187,13 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnRemove)) {
 			int batchID = id.get(tblExpiryList.getSelectedRow());
+			
 			ExpiryRemoveDialog erd = new ExpiryRemoveDialog(batchID);
+			erd.addWindowListener(new WindowAdapter(){
+			    public void windowClosed(WindowEvent e) {
+					loadExpiryList();
+			    }
+			});
 		}
 		else if(e.getSource().equals(rdbtnThisMonth)) {
 			cboMonth.setEnabled(false);
