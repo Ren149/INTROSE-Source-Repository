@@ -272,21 +272,17 @@ public class BatchManager {
 		ResultSet rs;
 		String sQuery;
 		LocalDate currentDate = LocalDate.now();
-		int monthCalculate = currentDate.getMonthValue() + month ;
-			
-		
-		if(month == 0)
-		
-		sQuery = "SELECT DISTINCT b.batchID "
-				+ "FROM batch b "
-				+ "WHERE b.expiry_month = " + currentDate.getMonthValue()+ ";";
-		
-		else
-				sQuery = "SELECT DISTINCT b.batchID "
-							+ "FROM batch b "
-							+ "WHERE b.expiry_month >= " + currentDate.getMonthValue() + " AND b.expiry_month <= " + monthCalculate + " ;";
-		
+		int monthIterator = currentDate.getMonthValue();
+		int yearIterator = 2018;
 		ArrayList<Integer> productIDList = new ArrayList<>();
+			
+		do
+		{
+		   sQuery = "SELECT DISTINCT b.batchID "
+					+ "FROM batch b "
+					+ "WHERE b.expiry_month = " + monthIterator 
+					+ " AND b.expiry_year = " + yearIterator + ";";
+		
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
@@ -297,16 +293,21 @@ public class BatchManager {
 				productIDList.add(rs.getInt(1));
 			}
 			
-			con.disconnect();
 
-			rs.close();
-			
-			return productIDList;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-
-		return null;
+		if(monthIterator > 12)
+		{
+		      yearIterator++;
+		      monthIterator = 1;					
+		}
+		else
+		   monthIterator++;
+		   month--;
+		}while(month > 0);
+		con.disconnect();
+		return productIDList;
 	}
 	
 	
