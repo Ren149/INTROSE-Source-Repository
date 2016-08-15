@@ -297,15 +297,14 @@ public class BatchManager {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		   monthIterator++;
 		if(monthIterator > 12)
 		{
 		      yearIterator++;
 		      monthIterator = 1;					
 		}
-		else
-		   monthIterator++;
 		   month--;
-		}while(month > 0);
+		}while(month >= 0);
 		con.disconnect();
 		return productIDList;
 	}
