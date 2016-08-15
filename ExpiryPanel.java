@@ -183,8 +183,8 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnRemove)) {
-			int batchID = bm.getBatchID(tblExpiryList.getSelectedRow());
-			bm.emptyBatch(batchID);
+			int batchID = id.get(tblExpiryList.getSelectedRow());
+			ExpiryRemoveDialog erd = new ExpiryRemoveDialog(batchID);
 		}
 		else if(e.getSource().equals(rdbtnThisMonth)) {
 			cboMonth.setEnabled(false);
