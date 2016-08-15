@@ -205,6 +205,37 @@ public class BatchManager {
 		return 0;
 	}
 
+	public int getProductID (int batchID) {
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		int productID = 0;
+		String sQuery = "SELECT productID "
+				+ "FROM batch "
+				+ "WHERE batchID = " + batchID + ";";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+
+			if(rs.next()) {
+				productID = rs.getInt(1);
+			}
+			con.disconnect();
+
+			rs.close();
+			return productID;
+		}
+			
+			catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return productID;
+	}
+	
+
 	public int getBatchID (int row) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
@@ -281,7 +312,8 @@ public class BatchManager {
 		   sQuery = "SELECT DISTINCT b.batchID "
 					+ "FROM batch b "
 					+ "WHERE b.expiry_month = " + monthIterator 
-					+ " AND b.expiry_year = " + yearIterator + ";";
+					+ " AND b.expiry_year = " + yearIterator
+					+ " AND b.quantity_left > 0;";
 		
 
 		try {

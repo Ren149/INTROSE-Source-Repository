@@ -46,8 +46,7 @@ public class ExpiryRemoveDialog extends JFrame implements ActionListener {
 		panel.setLayout(new MigLayout("", "[][]", "[][][]"));
 		panel.add(lblPrompt, "cell 0 0,alignx center,aligny top");
 		
-		String productName = "TERIYAKI"; //initialize this with whatever name the product the batch refers to.
-		
+		String productName = pm.getProductName(bm.getProductID(batchID));
 		lblPrompt.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		lblPrompt.setText("<html>Do you want to remove<br>" + productName + " batch "
 				+ bm.getLotNumber(batchID) + "<br>from the inventory?</html>");
