@@ -273,7 +273,7 @@ public class BatchManager {
 		String sQuery;
 		LocalDate currentDate = LocalDate.now();
 		int monthIterator = currentDate.getMonthValue();
-		int yearIterator = 2018;
+		int yearIterator = currentDate.getYear();
 		ArrayList<Integer> productIDList = new ArrayList<>();
 			
 		do
