@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -28,8 +30,9 @@ import javax.swing.table.DefaultTableModel;
 import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.ListSelectionModel;
 
-public class ExpiryPanel extends JPanel implements ItemListener, ActionListener, ListSelectionListener {
+public class ExpiryPanel extends JPanel implements ItemListener, ActionListener, ListSelectionListener, MouseListener {
 	private JTable tblExpiryList = new JTable();;
 	private JLabel lblTitle = new JLabel("Expiry List");
 	private JScrollPane scrNearExpiredProducts = new JScrollPane();
@@ -54,6 +57,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		
 		lblTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
 		
+		tblExpiryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblExpiryList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblExpiryList.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblExpiryList.getSelectionModel().addListSelectionListener(this);
@@ -67,14 +71,12 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		rdbtnThisMonth.setActionCommand("This month");
 		rdbtnThisMonth.setSelected(true);
 		rdbtnThisMonth.addActionListener(this);
-		rdbtnThisMonth.addItemListener(this);
 		
 		rdbtnWithinTheNext.setBackground(Color.WHITE);
 		rdbtnWithinTheNext.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		rdbtnWithinTheNext.setActionCommand("Within the next");
 		rdbtnWithinTheNext.setSelected(false);
 		rdbtnWithinTheNext.addActionListener(this);
-		rdbtnWithinTheNext.addItemListener(this);
 
 		buttonGroup.add(rdbtnThisMonth);
 		buttonGroup.add(rdbtnWithinTheNext);
@@ -83,6 +85,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		cboMonth.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"}));
 		cboMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		cboMonth.addItemListener(this);
+		cboMonth.setEnabled(false);
 		
 		lblMonths.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 
@@ -97,10 +100,11 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		add(scrNearExpiredProducts, "cell 0 2 2 1,grow");
 		add(lblItemCount, "cell 1 1,alignx right,aligny bottom");
 		add(rdbtnWithinTheNext, "cell 0 1,growy");
-		add(cboMonth, "cell 0 1,growy");
+		add(cboMonth, "cell 0 1");
 		add(lblMonths, "cell 0 1,growy");
 		add(btnRemove, "cell 1 3,alignx right");
 		
+		addMouseListener(this);
 	}
 	
 	private void loadExpiryList() {
@@ -165,26 +169,15 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	public void itemStateChanged(ItemEvent e) {
 		if(e.getSource().equals(cboMonth)) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				rdbtnWithinTheNext.setSelected(true);
 				if(cboMonth.getSelectedIndex() == 0) {
 					lblMonths.setText("month");
-					update();
 				}
 				else {
 					lblMonths.setText("months");
-					update();
 				}
 			}
-		}
-		else if(e.getSource().equals(rdbtnThisMonth))
-		{
-			update();			
-		}
-		else if(e.getSource().equals(rdbtnWithinTheNext))
-		{
 			update();
 		}
-		
 	}
 
 	@Override
@@ -192,8 +185,15 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		if(e.getSource().equals(btnRemove)) {
 			int batchID = bm.getBatchID(tblExpiryList.getSelectedRow());
 			bm.emptyBatch(batchID);
-			update();
 		}
+		else if(e.getSource().equals(rdbtnThisMonth)) {
+			cboMonth.setEnabled(false);
+		}
+		else if(e.getSource().equals(rdbtnWithinTheNext)) {
+			cboMonth.setEnabled(true);
+		}
+
+		update();
 	}
 
 	@Override
@@ -210,5 +210,33 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 				btnRemove.setForeground(Color.WHITE);
 			}
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource().equals(this)) {
+			tblExpiryList.transferFocusUpCycle();
+			tblExpiryList.clearSelection();
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		
 	}
 }
