@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import DBConnector.DBConnection;
@@ -203,7 +204,69 @@ public class BatchManager {
 
 		return 0;
 	}
+
+	public int getProductID (int batchID) {
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		int productID = 0;
+		String sQuery = "SELECT productID "
+				+ "FROM batch "
+				+ "WHERE batchID = " + batchID + ";";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+
+			if(rs.next()) {
+				productID = rs.getInt(1);
+			}
+			con.disconnect();
+
+			rs.close();
+			return productID;
+		}
+			
+			catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return productID;
+	}
 	
+
+	public int getBatchID (int row) {
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		int batchID = 0;
+		String sQuery = "SELECT batchID "
+				+ "FROM batch "
+				+ "ORDER BY batchID LIMIT 1 OFFSET " + row + ";";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+
+			if(rs.next()) {
+				batchID = rs.getInt(1);
+			}
+			con.disconnect();
+
+			rs.close();
+			return batchID;
+		}
+			
+			catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return batchID;
+	}
+	
+
 	public ArrayList<Integer> getBatchIDList (int productID) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
@@ -232,6 +295,55 @@ public class BatchManager {
 		
 		return searchResults;
 	}
+	
+
+	public ArrayList<Integer> getExpiredBatchIDList(int month) {	
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery;
+		LocalDate currentDate = LocalDate.now();
+		int monthIterator = currentDate.getMonthValue();
+		int yearIterator = currentDate.getYear();
+		ArrayList<Integer> productIDList = new ArrayList<>();
+			
+		do
+		{
+		   sQuery = "SELECT b.batchID "
+					+ "FROM batch b "
+					+ "WHERE b.expiry_month = " + monthIterator 
+					+ " AND b.expiry_year = " + yearIterator
+					+ " AND b.batch_quantity_left > 0;";
+
+			try {
+				ps = con.getConnection().prepareStatement(sQuery);
+				
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					productIDList.add(rs.getInt(1));
+				}
+				
+				rs.close();
+				
+				con.disconnect();
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
+			
+			monthIterator++;
+		
+			if(monthIterator > 12) {
+				yearIterator++;
+				monthIterator = 1;					
+			}
+		
+			month--;
+		} while(month >= 0);
+
+		return productIDList;
+	}
+	
 	
 	public void addBatch(int productID, int batchquantity, double buyingprice, int expiremonth, int expiryyear, String lotnumber) {
 		DBConnection con = new DBConnection();
@@ -265,12 +377,30 @@ public class BatchManager {
 		}
 	}
 
+    public void emptyBatch(int batchID) {
+    	System.out.println("BatchID: " + batchID);
+    	DBConnection con = new DBConnection();
+		PreparedStatement ps;
+    	String sQuery = "UPDATE batch "
+				+ "SET batch_quantity_left = 0 "
+				+ "WHERE batchID = "+ batchID +";";
+        
+        try {
+        	ps = con.getConnection().prepareStatement(sQuery);
+        	ps.executeUpdate(sQuery);
+			
+        	con.disconnect();
+        } catch(SQLException e) {
+        	e.printStackTrace();
+        }
+    }
+    
     public void changeBatchQtyToZero(int batchID) {
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
     	String sQuery = "UPDATE batch "
-				+ "SET total_batch_quantity = '0'"
-				+ "AND batch_quantity_left = '0'"
+				+ "SET total_batch_quantity = 0 "
+				+ "AND batch_quantity_left = 0 "
 				+ "WHERE batchID = "+ batchID +";";
         
         try {

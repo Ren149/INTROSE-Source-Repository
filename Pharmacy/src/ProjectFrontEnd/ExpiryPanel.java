@@ -7,6 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -28,8 +32,11 @@ import javax.swing.table.DefaultTableModel;
 import ProjectBackEnd.BatchManager;
 import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.ListSelectionModel;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.Component;
 
-public class ExpiryPanel extends JPanel implements ItemListener, ActionListener, ListSelectionListener {
+public class ExpiryPanel extends JPanel implements ItemListener, ActionListener, ListSelectionListener, MouseListener {
 	private JTable tblExpiryList = new JTable();;
 	private JLabel lblTitle = new JLabel("Expiry List");
 	private JScrollPane scrNearExpiredProducts = new JScrollPane();
@@ -44,7 +51,6 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	private JComboBox cboMonth = new JComboBox();
 	private JLabel lblMonths = new JLabel("month");
 	private LocalDate currentDate = LocalDate.now();
-	private boolean distanceReceived = false;
 	private JButton btnRemove = new JButton("Remove");
 	
 	private ArrayList<Integer> id;
@@ -55,6 +61,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		
 		lblTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
 		
+		tblExpiryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblExpiryList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblExpiryList.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblExpiryList.getSelectionModel().addListSelectionListener(this);
@@ -82,6 +89,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		cboMonth.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"}));
 		cboMonth.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		cboMonth.addItemListener(this);
+		cboMonth.setEnabled(false);
 		
 		lblMonths.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 
@@ -96,59 +104,28 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 		add(scrNearExpiredProducts, "cell 0 2 2 1,grow");
 		add(lblItemCount, "cell 1 1,alignx right,aligny bottom");
 		add(rdbtnWithinTheNext, "cell 0 1,growy");
-		add(cboMonth, "cell 0 1,growy");
+		add(cboMonth, "cell 0 1");
 		add(lblMonths, "cell 0 1,growy");
 		add(btnRemove, "cell 1 3,alignx right");
 		
-		//loadExpiryList();
+		addMouseListener(this);
 	}
 	
-	private void loadExpiryList(boolean distanceReceived) {
+	private void loadExpiryList() {
 		DefaultTableModel expiryListTableModel = new DefaultTableModel();
 		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Expiry Date", "Quantity"});
 		
-		/*
-		 *   Write a query in the batch manager that accepts month distance
-		 *   and returns an ArrayList of batch ids whose expiry dates
-		 *   fall from this month to x months from now.
-		 *   Can you at least name that query something clearer,
-		 *   not just getProductIDList.
-		 *   
-		 *   It doesn't even get the ProductIDs, but the BatchIDs.
-		 *   Name it something like getExpiredBatchIDList(int month)
-		 *   
-		 * if(rdbtnThisMonth.isSelected()) {
-		 *   Use that query, accepting 0 as parameter.  
-		 * }
-		 * else {
-		 *   Use that getExpiredBatchIDList(month), accepting the parsed integer from cboMonth, I don't recommend using the index.
-		 *   If the query accepts 1, the manager must return the ids of batches whose expiry fall are either
-		 *   this month or next month.
-		 * }
-		 * 
-		 * 
-		 * And then remove this distanceReceived fluff from here...
-		 */
+		 if(rdbtnThisMonth.isSelected()) {
+			 id = bm.getExpiredBatchIDList(0);
+		 }
+		 else{
+			 id = bm.getExpiredBatchIDList(Integer.parseInt((String) cboMonth.getSelectedItem()));
+		 }
 		
-		if(distanceReceived == true) {
-			int monthdistance = currentDate.getMonthValue();
-			monthdistance += cboMonth.getSelectedIndex()+1;
-			if(monthdistance > 12)
-				monthdistance -= 12;
-			id = pm.getProductIDList(currentDate.getMonthValue(), monthdistance);
-		}
-		else {
-			id = pm.getProductIDList(currentDate.getMonthValue());
-		}
-		
-		/*
-		 * to here.
-		 */
-			
 		for(int i : id) {
-			String productName = pm.getProductName(i);
+			String productName = pm.getProductName(bm.getProductID(i));
 			String lotnumber = bm.getLotNumber(i);
-			String quantity = bm.getTotalQuantity(i) + "";
+			String quantity = bm.getTotalQuantity(bm.getProductID(i)) + "";
 			String expiryDate = "";
 			
 			switch(bm.getExpiryMonth(i)) {
@@ -188,33 +165,44 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	}
 	
 	public void update() {
-		loadExpiryList(distanceReceived);
+		loadExpiryList();
 	}
 	
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		if(e.getSource().equals(cboMonth)) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				rdbtnWithinTheNext.setSelected(true);
 				if(cboMonth.getSelectedIndex() == 0) {
 					lblMonths.setText("month");
-					update();
 				}
 				else {
 					lblMonths.setText("months");
-					update();
 				}
 			}
+			update();
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnRemove)) {
-			//get batch id of selected batch from ArrayList id.
-			//calls the batch manager to empty the batch by setting quantity_left to 0, maybe call it emptyBatch(int batchID)
-			//update();
+			int batchID = id.get(tblExpiryList.getSelectedRow());
+			
+			ExpiryRemoveDialog erd = new ExpiryRemoveDialog(batchID);
+			erd.addWindowListener(new WindowAdapter(){
+			    public void windowClosed(WindowEvent e) {
+					loadExpiryList();
+			    }
+			});
 		}
+		else if(e.getSource().equals(rdbtnThisMonth)) {
+			cboMonth.setEnabled(false);
+		}
+		else if(e.getSource().equals(rdbtnWithinTheNext)) {
+			cboMonth.setEnabled(true);
+		}
+
+		update();
 	}
 
 	@Override
@@ -225,11 +213,39 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 				btnRemove.setBackground(Color.WHITE);
 				btnRemove.setForeground(Color.BLACK);
 			}
-			else {
+			else {				
 				btnRemove.setEnabled(true);
 				btnRemove.setBackground(new Color(51, 204, 0));
 				btnRemove.setForeground(Color.WHITE);
 			}
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource().equals(this)) {
+			tblExpiryList.transferFocusUpCycle();
+			tblExpiryList.clearSelection();
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		
 	}
 }
