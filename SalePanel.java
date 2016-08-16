@@ -357,22 +357,22 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
 
-                        String preferreddate = "";
-                        Date today = new Date();
-                        
-                        String timeCheck = new SimpleDateFormat("HH:mm:ss").format(today);
-                        
-                        if(timeCheck.compareTo("18:00:00") < 0){
-                            preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(today);
-                        }
-                        else{
-                            Date nextDay = new Date();
-                            Calendar c = Calendar.getInstance(); 
-                            c.setTime(nextDay); 
-                            c.add(Calendar.DATE, 1);
-                            nextDay = c.getTime();
-                            preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
-                        }
+                    String preferreddate = "";
+                    Date today = new Date();
+                    
+                    String timeCheck = new SimpleDateFormat("HH:mm:ss").format(today);
+                    
+                    if(timeCheck.compareTo("18:00:00") < 0){
+                        preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    }
+                    else{
+                        Date nextDay = new Date();
+                        Calendar c = Calendar.getInstance(); 
+                        c.setTime(nextDay); 
+                        c.add(Calendar.DATE, 1);
+                        nextDay = c.getTime();
+                        preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
+                    }
                 
 	            	int prodID, prodQty;       	
 	            	//Reduce Batch Qty
@@ -411,7 +411,8 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	                sum = 0;
 	                loadCart();
 	                //tblSaleSearch.setModel(pm.viewProducts());
-            	            	
+            	    
+	                loadItemSelection();
             }
         }
         lblTotalValue.setText(String.valueOf(sum));
@@ -419,11 +420,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getSource().equals(tblItemSelection)) {
-			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
-				txtQuantity.requestFocus();
-			}
-		}
+		
 	}
 
 	@Override
@@ -451,11 +448,16 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 				btnAddToCart.setEnabled(true);
 			}
 		}
+		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-
+		if(e.getSource().equals(tblItemSelection)) {
+			if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+				txtQuantity.requestFocus();
+			}
+		}
 	}
 
 	@Override
