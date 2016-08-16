@@ -285,7 +285,12 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 		else if(e.getSource().equals(btnDiscontinue)) {
 			int productID = pm.getProductID(tblProductList.getSelectedRow(), txtSearch.getText());
 			
-			pm.setDiscontinued(productID, true);
+			DiscontinueDialog dd = new DiscontinueDialog(productID);
+			dd.addWindowListener(new WindowAdapter(){
+			    public void windowClosed(WindowEvent e) {
+					loadProductList();
+			    }
+			});
 			
 			loadProductList();
 		}

@@ -135,7 +135,7 @@ public class ProductManager {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
-		String sQuery = "SELECT productID FROM products WHERE product_name = ?;";
+		String sQuery = "SELECT productID FROM products WHERE product_name = ? AND isDiscontinued = false;";
 		int productID = -1;
 		
 		try {
@@ -167,6 +167,7 @@ public class ProductManager {
 		String sQuery = "SELECT p.productID "
 					+ "FROM products p "
 					+ "WHERE p.product_name LIKE '%" + searchText + "%' "
+					+ "AND p.isDiscontinued = false "
 					+ "ORDER BY p.product_name LIMIT 1 OFFSET " + row + ";";
 		int productID = -1;
 		
