@@ -111,7 +111,38 @@ public class BatchManager {
 
 		return 0;
 	}
+
 	
+	public int getBatchQuantity (int batchID) {
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT batch_quantity_left "
+				+ "FROM batch "
+				+ "WHERE batchID = '" + batchID + "';";
+		int batchQuantity = -1;
+		
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			ps.executeQuery(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt(1);
+			}
+
+			con.disconnect();
+			
+			rs.close();
+			
+			return batchQuantity;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
 	public Date getEntryDate (int batchID) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
@@ -309,35 +340,38 @@ public class BatchManager {
 			
 		do
 		{
-		   sQuery = "SELECT DISTINCT b.batchID "
+		   sQuery = "SELECT b.batchID "
 					+ "FROM batch b "
 					+ "WHERE b.expiry_month = " + monthIterator 
 					+ " AND b.expiry_year = " + yearIterator
-					+ " AND b.quantity_left > 0;";
-		
+					+ " AND b.batch_quantity_left > 0;";
 
-		try {
-			ps = con.getConnection().prepareStatement(sQuery);
-			
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				productIDList.add(rs.getInt(1));
+			try {
+				ps = con.getConnection().prepareStatement(sQuery);
+				
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					productIDList.add(rs.getInt(1));
+				}
+				
+				rs.close();
+				
+				con.disconnect();
+			} catch(SQLException e) {
+				e.printStackTrace();
 			}
 			
+			monthIterator++;
+		
+			if(monthIterator > 12) {
+				yearIterator++;
+				monthIterator = 1;					
+			}
+		
+			month--;
+		} while(month >= 0);
 
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		   monthIterator++;
-		if(monthIterator > 12)
-		{
-		      yearIterator++;
-		      monthIterator = 1;					
-		}
-		   month--;
-		}while(month >= 0);
-		con.disconnect();
 		return productIDList;
 	}
 	
@@ -375,6 +409,7 @@ public class BatchManager {
 	}
 
     public void emptyBatch(int batchID) {
+    	System.out.println("BatchID: " + batchID);
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
     	String sQuery = "UPDATE batch "
@@ -390,7 +425,6 @@ public class BatchManager {
         	e.printStackTrace();
         }
     }
-    
     
     public void changeBatchQtyToZero(int batchID) {
     	DBConnection con = new DBConnection();
