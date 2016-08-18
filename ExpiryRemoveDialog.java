@@ -70,6 +70,8 @@ public class ExpiryRemoveDialog extends JFrame implements ActionListener {
 
 		panel.add(btnCancel, "cell 1 2");
 		
+		this.batchID = batchID;
+		
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
