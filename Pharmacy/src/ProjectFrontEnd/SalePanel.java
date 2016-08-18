@@ -52,7 +52,12 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	private JScrollPane scrollPaneItemSelection = new JScrollPane();
 	private JScrollPane scrollPaneCart = new JScrollPane();
 	private JTable tblItemSelection = new JTable();
-	private JTable tblCart = new JTable();
+	private JTable tblCart = new JTable() {
+			public boolean isCellEditable(int row, int column) {                
+	            return false;               
+			}
+		};
+	
 	private JLabel lblSearch = new JLabel("Search: ");
 	private JLabel lblItemCount = new JLabel("");
 	private JLabel lblItemSelectionError = new JLabel("");
@@ -204,11 +209,13 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		itemSelectionTableModel.setColumnIdentifiers(new String[] {"Product Name", "Selling Price", "Quantity"});
 		
 		for(int i : id) {
+			if(bm.getTotalQuantity(i) != 0){
 			String productName = pm.getProductName(i);
 			String sellingPrice = "₱" + String.format("%.2f", pm.getSellingPrice(i));
 			String quantity = bm.getTotalQuantity(i) + "";
 			
 			itemSelectionTableModel.addRow(new Object[] {productName, sellingPrice, quantity});
+			}
 		}
 		
 		tblItemSelection.setModel(itemSelectionTableModel);
@@ -357,7 +364,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
 
-<<<<<<< HEAD:Pharmacy/src/ProjectFrontEnd/SalePanel.java
                         String preferreddate = "";
                         Date today = new Date();
                         
@@ -374,24 +380,6 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
                             nextDay = c.getTime();
                             preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
                         }
-=======
-                    String preferreddate = "";
-                    Date today = new Date();
-                    
-                    String timeCheck = new SimpleDateFormat("HH:mm:ss").format(today);
-                    
-                    if(timeCheck.compareTo("18:00:00") < 0){
-                        preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(today);
-                    }
-                    else{
-                        Date nextDay = new Date();
-                        Calendar c = Calendar.getInstance(); 
-                        c.setTime(nextDay); 
-                        c.add(Calendar.DATE, 1);
-                        nextDay = c.getTime();
-                        preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
-                    }
->>>>>>> Sale:SalePanel.java
                 
 	            	int prodID, prodQty;       	
 	            	//Reduce Batch Qty
@@ -403,11 +391,12 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	            			int batchQty = bm.getEachBatchQuantity(batchIDList.get(j));
 	            			if(prodQtyList.get(i) > batchQty){
 	            				bm.changeBatchQtyToZero(batchIDList.get(j));
-	            				prodQtyList.set(i, batchQty);
+	            				prodQtyList.set(i, prodQtyList.get(i)-batchQty);
 	            			}
 	            			else{
 	            				int difference = batchQty - prodQtyList.get(i);
 	            				bm.subtractBatchQty(batchIDList.get(j), difference);
+	            				prodQtyList.set(i, 0);
 	            			}
 	            		}
 	            	}
@@ -428,14 +417,9 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	                prodQtyList.clear();
 	                totalQty = 0;
 	                sum = 0;
-	                loadCart();
-	                //tblSaleSearch.setModel(pm.viewProducts());
-<<<<<<< HEAD:Pharmacy/src/ProjectFrontEnd/SalePanel.java
-            	            	
-=======
-            	    
+	                
 	                loadItemSelection();
->>>>>>> Sale:SalePanel.java
+	                loadCart();
             }
         }
         lblTotalValue.setText(String.valueOf(sum));
