@@ -357,6 +357,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
         if(e.getSource().equals(btnRecord)){
             if(tblCart.getRowCount() != 0){
 
+<<<<<<< HEAD:Pharmacy/src/ProjectFrontEnd/SalePanel.java
                         String preferreddate = "";
                         Date today = new Date();
                         
@@ -373,6 +374,24 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
                             nextDay = c.getTime();
                             preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
                         }
+=======
+                    String preferreddate = "";
+                    Date today = new Date();
+                    
+                    String timeCheck = new SimpleDateFormat("HH:mm:ss").format(today);
+                    
+                    if(timeCheck.compareTo("18:00:00") < 0){
+                        preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    }
+                    else{
+                        Date nextDay = new Date();
+                        Calendar c = Calendar.getInstance(); 
+                        c.setTime(nextDay); 
+                        c.add(Calendar.DATE, 1);
+                        nextDay = c.getTime();
+                        preferreddate = new SimpleDateFormat("yyyy-MM-dd").format(nextDay);;
+                    }
+>>>>>>> Sale:SalePanel.java
                 
 	            	int prodID, prodQty;       	
 	            	//Reduce Batch Qty
@@ -411,7 +430,12 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	                sum = 0;
 	                loadCart();
 	                //tblSaleSearch.setModel(pm.viewProducts());
+<<<<<<< HEAD:Pharmacy/src/ProjectFrontEnd/SalePanel.java
             	            	
+=======
+            	    
+	                loadItemSelection();
+>>>>>>> Sale:SalePanel.java
             }
         }
         lblTotalValue.setText(String.valueOf(sum));
