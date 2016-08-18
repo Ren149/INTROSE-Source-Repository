@@ -111,7 +111,38 @@ public class BatchManager {
 
 		return 0;
 	}
+
 	
+	public int getBatchQuantity (int batchID) {
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT batch_quantity_left "
+				+ "FROM batch "
+				+ "WHERE batchID = '" + batchID + "';";
+		int batchQuantity = -1;
+		
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			ps.executeQuery(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt(1);
+			}
+
+			con.disconnect();
+			
+			rs.close();
+			
+			return batchQuantity;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
 	public Date getEntryDate (int batchID) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
