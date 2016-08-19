@@ -29,6 +29,10 @@ import javax.swing.table.DefaultTableModel;
 
 import net.miginfocom.swing.MigLayout;
 
+import ProjectBackEnd.SaleManager;
+import java.util.ArrayList;
+import java.util.Date;
+
 public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener {
 	private ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
 	private JTextField salesReportDayInput;
@@ -52,6 +56,14 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	private JRadioButton rdbtnToday = new JRadioButton("Today");
 	private JRadioButton rdbtnPast = new JRadioButton("Past");	
 	private JRadioButton rdbtnCustom = new JRadioButton("Custom Range");
+        
+        //OTHER VARIABLES
+        float TotalCashSale = 0;
+        private ArrayList<Integer> salesIDList = new ArrayList<Integer>();
+        private ArrayList<Integer> TotalSalesList = new ArrayList<Integer>();
+        
+        //MANAGERS
+        private SaleManager sm = new SaleManager();
 	
 	public SalesReport() {
 		getContentPane().setBackground(Color.WHITE);
@@ -173,9 +185,45 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+                
+                /*
+                //TODAY 
+                Date today = new Date();
+                String entrydate = "";
+                entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                salesIDList = sm.getSalesIDList(entrydate);
+                for(int i = 0; i < salesIDList.size(); i++){
+                   TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
+                   TotalCashSale += TotalSalesList.get(i);                    
+                }
+                
+                //PAST N DAYS
+                Date today = new Date();
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(today);
+                int daysToDecrement = -1;
+                int N = Integer.parseInt(salesReportDayInput.getText());
+                
+                for(int i = 0; i < N; i++){
+                    cal.add(Calendar.DATE, daysToDecrement);
+                    today = cal.getTime();
+                    String entrydate = "";
+                    entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    
+                    salesIDList = sm.getSalesIDList(entrydate);
+                    for(int j = 0; j < salesIDList.size(); j++){
+                        TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
+                        TotalCashSale += TotalSalesList.get(j);                    
+                    }
+                }
+                */
+                              
 	}
 	
 	private void loadDateList() {
+                
+                
+                
 		//load ka ng ArrayList of Dates
 		//tapos ipakita mo sa Date table
 	}
