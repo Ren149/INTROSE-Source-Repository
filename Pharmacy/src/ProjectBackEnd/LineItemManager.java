@@ -24,10 +24,10 @@ public class LineItemManager {
 		return con;
 	}
 	
-    public void recordTransaction(int salesID, int productID, int totalQty)
+    public void recordTransaction(int salesID, int productID, int totalQty, float unit_price, float total_price_sold)
 	{
-		sQuery = "INSERT INTO line_item(salesID, productID, quantity_sold)"
-						+ "VALUES('"+ salesID +"','"+ productID + "', '"+totalQty+"')";
+		sQuery = "INSERT INTO line_item(salesID, productID, quantity_sold, unit_price, total_price_sold)"
+						+ "VALUES('"+ salesID +"','"+ productID + "', '"+totalQty+"', '"+unit_price+"', '"+total_price_sold+")";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);

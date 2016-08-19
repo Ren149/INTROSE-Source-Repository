@@ -51,13 +51,16 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	private JTextField txtQuantity = new JTextField();
 	private JScrollPane scrollPaneItemSelection = new JScrollPane();
 	private JScrollPane scrollPaneCart = new JScrollPane();
-	private JTable tblItemSelection = new JTable();
+	private JTable tblItemSelection = new JTable() {
+		public boolean isCellEditable(int row, int column) {                
+            return false;               
+		}
+	};
 	private JTable tblCart = new JTable() {
-			public boolean isCellEditable(int row, int column) {                
-	            return false;               
-			}
-		};
-	
+		public boolean isCellEditable(int row, int column) {                
+            return false;               
+		}
+	};
 	private JLabel lblSearch = new JLabel("Search: ");
 	private JLabel lblItemCount = new JLabel("");
 	private JLabel lblItemSelectionError = new JLabel("");
@@ -211,7 +214,7 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 		for(int i : id) {
 			if(bm.getTotalQuantity(i) != 0){
 			String productName = pm.getProductName(i);
-			String sellingPrice = "₱" + String.format("%.2f", pm.getSellingPrice(i));
+			String sellingPrice = "P" + String.format("%.2f", pm.getSellingPrice(i));
 			String quantity = bm.getTotalQuantity(i) + "";
 			
 			itemSelectionTableModel.addRow(new Object[] {productName, sellingPrice, quantity});
@@ -313,9 +316,8 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
             if(allValidInputs()) {
                 if(prodNameList.contains(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)))){
                 	int index;
- 
+
                 	index = prodNameList.indexOf(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
-                    
                     
                     sellingprice = pm.getSellingPrice(String.valueOf(tblItemSelection.getModel().getValueAt(tblItemSelection.getSelectedRow(), 0)));
                     sum += sm.getSubtotal(Integer.parseInt(txtQuantity.getText()), sellingprice);
@@ -405,12 +407,12 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	                sm.recordTransaction(sum, preferreddate);
 	                
 	                //Record Sales Manager
-	                int salesID = sm.getLatestSalesID();
+	                int salesID = sm.getLatestSalesID()+1;
 	                
 	                for(int i = 0; i < prodNameList.size(); i++){
 	                	prodID = pm.getProductID(prodNameList.get(i));
 	                	prodQty = Integer.parseInt(String.valueOf(tblCart.getModel().getValueAt(i, 1)));
-	                	lm.recordTransaction(salesID, prodID, prodQty);
+	                	//lm.recordTransaction(salesID, prodID, prodQty, );
 	                }
 	                
 	                prodNameList.clear();
