@@ -40,7 +40,7 @@ import javax.swing.event.ListSelectionListener;
 
 public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener, ListSelectionListener {
 	private ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
-	private JTextField salesReportDayInput;
+	private JTextField txtDay;
 	private JPanel salesReportMainPanel = new JPanel();
 	private JLabel lblTitle = new JLabel("Sales Report");
 	private JLabel lblSalesReportTable = new JLabel("Please choose a date range to show its sales report");
@@ -90,6 +90,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		rdbtnToday.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		rdbtnToday.setBackground(Color.WHITE);
+		rdbtnToday.addActionListener(this);
 		rdbtnToday.setSelected(true);
 		
 		salesReportDateSelectionRadioBtn.add(rdbtnToday);
@@ -102,6 +103,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 			}
 		));
 		tblDateList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tblDateList.getSelectionModel().addListSelectionListener(this);
+		
 		scrDateList.setViewportView(tblDateList);
                 
 
@@ -120,12 +123,13 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		rdbtnPast.setBackground(Color.WHITE);
 		rdbtnPast.addActionListener(this);
 		
-		salesReportDayInput = new JTextField();
-		salesReportDayInput.setBackground(Color.WHITE);
-		salesReportDayInput.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportDayInput.setText("7");
-		salesReportDayInput.setColumns(3);
-		salesReportDayInput.setEditable(false);
+		txtDay = new JTextField();
+		txtDay.setBackground(Color.WHITE);
+		txtDay.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtDay.setText("7");
+		txtDay.setColumns(3);
+		txtDay.setEditable(false);
+		txtDay.setEnabled(false);
 
 		lblError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
@@ -175,7 +179,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		salesReportMainPanel.add(scrDateList, "cell 2 1 1 6");
 		salesReportMainPanel.add(scrProductList, "cell 3 1 1 6");
 		salesReportMainPanel.add(rdbtnPast, "flowx,cell 0 2,alignx left");
-		salesReportMainPanel.add(salesReportDayInput, "cell 0 2,alignx left");
+		salesReportMainPanel.add(txtDay, "cell 0 2,alignx left");
 		salesReportMainPanel.add(lblError, "cell 0 3,alignx left");
 		salesReportMainPanel.add(rdbtnCustom, "cell 0 4");
 		salesReportMainPanel.add(separator, "cell 1 0 1 8,alignx center,growy");
@@ -224,7 +228,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	        Calendar cal = Calendar.getInstance();
 	        cal.setTime(today);
 	        int daysToDecrement = -1;
-	        int N = Integer.parseInt(salesReportDayInput.getText());
+	        int N = Integer.parseInt(txtDay.getText());
 	        
 	        for(int i = 0; i < N; i++){
 	            cal.add(Calendar.DATE, daysToDecrement);
@@ -294,20 +298,22 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	public void actionPerformed(ActionEvent arg0) {
 		if(rdbtnToday.isSelected()){
 			lblSalesReportTable.setText("Sales report for today, " + getCurrentDateString());
-			salesReportDayInput.setText(salesReportDayInput.getText());
-			salesReportDayInput.setEditable(false);
+			txtDay.setEditable(false);
+			txtDay.setEnabled(false);
 			cboDate_1.setEnabled(false);
 			cboDate_2.setEnabled(false);
 		}
 		else if(rdbtnPast.isSelected()){
-			salesReportDayInput.setEditable(true);
+			txtDay.setEditable(true);
+			txtDay.setEnabled(true);
 			cboDate_1.setEnabled(false);
 			cboDate_2.setEnabled(false);
-			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(salesReportDayInput.getText())));
-			salesReportDayInput.getDocument().addDocumentListener(this);
+			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
+			txtDay.getDocument().addDocumentListener(this);
 		}
 		else if(rdbtnCustom.isSelected()){
-			salesReportDayInput.setEditable(false);
+			txtDay.setEditable(false);
+			txtDay.setEnabled(false);
 			cboDate_1.setEnabled(true);
 			cboDate_2.setEnabled(true);
 			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_2.getValue()));
@@ -329,7 +335,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	@Override
 	public void insertUpdate(DocumentEvent arg0) {
 		if(rdbtnPast.isSelected()){
-			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(salesReportDayInput.getText())));
+			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
 		}
 	}
 
