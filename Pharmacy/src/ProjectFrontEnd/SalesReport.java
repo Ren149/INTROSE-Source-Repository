@@ -185,52 +185,65 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
-                
-                /*
-                //TODAY 
-                Date today = new Date();
-                String entrydate = "";
-                entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
-                salesIDList = sm.getSalesIDList(entrydate);
-                for(int i = 0; i < salesIDList.size(); i++){
-                   TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
-                   TotalCashSale += TotalSalesList.get(i);                    
-                }
-                
-                //PAST N DAYS
-                Date today = new Date();
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(today);
-                int daysToDecrement = -1;
-                int N = Integer.parseInt(salesReportDayInput.getText());
-                
-                for(int i = 0; i < N; i++){
-                    cal.add(Calendar.DATE, daysToDecrement);
-                    today = cal.getTime();
-                    String entrydate = "";
-                    entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
-                    
-                    salesIDList = sm.getSalesIDList(entrydate);
-                    for(int j = 0; j < salesIDList.size(); j++){
-                        TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
-                        TotalCashSale += TotalSalesList.get(j);                    
-                    }
-                }
-                */
-                              
 	}
 	
 	private void loadDateList() {
-                
-                
-                
-		//load ka ng ArrayList of Dates
-		//tapos ipakita mo sa Date table
+		//declare ka ng ArrayList dito
+		DefaultTableModel dateListTableModel = new DefaultTableModel();
+		dateListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
+		
+		if(rdbtnToday.isSelected()) {
+			/*
+			//TODAY 
+	        Date today = new Date();
+	        String entrydate = "";
+	        entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+	        salesIDList = sm.getSalesIDList(entrydate);
+	        for(int i = 0; i < salesIDList.size(); i++){
+	           TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
+	           TotalCashSale += TotalSalesList.get(i);                    
+	        }
+	        */
+		}
+		else if(rdbtnPast.isSelected()) {
+			/*
+			//PAST N DAYS
+	        Date today = new Date();
+	        Calendar cal = Calendar.getInstance();
+	        cal.setTime(today);
+	        int daysToDecrement = -1;
+	        int N = Integer.parseInt(salesReportDayInput.getText());
+	        
+	        for(int i = 0; i < N; i++){
+	            cal.add(Calendar.DATE, daysToDecrement);
+	            today = cal.getTime();
+	            String entrydate = "";
+	            entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+	            
+	            salesIDList = sm.getSalesIDList(entrydate);
+	            for(int j = 0; j < salesIDList.size(); j++){
+	                TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
+	                TotalCashSale += TotalSalesList.get(j);                    
+	            }
+	        }
+	        */
+		} else if(rdbtnCustom.isSelected()) {
+			
+			
+		}
+		
+		tblDateList.setModel(dateListTableModel);
 	}
 	
 	private void loadProductList() {
-		//load ka ng ArrayList of ProductIDs
-		//tapos ipakita mo sa Products table
+		//declare ka ng ArrayList dito
+		DefaultTableModel productListTableModel = new DefaultTableModel();
+		productListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
+	
+		//manipulation stuff
+	
+	
+		tblProductList.setModel(productListTableModel);
 	}
 	
 	public void update() {
