@@ -32,9 +32,14 @@ import net.miginfocom.swing.MigLayout;
 import ProjectBackEnd.LineItemManager;
 import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
+import java.text.ParseException;
+import java.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -63,7 +68,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	private JRadioButton rdbtnCustom = new JRadioButton("Custom Range");
         
         //OTHER VARIABLES
-        float TotalCashSale = 0;
+        
         private ArrayList<Integer> prodIDList = new ArrayList<Integer>();
         private ArrayList<Integer> salesIDList = new ArrayList<Integer>();
         private ArrayList<Integer> TotalSalesList = new ArrayList<Integer>();
@@ -192,8 +197,6 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		salesReportMainPanel.add(lblTotalCashSales_2, "flowx,cell 3 7,alignx right");
 		salesReportMainPanel.add(lblTotalCashSalesValue_2, "cell 3 7,alignx right");
                 
-                
-		
 		loadDateList();
 		
 		
@@ -204,6 +207,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	
 	private void loadDateList() {
 		//declare ka ng ArrayList dito
+                float TotalCashSale1 = 0;
+
                 Date today = new Date();
 		DefaultTableModel dateListTableModel = new DefaultTableModel();
 		dateListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
@@ -216,49 +221,98 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                     salesIDList = sm.getSalesIDList(entrydate);
                     for(int i = 0; i < salesIDList.size(); i++){
                         TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
-                        TotalCashSale += TotalSalesList.get(i);
+                        TotalCashSale1 += TotalSalesList.get(i);
                     }
-                    dateListTableModel.addRow(new Object[] {entrydate,"P "+TotalCashSale});
-                    lblTotalCashSalesValue_1.setText(String.valueOf(TotalCashSale));
-                    
-                    
+                    dateListTableModel.addRow(new Object[] {entrydate,"P "+TotalCashSale1});    
 		}
 		else if(rdbtnPast.isSelected()) {
 			//PAST N DAYS
-	        Calendar cal = Calendar.getInstance();
-	        cal.setTime(today);
-	        int daysToDecrement = -1;
-	        int N = Integer.parseInt(txtDay.getText());
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(today);
+                    int daysToDecrement = -1;
+                    int N = Integer.parseInt(txtDay.getText());
 	        
-	        for(int i = 0; i < N; i++){
-	            cal.add(Calendar.DATE, daysToDecrement);
-	            today = cal.getTime();
-	            String entrydate = "";
-	            entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    for(int i = 0; i < N; i++){
+                        int cashSale = 0;
+                        cal.add(Calendar.DATE, daysToDecrement);
+                        today = cal.getTime();
+                        String entrydate = "";
+                        entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
 	            
-	            salesIDList = sm.getSalesIDList(entrydate);
-	            for(int j = 0; j < salesIDList.size(); j++){
-	                TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
-	                TotalCashSale += TotalSalesList.get(j);                    
-	            }
-	        }
+                        salesIDList = sm.getSalesIDList(entrydate);
+                        for(int j = 0; j < salesIDList.size(); j++){
+                            TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
+                            cashSale += TotalSalesList.get(j);
+                            TotalCashSale1 += TotalSalesList.get(j);                    
+                        }
+                        
+                        dateListTableModel.addRow(new Object[] {entrydate,"P "+cashSale});
+                    }
 		} else if(rdbtnCustom.isSelected()) {
-			
-			
+                    
+                String startDateString = new SimpleDateFormat("yyyy-MM-dd").format(cboDate_2.getValue());
+                String endDateString = new SimpleDateFormat("yyyy-MM-dd").format(cboDate_1.getValue());
+               
+                LocalDate startDate = LocalDate.parse(startDateString);
+                LocalDate endDate = LocalDate.parse(endDateString);
+                
+                
+                System.out.println(startDate);
+                System.out.println(endDate);
+                /*
+                    try {
+                        startDate = df.parse(startDateString);
+                    } catch (ParseException ex) {
+                        Logger.getLogger(SalesReport.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    try {
+                        endDate = df.parse(endDateString);
+                    } catch (ParseException ex) {
+                        Logger.getLogger(SalesReport.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                
+                /*
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(startDate);
+                int daysToDecrement = -1;
+                
+                String newDateString1 = df.format(startDate);
+                String newDateString2 = df.format(endDate);
+                
+                do{
+                    int cashSale = 0;
+                        cal.add(Calendar.DATE, daysToDecrement);
+                        startDate = cal.getTime();
+                        String entrydate = "";
+                        entrydate = new SimpleDateFormat("yyyy-MM-dd").format(startDate);
+	            
+                        salesIDList = sm.getSalesIDList(entrydate);
+                        for(int j = 0; j < salesIDList.size(); j++){
+                            TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
+                            cashSale += TotalSalesList.get(j);
+                            TotalCashSale1 += TotalSalesList.get(j);                    
+                        }
+                        
+                        dateListTableModel.addRow(new Object[] {entrydate,"P "+cashSale});
+                        newDateString1 = df.format(startDate);
+                        newDateString2 = df.format(endDate);
+                }while(newDateString1.equals(newDateString2) != true);
+                	*/
 		}
 		
+                lblTotalCashSalesValue_1.setText(String.valueOf(TotalCashSale1));
 		tblDateList.setModel(dateListTableModel);
 	}
 	
 	private void loadProductList() {
-		//declare ka ng ArrayList dito
+		float TotalCashSale2 = 0;
                 ArrayList<Integer> prodIDList = new ArrayList<>();
 		DefaultTableModel productListTableModel = new DefaultTableModel();
 		productListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity sold", "Cash Sales"});
                 
-                
+                if(tblDateList.getSelectedRow() != -1){
                 String entrydate = String.valueOf(tblDateList.getValueAt(tblDateList.getSelectedRow(), 0));
-                
+
                 prodIDList = lm.getProdIDList(entrydate);
                 
                 for(int i = 0; i < prodIDList.size(); i++){
@@ -266,12 +320,13 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                     int QtySold = lm.getTotalProdQty(prodIDList.get(i), entrydate);
                     float unitPrice = lm.getUnitPrice(prodIDList.get(i), entrydate);
                     float cashSale = QtySold * unitPrice;
-                
+                    TotalCashSale2 += cashSale;
+                    
                     productListTableModel.addRow(new Object[] {prodName, QtySold, cashSale});
                     }
-		//manipulation stuff
+                }
 	
-	
+                lblTotalCashSalesValue_2.setText(String.valueOf(TotalCashSale2));
 		tblProductList.setModel(productListTableModel);
 	}
 	
@@ -302,6 +357,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 			txtDay.setEnabled(false);
 			cboDate_1.setEnabled(false);
 			cboDate_2.setEnabled(false);
+                        loadDateList();
 		}
 		else if(rdbtnPast.isSelected()){
 			txtDay.setEditable(true);
@@ -310,6 +366,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 			cboDate_2.setEnabled(false);
 			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
 			txtDay.getDocument().addDocumentListener(this);
+                        loadDateList();
 		}
 		else if(rdbtnCustom.isSelected()){
 			txtDay.setEditable(false);
@@ -317,6 +374,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 			cboDate_1.setEnabled(true);
 			cboDate_2.setEnabled(true);
 			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_2.getValue()));
+                        loadDateList();
 		}
 	}
 
@@ -347,7 +405,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        if(e.getSource().equals(tblDateList)){
+        if(e.getSource().equals(tblDateList.getSelectionModel())){
            loadProductList();
         }
     }
