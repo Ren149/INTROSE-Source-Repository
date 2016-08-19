@@ -412,7 +412,9 @@ public class SalePanel extends JPanel implements ActionListener, ListSelectionLi
 	                for(int i = 0; i < prodNameList.size(); i++){
 	                	prodID = pm.getProductID(prodNameList.get(i));
 	                	prodQty = Integer.parseInt(String.valueOf(tblCart.getModel().getValueAt(i, 1)));
-	                	//lm.recordTransaction(salesID, prodID, prodQty, );
+                                float unitPrice = pm.getSellingPrice(prodID);
+                                float totalPriceSold = unitPrice * prodQty;                                
+	                	lm.recordTransaction(salesID, prodID, prodQty, unitPrice, totalPriceSold);
 	                }
 	                
 	                prodNameList.clear();
