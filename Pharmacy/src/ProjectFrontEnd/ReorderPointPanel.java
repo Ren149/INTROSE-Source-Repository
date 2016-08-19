@@ -11,6 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import javax.swing.JTextField;
+
+import ProjectBackEnd.LineItemManager;
+import ProjectBackEnd.ReorderPointManager;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
@@ -31,6 +35,10 @@ public class ReorderPointPanel extends JFrame implements ActionListener{
 	private JButton btnAdjust = new JButton("Adjust");
 	private JPanel panel = new JPanel();
 	private Component verticalStrut = Box.createVerticalStrut(20);
+	private LineItemManager lm = new LineItemManager();
+	private ReorderPointManager rm = new ReorderPointManager();
+	private String lowReorder = String.valueOf(rm.getLowReorderPoint());
+	private String highReorder = String.valueOf(rm.getHighReorderPoint());
 	
 	public ReorderPointPanel() {
 		getContentPane().setBackground(Color.WHITE);
@@ -50,7 +58,7 @@ public class ReorderPointPanel extends JFrame implements ActionListener{
 		txtHighDemandReorderPoint = new JTextField();
 		txtHighDemandReorderPoint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtHighDemandReorderPoint.setColumns(3);
-		//set text of txtHighDemandReorderPoint to reorder point of high demand from reorderPoint table
+		txtHighDemandReorderPoint.setText(highReorder);
 		
 		lblPieces.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
@@ -61,7 +69,7 @@ public class ReorderPointPanel extends JFrame implements ActionListener{
 		txtLowDemandReorderPoint = new JTextField();
 		txtLowDemandReorderPoint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtLowDemandReorderPoint.setColumns(3);
-		//set text of txtLowDemandReorderPoint to reorder point of low demand from reorderPoint table
+		txtLowDemandReorderPoint.setText(lowReorder);
 		
 		lblLowDemandDescription.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
@@ -93,6 +101,12 @@ public class ReorderPointPanel extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//ReorderPointManager sets new values
+		if(e.getSource().equals(btnAdjust))
+		{
+			rm.setHighReorderPoint(Integer.parseInt(txtHighDemandReorderPoint.getText()));
+			rm.setLowReorderPoint(Integer.parseInt(txtLowDemandReorderPoint.getText()));
+			dispose();
+			
+		}
 	}
 }

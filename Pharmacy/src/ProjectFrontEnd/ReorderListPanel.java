@@ -16,6 +16,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import ProjectBackEnd.BatchManager;
+import ProjectBackEnd.LineItemManager;
+import ProjectBackEnd.ProductManager;
+import ProjectBackEnd.ReorderPointManager;
 import net.miginfocom.swing.MigLayout;
 
 public class ReorderListPanel extends JPanel implements ActionListener{
@@ -23,6 +27,12 @@ public class ReorderListPanel extends JPanel implements ActionListener{
 	private JButton btnUpdateReorderPoints = new JButton("Update Reorder Points");
 	private JScrollPane scrReorderList = new JScrollPane();
 	private JTable tblReorderList = new JTable();
+	private ProductManager pm = new ProductManager();
+	private BatchManager bm = new BatchManager();
+	private LineItemManager lm = new LineItemManager();
+	private ReorderPointManager rm = new ReorderPointManager();
+	private int lowReorder;
+	private int highReorder;
 	
 	public ReorderListPanel() {
 		setBackground(Color.WHITE);
@@ -59,9 +69,29 @@ public class ReorderListPanel extends JPanel implements ActionListener{
 		DefaultTableModel reorderListTableModel = new DefaultTableModel();
 		reorderListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity Left", "Demand"});
 
+		
 		//insert here code that gives arrayList id the list of products whose quantities are below their corresponding reorder points.
+		id = lm.getProductIDs();
+		
+		for(int i: id)
+		{
+			lowReorder = rm.getLowReorderPoint();
+			highReorder = rm.getHighReorderPoint();
+			String productName = pm.getProductName(i);
+			String quantity = String.valueOf(bm.getBatchQuantity(i));
+			String demand = rm.setDemand(i, lm.getAverageQuantity());
+			
+			if(demand.equals("High") && Integer.parseInt(quantity) < highReorder 
+					|| demand.equals("Low") && Integer.parseInt(quantity) < lowReorder)
+			reorderListTableModel.addRow(new Object[]{productName, quantity, demand});
+		}
+		
 		
 		tblReorderList.setModel(reorderListTableModel);
+	}
+
+	public void update() {
+		loadReorderList();
 	}
 	
 	@Override
