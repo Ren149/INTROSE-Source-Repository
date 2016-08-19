@@ -69,5 +69,49 @@ public class SaleManager {
 			e.printStackTrace();
 		}
 	}
+    
+    public int getTotalSales(int salesID){
+        sQuery = "SELECT total_price_sold FROM sales WHERE salesID = '"+salesID+"';";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			rs = ps.executeQuery();
+			con.getConnection().close();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+			rs.close(); 	
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+                return -1;
+    }
+    
+    public ArrayList<Integer> getSalesIDList(String entrydate) {	
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT salesID FROM sales WHERE date_sold LIKE '%"+entrydate+"%';";
+		ArrayList<Integer> salesIDList = new ArrayList<>();
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				salesIDList.add(rs.getInt(1));
+			}
+
+			con.getConnection().close();
+			rs.close(); 
+			return salesIDList;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 
 }
