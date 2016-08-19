@@ -29,11 +29,16 @@ import javax.swing.table.DefaultTableModel;
 
 import net.miginfocom.swing.MigLayout;
 
+import ProjectBackEnd.LineItemManager;
+import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
+
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener {
+public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener, ListSelectionListener {
 	private ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
 	private JTextField salesReportDayInput;
 	private JPanel salesReportMainPanel = new JPanel();
@@ -59,11 +64,14 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
         
         //OTHER VARIABLES
         float TotalCashSale = 0;
+        private ArrayList<Integer> prodIDList = new ArrayList<Integer>();
         private ArrayList<Integer> salesIDList = new ArrayList<Integer>();
         private ArrayList<Integer> TotalSalesList = new ArrayList<Integer>();
         
         //MANAGERS
         private SaleManager sm = new SaleManager();
+        private ProductManager pm = new ProductManager();
+        private LineItemManager lm = new LineItemManager();
 	
 	public SalesReport() {
 		getContentPane().setBackground(Color.WHITE);
@@ -95,6 +103,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		));
 		tblDateList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		scrDateList.setViewportView(tblDateList);
+                
 
 		tblProductList.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -178,9 +187,11 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		salesReportMainPanel.add(lblTotalCashSalesValue_1, "cell 2 7,alignx right");
 		salesReportMainPanel.add(lblTotalCashSales_2, "flowx,cell 3 7,alignx right");
 		salesReportMainPanel.add(lblTotalCashSalesValue_2, "cell 3 7,alignx right");
+                
+                
 		
 		loadDateList();
-		loadProductList();
+		
 		
 		pack();
 		setLocationRelativeTo(null);
@@ -189,26 +200,27 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	
 	private void loadDateList() {
 		//declare ka ng ArrayList dito
+                Date today = new Date();
 		DefaultTableModel dateListTableModel = new DefaultTableModel();
 		dateListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
 		
 		if(rdbtnToday.isSelected()) {
-			/*
-			//TODAY 
-	        Date today = new Date();
-	        String entrydate = "";
-	        entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
-	        salesIDList = sm.getSalesIDList(entrydate);
-	        for(int i = 0; i < salesIDList.size(); i++){
-	           TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
-	           TotalCashSale += TotalSalesList.get(i);                    
-	        }
-	        */
+                    //TODAY 
+                    String entrydate = "2016-08-16";
+                    //entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+
+                    salesIDList = sm.getSalesIDList(entrydate);
+                    for(int i = 0; i < salesIDList.size(); i++){
+                        TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
+                        TotalCashSale += TotalSalesList.get(i);
+                    }
+                    dateListTableModel.addRow(new Object[] {entrydate,"P "+TotalCashSale});
+                    lblTotalCashSalesValue_1.setText(String.valueOf(TotalCashSale));
+                    
+                    
 		}
 		else if(rdbtnPast.isSelected()) {
-			/*
 			//PAST N DAYS
-	        Date today = new Date();
 	        Calendar cal = Calendar.getInstance();
 	        cal.setTime(today);
 	        int daysToDecrement = -1;
@@ -226,7 +238,6 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	                TotalCashSale += TotalSalesList.get(j);                    
 	            }
 	        }
-	        */
 		} else if(rdbtnCustom.isSelected()) {
 			
 			
@@ -237,9 +248,23 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	
 	private void loadProductList() {
 		//declare ka ng ArrayList dito
+                ArrayList<Integer> prodIDList = new ArrayList<>();
 		DefaultTableModel productListTableModel = new DefaultTableModel();
-		productListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
-	
+		productListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity sold", "Cash Sales"});
+                
+                
+                String entrydate = String.valueOf(tblDateList.getValueAt(tblDateList.getSelectedRow(), 0));
+                
+                prodIDList = lm.getProdIDList(entrydate);
+                
+                for(int i = 0; i < prodIDList.size(); i++){
+                    String prodName = pm.getProductName(prodIDList.get(i));
+                    int QtySold = lm.getTotalProdQty(prodIDList.get(i), entrydate);
+                    float unitPrice = lm.getUnitPrice(prodIDList.get(i), entrydate);
+                    float cashSale = QtySold * unitPrice;
+                
+                    productListTableModel.addRow(new Object[] {prodName, QtySold, cashSale});
+                    }
 		//manipulation stuff
 	
 	
@@ -313,4 +338,11 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	public void removeUpdate(DocumentEvent arg0) {
 		
 	}
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        if(e.getSource().equals(tblDateList)){
+           loadProductList();
+        }
+    }
 }
