@@ -255,8 +255,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		if(rdbtnToday.isSelected()) {
                     //TODAY 
-                    String entrydate = "2016-08-21";
-                    //entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    String entrydate = "";
+                    entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
 
                     salesIDList = sm.getSalesIDList(entrydate);
                     for(int i = 0; i < salesIDList.size(); i++){
