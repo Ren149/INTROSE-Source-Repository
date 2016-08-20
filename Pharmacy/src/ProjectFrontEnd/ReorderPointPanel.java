@@ -11,88 +11,101 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import javax.swing.JTextField;
+
+import ProjectBackEnd.LineItemManager;
+import ProjectBackEnd.ReorderPointManager;
+
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.CardLayout;
+import java.awt.Component;
+import javax.swing.Box;
 
 public class ReorderPointPanel extends JFrame implements ActionListener{
 
-	//HEADER
-	private JLabel lblReorderPointHeader = new JLabel("Adjust Reorder Point");
-
-	//SLOW ITEMS
-	private JLabel lblSlowMovingItems = new JLabel("Slow-moving Items:");
-	private JTextField txtSlowMovingItemPoint = new JTextField();
-	private JLabel lblSlowPieces = new JLabel("pieces");
-	private JLabel lblSlowMovingFormula = new JLabel("(Top 50 of ");
-	
-	//FAST ITEMS
-	private JLabel lblFastMovingItemPoint = new JLabel("Fast-moving Items:");
-	private JTextField txtFastMovingItemPoint = new JTextField();
-	private JLabel lblFastPieces = new JLabel("pieces");
-	private JLabel lblFastMovingFormula = new JLabel("<current formula for fast-moving items>");
-	
-	//ADJUST BUTTON
-	private JButton btnAdjustReorderPoint = new JButton("Adjust");
-	
+	private JLabel lblTitle = new JLabel("Adjust Reorder Point");
+	private JLabel lblHighDemandProducts = new JLabel("High-Demand Products:");
+	private JLabel lblHighDemandDescription = new JLabel("(Products above average total sales count)");
+	private JLabel lblLowDemandProducts = new JLabel("Low-Demand Products:");
+	private JLabel lblLowDemandDescription = new JLabel("(Products below average total sales count)");
+	private JLabel lblPieces = new JLabel("pieces");
+	private JLabel lblPieces_1 = new JLabel("pieces");
+	private JTextField txtHighDemandReorderPoint;
+	private JTextField txtLowDemandReorderPoint;
+	private JButton btnAdjust = new JButton("Adjust");
+	private JPanel panel = new JPanel();
+	private Component verticalStrut = Box.createVerticalStrut(20);
+	private LineItemManager lm = new LineItemManager();
+	private ReorderPointManager rm = new ReorderPointManager();
+	private String lowReorder = String.valueOf(rm.getLowReorderPoint());
+	private String highReorder = String.valueOf(rm.getHighReorderPoint());
 	
 	public ReorderPointPanel() {
-		//PANEL
+		getContentPane().setBackground(Color.WHITE);
+
 		setBackground(new Color(255, 255, 255));
 		setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		setBounds(100, 100, 350, 252);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][][][][][]"));
+		getContentPane().setLayout(new CardLayout(10, 10));
 		
-		//HEADER
-		lblReorderPointHeader.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
-		getContentPane().add(lblReorderPointHeader, "cell 0 0 2 1");
+		getContentPane().add(panel, "name_442237092009446");
+
+		lblTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
+
+		lblHighDemandProducts.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
-		//SLOW ITEMS
-		lblSlowMovingItems.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(lblSlowMovingItems, "cell 0 1,alignx trailing");
+		txtHighDemandReorderPoint = new JTextField();
+		txtHighDemandReorderPoint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtHighDemandReorderPoint.setColumns(3);
+		txtHighDemandReorderPoint.setText(highReorder);
 		
-		txtSlowMovingItemPoint = new JTextField();
-		txtSlowMovingItemPoint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		txtSlowMovingItemPoint.setText("<current reordering point>");
-		getContentPane().add(txtSlowMovingItemPoint, "flowx,cell 1 1,growx");
-		txtSlowMovingItemPoint.setColumns(10);
+		lblPieces.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
-		lblSlowMovingFormula.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(lblSlowMovingFormula, "cell 0 2,alignx right,aligny top");
+		lblHighDemandDescription.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+
+		lblLowDemandProducts.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
+		txtLowDemandReorderPoint = new JTextField();
+		txtLowDemandReorderPoint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtLowDemandReorderPoint.setColumns(3);
+		txtLowDemandReorderPoint.setText(lowReorder);
 		
-		//FAST ITEMS
-		lblFastMovingItemPoint.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(lblFastMovingItemPoint, "cell 0 3,alignx trailing");
+		lblLowDemandDescription.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
-		txtFastMovingItemPoint = new JTextField();
-		txtFastMovingItemPoint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		txtFastMovingItemPoint.setText("<current reordering point>");
-		getContentPane().add(txtFastMovingItemPoint, "flowx,cell 1 3,growx,aligny top");
-		txtFastMovingItemPoint.setColumns(10);
+		btnAdjust.setForeground(new Color(255, 255, 255));
+		btnAdjust.setBackground(new Color(0, 204, 0));
+		btnAdjust.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
+		btnAdjust.addActionListener(this);
 		
-		lblFastMovingFormula.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(lblFastMovingFormula, "cell 0 4,alignx right,aligny top");
+		lblPieces_1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+
+		panel.setBackground(Color.WHITE);
+		panel.setLayout(new MigLayout("", "[][]", "[][][][][][][][][]"));
+		panel.add(lblTitle, "cell 0 0 2 1");
+		panel.add(lblHighDemandProducts, "cell 0 2,alignx trailing");
+		panel.add(txtHighDemandReorderPoint, "flowx,cell 1 2,growx");
+		panel.add(lblPieces, "cell 1 2,alignx left");
+		panel.add(lblHighDemandDescription, "cell 0 3,alignx right,aligny top");
+		panel.add(lblLowDemandProducts, "cell 0 5,alignx trailing");
+		panel.add(txtLowDemandReorderPoint, "flowx,cell 1 5,growx,aligny top");
+		panel.add(lblLowDemandDescription, "cell 0 6,alignx right,aligny top");
+		panel.add(verticalStrut, "cell 0 7");
+		panel.add(btnAdjust, "cell 0 8 2 1,alignx right,aligny bottom");
+		panel.add(lblPieces_1, "cell 1 5");
 		
-		
-		//ADJUST BUTTON
-		btnAdjustReorderPoint.setForeground(new Color(255, 255, 255));
-		btnAdjustReorderPoint.setBackground(new Color(0, 204, 0));
-		btnAdjustReorderPoint.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(btnAdjustReorderPoint, "cell 0 5 2 1,alignx right,aligny bottom");
-		
-		lblSlowPieces.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(lblSlowPieces, "cell 1 1,alignx left");
-		
-		lblFastPieces.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
-		getContentPane().add(lblFastPieces, "cell 1 3");
+		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(e.getSource().equals(btnAdjust)) {
+			rm.setHighReorderPoint(Integer.parseInt(txtHighDemandReorderPoint.getText()));
+			rm.setLowReorderPoint(Integer.parseInt(txtLowDemandReorderPoint.getText()));
+			dispose();
+			
+		}
 	}
-
 }
