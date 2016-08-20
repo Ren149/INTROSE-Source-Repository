@@ -37,7 +37,9 @@ public class SaleManager {
     
     public int getLatestSalesID()
 	{
-    	ResultSet rs;
+    	DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
     	sQuery = "SELECT MAX(salesID) FROM sales;";
 
 		try {
@@ -47,10 +49,9 @@ public class SaleManager {
 			con.disconnect();
 			
 			if(rs.next()) {
-					rs.close();
-					return rs.getInt(1);
+                            return rs.getInt(1);
 			}
-				
+			rs.close();	
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -72,19 +73,23 @@ public class SaleManager {
 	}
     
     public int getTotalSales(int salesID){
-    	ResultSet rs;
+    	DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
         sQuery = "SELECT total_price_sold FROM sales WHERE salesID = '"+salesID+"';";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			rs = ps.executeQuery();
-			con.disconnect();
+			
 			int temp;
 			if(rs.next()) {
 					temp = rs.getInt(1);
+                                        con.disconnect();
+                                        rs.close();
 					return temp;
-			}	
-			rs.close();
+			}
+                        
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}

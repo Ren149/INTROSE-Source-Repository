@@ -106,11 +106,13 @@ public class LineItemManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			rs = ps.executeQuery();
-			con.disconnect();
+			int temp = 0;
 			
 			if(rs.next()) {
+                                        temp = rs.getInt(1);
+                                        con.disconnect();
 					rs.close();
-					return rs.getInt(1);
+					return temp;
 					
 			}
 			 	
@@ -130,10 +132,12 @@ public class LineItemManager {
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			rs = ps.executeQuery();
-			con.disconnect();
-			rs.close();
+			float temp = 0;
 			if(rs.next()) {
-					return rs.getFloat(1);
+                                        temp = rs.getFloat(1);
+                                        con.disconnect();
+                                        rs.close();
+					return temp;
 			}
 			 	
 		} catch(SQLException e) {

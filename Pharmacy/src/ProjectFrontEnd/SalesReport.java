@@ -255,8 +255,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		if(rdbtnToday.isSelected()) {
                     //TODAY 
-                    String entrydate = "2016-08-16";
-                    //entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    String entrydate = "";
+                    entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
 
                     salesIDList = sm.getSalesIDList(entrydate);
                     for(int i = 0; i < salesIDList.size(); i++){
@@ -296,26 +296,16 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                
                 Date startDate = new Date();
+                Date endDate = new Date();
+                
 				try {
 					startDate = df.parse(startDateString);
+                                        endDate = df.parse(endDateString);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
-                Date endDate = new Date();
-				try {
-					endDate = df.parse(endDateString);
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-                
-                
-                System.out.println(startDate);
-                System.out.println(endDate);
-                
-                
-                
+				}             
+
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(startDate);
                 int daysToDecrement = -1;
