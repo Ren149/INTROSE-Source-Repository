@@ -1,312 +1,385 @@
 package ProjectFrontEnd;
 
-import javax.swing.*;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+
+import com.mysql.jdbc.StringUtils;
 
 import net.miginfocom.swing.MigLayout;
-import javax.swing.table.DefaultTableModel;
-import java.awt.Component;
-import java.util.Date;
-import java.util.Calendar;
-import java.awt.Color;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.*;
-import java.time.LocalDate;
-import java.awt.Font;
-import java.awt.CardLayout;
 
-public class SalesReport extends JFrame {
-	private final ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
-	private JTextField salesReportDayInput;
-	private String currDateString;
-	private String pastDateString;
-	private JTable tableSet1SalesReportTable;
-	private JTable tableSet2DateTotalTable;
-	private JTable table;
+import ProjectBackEnd.LineItemManager;
+import ProjectBackEnd.ProductManager;
+import ProjectBackEnd.SaleManager;
+import java.text.ParseException;
+import java.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener, ListSelectionListener {
+	private ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
+	private JTextField txtDay;
+	private JPanel salesReportMainPanel = new JPanel();
+	private JLabel lblTitle = new JLabel("Sales Report");
+	private JLabel lblSalesReportTable = new JLabel("Please choose a date range to show its sales report");
+	private JLabel lblDays = new JLabel(" days");
+	private JLabel lblTo = new JLabel("to");
+	private JLabel lblError = new JLabel("Error");		
+	private JLabel lblTotalCashSales_1 = new JLabel("Total Cash Sales:");
+	private JLabel lblTotalCashSalesValue_1 = new JLabel("0.00");
+	private JLabel lblTotalCashSales_2 = new JLabel("Total Cash Sales:");
+	private JLabel lblTotalCashSalesValue_2 = new JLabel("0.00");
+	private JSeparator separator = new JSeparator();
+	private JSpinner cboDate_1 = new JSpinner();
+	private JSpinner cboDate_2 = new JSpinner();
+	private JTable tblDateList = new JTable();
+	private JTable tblProductList = new JTable();
+	private JScrollPane scrDateList = new JScrollPane();
+	private JScrollPane scrProductList = new JScrollPane();
+	private JRadioButton rdbtnToday = new JRadioButton("Today");
+	private JRadioButton rdbtnPast = new JRadioButton("Past");	
+	private JRadioButton rdbtnCustom = new JRadioButton("Custom Range");
+        
+        //OTHER VARIABLES
+        
+        private ArrayList<Integer> prodIDList = new ArrayList<Integer>();
+        private ArrayList<Integer> salesIDList = new ArrayList<Integer>();
+        private ArrayList<Integer> TotalSalesList = new ArrayList<Integer>();
+        
+        //MANAGERS
+        private SaleManager sm = new SaleManager();
+        private ProductManager pm = new ProductManager();
+        private LineItemManager lm = new LineItemManager();
 	
 	public SalesReport() {
 		getContentPane().setBackground(Color.WHITE);
-		setTitle("Pharmacia Regine Sales Report");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
-		JPanel salesReportMainPanel = new JPanel();
-		JLabel lblSalesReport = new JLabel("Sales Report");
-		JLabel salesReportDateRangeLabel = new JLabel("Please choose a date range to show its sales report");
-		JPanel salesReportLeftPanel = new JPanel();
-		JRadioButton salesReportTodayRadioBtn = new JRadioButton("Today");
-		JRadioButton salesReportDayInputRadioBtn = new JRadioButton("Past");
-		JRadioButton salesReportDateRangeRadioBtn = new JRadioButton("Custom Range");
-		salesReportDayInput = new JTextField();
-		salesReportDayInput.setBackground(Color.WHITE);
-		JLabel lblDays = new JLabel(" days");
-		JSpinner salesReportCustomDate1 = new JSpinner();
-		salesReportCustomDate1.setForeground(Color.WHITE);
-		JLabel lblNewLabel = new JLabel("to");
-		JSpinner salesReportCustomDate2 = new JSpinner();
-		salesReportCustomDate2.setForeground(Color.WHITE);
-		JSeparator separator = new JSeparator();
-		JPanel salesReportRightPanel = new JPanel();
-		JPanel tableSet1 = new JPanel();
-		tableSet1.setBackground(Color.WHITE);
-		JPanel tableSet2 = new JPanel();
-		tableSet2.setBackground(Color.WHITE);
 		
 		setBackground(Color.WHITE);
-		getContentPane().setLayout(new MigLayout("", "[800,grow]", "[grow]"));
+		setTitle("Farmacia Regine Sales Report");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		salesReportMainPanel.setBackground(Color.WHITE);
-		getContentPane().add(salesReportMainPanel, "cell 0 0,grow");
-		salesReportMainPanel.setLayout(new MigLayout("", "[189.00,fill][][454.00][grow]", "[][grow]"));
+		getContentPane().setLayout(new CardLayout(10, 10));
+		getContentPane().add(salesReportMainPanel, "name_448996073156723");
 		
-		lblSalesReport.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-		lblSalesReport.setBackground(Color.WHITE);
-		salesReportMainPanel.add(lblSalesReport, "cell 0 0");
+		lblTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		lblTitle.setBackground(Color.WHITE);
 		
-		salesReportDateRangeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		salesReportMainPanel.add(salesReportDateRangeLabel, "cell 2 0");
-		
-		salesReportLeftPanel.setBackground(Color.WHITE);
-		salesReportMainPanel.add(salesReportLeftPanel, "cell 0 1,grow");
-		salesReportLeftPanel.setLayout(new MigLayout("", "[grow]", "[][][][][][][][][][][][][][][][]"));
-		
-		salesReportTodayRadioBtn.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportTodayRadioBtn.setBackground(Color.WHITE);
-		salesReportDateSelectionRadioBtn.add(salesReportTodayRadioBtn);
-		salesReportLeftPanel.add(salesReportTodayRadioBtn, "cell 0 0");
-		salesReportTodayRadioBtn.setSelected(true);
-		
-		salesReportDayInputRadioBtn.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportDayInputRadioBtn.setBackground(Color.WHITE);
-		salesReportDateSelectionRadioBtn.add(salesReportDayInputRadioBtn);
-		salesReportLeftPanel.add(salesReportDayInputRadioBtn, "flowx,cell 0 1");
-		
-		salesReportDateRangeRadioBtn.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportDateRangeRadioBtn.setBackground(Color.WHITE);
-		salesReportDateSelectionRadioBtn.add(salesReportDateRangeRadioBtn);
-		salesReportLeftPanel.add(salesReportDateRangeRadioBtn, "cell 0 2");
-		
-		salesReportDayInput.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportDayInput.setText("7");
-		salesReportLeftPanel.add(salesReportDayInput, "cell 0 1");
-		salesReportDayInput.setColumns(3);
-		
-		
-		
-		
-		lblDays.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportLeftPanel.add(lblDays, "cell 0 1");
-		
-		salesReportCustomDate1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportCustomDate1.setModel(new SpinnerDateModel());
-		salesReportCustomDate1.setEditor(new JSpinner.DateEditor(salesReportCustomDate1, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
-		salesReportLeftPanel.add(salesReportCustomDate1, "flowx,cell 0 3");
-		
-		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportLeftPanel.add(lblNewLabel, "cell 0 3");
-		
-		salesReportCustomDate2.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		salesReportCustomDate2.setModel(new SpinnerDateModel());
-		salesReportCustomDate2.setEditor(new JSpinner.DateEditor(salesReportCustomDate2, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
-		salesReportLeftPanel.add(salesReportCustomDate2, "cell 0 3");
-		
-		separator.setForeground(new Color(204, 204, 204));
-		separator.setOrientation(SwingConstants.VERTICAL);
-		salesReportMainPanel.add(separator, "cell 1 0 1 2,grow");
-		
-		
-		salesReportRightPanel.setBackground(Color.WHITE);
-		salesReportMainPanel.add(salesReportRightPanel, "cell 2 1 2 1,grow");
-		salesReportRightPanel.setLayout(new CardLayout(0, 0));
-		
-		
-		
-		salesReportRightPanel.add(tableSet1, "Table Set 1");
-		tableSet1.setLayout(new MigLayout("", "[450.00][grow]", "[grow][]"));
-		
-		JScrollPane tableSet1ScrollPane = new JScrollPane();
-		tableSet1.add(tableSet1ScrollPane, "cell 0 0 2 1,grow");
-		
-		tableSet1SalesReportTable = new JTable();
-		tableSet1SalesReportTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tableSet1SalesReportTable.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Item Name", "Sales Count", "Total Sales"
-			}
-		));
-		tableSet1ScrollPane.setViewportView(tableSet1SalesReportTable);
-		
-		JLabel tableSet1TotalTxtLbl = new JLabel("Overall Total Sales: ");
-		tableSet1TotalTxtLbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tableSet1.add(tableSet1TotalTxtLbl, "cell 0 1,alignx right");
-		
-		JLabel tableSet1OverallTotalSalesLbl = new JLabel("0.00");
-		tableSet1OverallTotalSalesLbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tableSet1.add(tableSet1OverallTotalSalesLbl, "cell 1 1,alignx right");
-		
-		salesReportRightPanel.add(tableSet2, "Table Set 2");
-		tableSet2.setLayout(new MigLayout("", "[158.00][256.00][164.00,grow][81.00,grow]", "[grow][]"));
-		
-		JScrollPane tableSet2ScrollPane1 = new JScrollPane();
-		tableSet2.add(tableSet2ScrollPane1, "cell 0 0 2 1,grow");
-		
-		tableSet2DateTotalTable = new JTable();
-		tableSet2DateTotalTable.setModel(new DefaultTableModel(
+		lblSalesReportTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+
+		tblDateList.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
 				"Date", "Sales Total"
 			}
 		));
-		tableSet2DateTotalTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tableSet2ScrollPane1.setViewportView(tableSet2DateTotalTable);
+		tblDateList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		tblDateList.getSelectionModel().addListSelectionListener(this);
 		
-		JScrollPane tableSet2ScrollPane2 = new JScrollPane();
-		tableSet2.add(tableSet2ScrollPane2, "cell 2 0 2 1,grow");
-		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(
+		scrDateList.setViewportView(tblDateList);
+                
+
+		tblProductList.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
 				"Item Name", "Sales Count", "Sales Total"
 			}
 		));
-		table.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		tableSet2ScrollPane2.setViewportView(table);
-		
-		JLabel tableSet2TotalTxtLbl1 = new JLabel("Overall Total Sales: ");
-		tableSet2TotalTxtLbl1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tableSet2.add(tableSet2TotalTxtLbl1, "cell 0 1,alignx right");
-		
-		JLabel tableSet2OverallTotalSalesLbl1 = new JLabel("0.00");
-		tableSet2OverallTotalSalesLbl1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tableSet2.add(tableSet2OverallTotalSalesLbl1, "cell 1 1,alignx right");
-		
-		JLabel tableSet2TotalTxtLbl2 = new JLabel("Overall Total Sales: ");
-		tableSet2TotalTxtLbl2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tableSet2.add(tableSet2TotalTxtLbl2, "cell 2 1,alignx right");
-		
-		JLabel tableSet2OverallTotalSalesLbl2 = new JLabel("0.00");
-		tableSet2OverallTotalSalesLbl2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tableSet2.add(tableSet2OverallTotalSalesLbl2, "cell 3 1,alignx right");
-		
-		CardLayout cardLayout = (CardLayout) salesReportRightPanel.getLayout();
-		cardLayout.show(salesReportRightPanel, "Table Set 1");
+		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 
+		scrProductList.setViewportView(tblProductList);
 		
-		//Radio buttons that update the text above the table
+		rdbtnPast.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		rdbtnPast.setBackground(Color.WHITE);
+		rdbtnPast.addActionListener(this);
 		
-		salesReportDateRangeLabel.setText("Sales report for today, " + getCurrentDateString());
-		
+		txtDay = new JTextField();
+		txtDay.setBackground(Color.WHITE);
+		txtDay.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtDay.setText("7");
+		txtDay.setColumns(3);
+		txtDay.setEditable(false);
+		txtDay.setEnabled(false);
 
-		salesReportDayInput.setEditable(false);
-		salesReportCustomDate1.setEnabled(false);
-		salesReportCustomDate2.setEnabled(false);
-		ActionListener salesReportActionListener = new ActionListener() {
-			
-			private String temp = salesReportDayInput.getText();
-			
-			public void actionPerformed(ActionEvent actionEvent) {
-				
-				
-				
-				if(salesReportTodayRadioBtn.isSelected()){
-					cardLayout.show(salesReportRightPanel, "Table Set 1");
-					
-					salesReportDateRangeLabel.setText("Sales report for today, " + getCurrentDateString());
-					salesReportDayInput.setText(temp);
-					salesReportDayInput.setEditable(false);
-					salesReportCustomDate1.setEnabled(false);
-					salesReportCustomDate2.setEnabled(false);
-				}
-				else if(salesReportDayInputRadioBtn.isSelected()){
-					
-					cardLayout.show(salesReportRightPanel, "Table Set 2");
-					salesReportDayInput.setEditable(true);
-					salesReportCustomDate1.setEnabled(false);
-					salesReportCustomDate2.setEnabled(false);
-					salesReportDateRangeLabel.setText(getPastDateString(Integer.parseInt(salesReportDayInput.getText())));
-					
-					salesReportDayInput.getDocument().addDocumentListener(new DocumentListener() {
-						
-						@Override
-						public void insertUpdate(DocumentEvent e) {
-							if(salesReportDayInputRadioBtn.isSelected()){
-								
-								salesReportDateRangeLabel.setText(getPastDateString(Integer.parseInt(salesReportDayInput.getText())));
-								temp = salesReportDayInput.getText();
-							}
-						}
+		lblError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+		
+		rdbtnCustom.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		rdbtnCustom.setBackground(Color.WHITE);
+		rdbtnCustom.addActionListener(this);
 
-						@Override
-						public void removeUpdate(DocumentEvent e) {
-							//none
-						}
+		salesReportDateSelectionRadioBtn.add(rdbtnPast);
+		salesReportDateSelectionRadioBtn.add(rdbtnCustom);
+		
+		separator.setForeground(new Color(204, 204, 204));
+		separator.setOrientation(SwingConstants.VERTICAL);
 
-						@Override
-						public void changedUpdate(DocumentEvent e) {
-							//none
-						}
-					});
-					
-				}
-				else if(salesReportDateRangeRadioBtn.isSelected()){
-					
-					cardLayout.show(salesReportRightPanel, "Table Set 2");
-					
-					salesReportDayInput.setEditable(false);
-					salesReportCustomDate1.setEnabled(true);
-					salesReportCustomDate2.setEnabled(true);
-					
-					salesReportDateRangeLabel.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(salesReportCustomDate1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(salesReportCustomDate2.getValue()));
-					
-					salesReportCustomDate1.addChangeListener(new ChangeListener() { 
-						
-						
-						@Override
-						public void stateChanged(ChangeEvent e) {
-							if(salesReportDateRangeRadioBtn.isSelected()){
-							
-								salesReportDateRangeLabel.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(salesReportCustomDate1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(salesReportCustomDate2.getValue()));
-							}
-						}
-					});
-					
-					salesReportCustomDate2.addChangeListener(new ChangeListener() { 
-						
-						@Override
-						public void stateChanged(ChangeEvent e) {
-							if(salesReportDateRangeRadioBtn.isSelected()){
-							
-								salesReportDateRangeLabel.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(salesReportCustomDate1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(salesReportCustomDate2.getValue()));
-							}
-						}
-					});
-				}
-			}
-		};
+		lblSalesReportTable.setText("Sales report for today, " + getCurrentDateString());
 		
+		lblDays.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+
+		lblError.setText("");
 		
+		lblTo.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
+		lblTotalCashSales_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
-		salesReportTodayRadioBtn.addActionListener(salesReportActionListener);
-		salesReportDayInputRadioBtn.addActionListener(salesReportActionListener);
-		salesReportDateRangeRadioBtn.addActionListener(salesReportActionListener);
+		lblTotalCashSalesValue_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
+		lblTotalCashSales_2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		
+		lblTotalCashSalesValue_2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+		cboDate_1.setForeground(Color.WHITE);
+		cboDate_1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		cboDate_1.setModel(new SpinnerDateModel());
+		cboDate_1.setEditor(new JSpinner.DateEditor(cboDate_1, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
+		cboDate_1.setEnabled(false);
+		cboDate_1.addChangeListener(this);
+		
+		cboDate_2.setForeground(Color.WHITE);
+		cboDate_2.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		cboDate_2.setModel(new SpinnerDateModel());
+		cboDate_2.setEditor(new JSpinner.DateEditor(cboDate_2, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
+		cboDate_2.setEnabled(false);
+		cboDate_2.addChangeListener(this);
+		
+		salesReportMainPanel.setBackground(Color.WHITE);
+		salesReportMainPanel.setLayout(new MigLayout("", "[][20px:20px][grow][grow]", "[][][][][][][grow][]"));
+		salesReportMainPanel.add(lblTitle, "cell 0 0");
+		salesReportMainPanel.add(lblSalesReportTable, "cell 2 0");
+		
+		rdbtnToday.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		rdbtnToday.setBackground(Color.WHITE);
+		rdbtnToday.addActionListener(this);
+		rdbtnToday.setSelected(true);
+		
+		salesReportDateSelectionRadioBtn.add(rdbtnToday);
+		
+		salesReportMainPanel.add(rdbtnToday, "cell 0 1");
+		salesReportMainPanel.add(scrDateList, "cell 2 1 1 6,growy");
+		salesReportMainPanel.add(scrProductList, "cell 3 1 1 6,growy");
+		salesReportMainPanel.add(rdbtnPast, "flowx,cell 0 2,alignx left");
+		salesReportMainPanel.add(txtDay, "cell 0 2,alignx left");
+		salesReportMainPanel.add(lblError, "cell 0 3,alignx left");
+		salesReportMainPanel.add(rdbtnCustom, "cell 0 4");
+		salesReportMainPanel.add(separator, "cell 1 0 1 8,alignx center,growy");
+		salesReportMainPanel.add(lblDays, "cell 0 2,alignx left");
+		salesReportMainPanel.add(cboDate_1, "flowx,cell 0 5");
+		salesReportMainPanel.add(lblTo, "cell 0 5");
+		salesReportMainPanel.add(cboDate_2, "cell 0 5");
+		salesReportMainPanel.add(lblTotalCashSales_1, "flowx,cell 2 7,alignx right");
+		salesReportMainPanel.add(lblTotalCashSalesValue_1, "cell 2 7,alignx right");
+		salesReportMainPanel.add(lblTotalCashSales_2, "flowx,cell 3 7,alignx right");
+		salesReportMainPanel.add(lblTotalCashSalesValue_2, "cell 3 7,alignx right");
+                
+		loadDateList();
 		
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	
+	private boolean allValidInputs() {
+		boolean valid = true;
+		
+		if(rdbtnPast.isSelected()) {
+			if(StringUtils.isEmptyOrWhitespaceOnly(txtDay.getText())) {
+				lblError.setText("Product must have a quantity.");
+				txtDay.setBackground(Color.YELLOW);
+				valid = false;
+			}
+			else {
+				try {
+					if(Integer.parseInt(txtDay.getText()) <= 0){
+						lblError.setText("Day must be greater than 0.");
+						txtDay.setBackground(Color.YELLOW);
+						txtDay.setText("");
+						valid = false;
+					}
+					else {
+						lblError.setText("");
+						txtDay.setBackground(Color.WHITE);
+					}
+				} catch(NumberFormatException e) {
+					lblError.setText("Day must be a positive whole number.");
+					txtDay.setBackground(Color.YELLOW);
+					txtDay.setText("");
+					valid = false;
+				}
+			}
+		}
+		else if(rdbtnCustom.isSelected()) {
+			
+		}
+		
+		return valid;
+	}
+	
+	private void loadDateList() {
+		//declare ka ng ArrayList dito
+                float TotalCashSale1 = 0;
+
+                Date today = new Date();
+		DefaultTableModel dateListTableModel = new DefaultTableModel();
+		dateListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
+		
+		if(rdbtnToday.isSelected()) {
+                    //TODAY 
+                    String entrydate = "2016-08-16";
+                    //entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+
+                    salesIDList = sm.getSalesIDList(entrydate);
+                    for(int i = 0; i < salesIDList.size(); i++){
+                        TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
+                        TotalCashSale1 += TotalSalesList.get(i);
+                    }
+                    dateListTableModel.addRow(new Object[] {entrydate,"P "+TotalCashSale1});    
+		}
+		else if(rdbtnPast.isSelected()) {
+			//PAST N DAYS
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(today);
+                    int daysToDecrement = -1;
+                    int N = Integer.parseInt(txtDay.getText());
+	        
+                    for(int i = 0; i < N; i++){
+                        int cashSale = 0;
+                        cal.add(Calendar.DATE, daysToDecrement);
+                        today = cal.getTime();
+                        String entrydate = "";
+                        entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+	            
+                        salesIDList = sm.getSalesIDList(entrydate);
+                        for(int j = 0; j < salesIDList.size(); j++){
+                            TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
+                            cashSale += TotalSalesList.get(j);
+                            TotalCashSale1 += TotalSalesList.get(j);                    
+                        }
+                        
+                        dateListTableModel.addRow(new Object[] {entrydate,"P "+cashSale});
+                    }
+		} else if(rdbtnCustom.isSelected()) {
+                    
+                String startDateString = new SimpleDateFormat("yyyy-MM-dd").format(cboDate_2.getValue());
+                String endDateString =  new SimpleDateFormat("yyyy-MM-dd").format(cboDate_1.getValue());
+                
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+               
+                Date startDate = new Date();
+				try {
+					startDate = df.parse(startDateString);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                Date endDate = new Date();
+				try {
+					endDate = df.parse(endDateString);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                
+                System.out.println(startDate);
+                System.out.println(endDate);
+                
+                
+                
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(startDate);
+                int daysToDecrement = -1;
+                
+                String newDateString1 = df.format(startDate);
+                String newDateString2 = df.format(endDate);
+                
+                do{
+                	int cashSale = 0;
+                	startDate = cal.getTime();
+                    String entrydate = "";
+                    entrydate = new SimpleDateFormat("yyyy-MM-dd").format(startDate);
+                    newDateString1 = df.format(startDate);
+                    newDateString2 = df.format(endDate);
+                	if(newDateString1.equals(newDateString2) != true){
+                        cal.add(Calendar.DATE, daysToDecrement);
+                	}
+                		
+                	salesIDList = sm.getSalesIDList(entrydate);
+                    for(int j = 0; j < salesIDList.size(); j++){
+                        TotalSalesList.add(sm.getTotalSales(salesIDList.get(j)));
+                        cashSale += TotalSalesList.get(j);
+                        TotalCashSale1 += TotalSalesList.get(j);                    
+                    }
+                    
+                    dateListTableModel.addRow(new Object[] {entrydate,"P "+cashSale});
+                }while(newDateString1.equals(newDateString2) != true);
+                	
+		}
+		
+                lblTotalCashSalesValue_1.setText(String.valueOf(TotalCashSale1));
+                tblDateList.setModel(dateListTableModel);
+	}
+	
+	private void loadProductList() {
+		float TotalCashSale2 = 0;
+                ArrayList<Integer> prodIDList = new ArrayList<>();
+		DefaultTableModel productListTableModel = new DefaultTableModel();
+		productListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Quantity sold", "Cash Sales"});
+                
+                if(tblDateList.getSelectedRow() != -1){
+                String entrydate = String.valueOf(tblDateList.getValueAt(tblDateList.getSelectedRow(), 0));
+
+                prodIDList = lm.getProdIDList(entrydate);
+                
+                for(int i = 0; i < prodIDList.size(); i++){
+                    String prodName = pm.getProductName(prodIDList.get(i));
+                    int QtySold = lm.getTotalProdQty(prodIDList.get(i), entrydate);
+                    float unitPrice = lm.getUnitPrice(prodIDList.get(i), entrydate);
+                    float cashSale = QtySold * unitPrice;
+                    TotalCashSale2 += cashSale;
+                    
+                    productListTableModel.addRow(new Object[] {prodName, QtySold, cashSale});
+                    }
+                }
+	
+                lblTotalCashSalesValue_2.setText(String.valueOf(TotalCashSale2));
+		tblProductList.setModel(productListTableModel);
+	}
+	
+	public void update() {
+		loadDateList();
+		loadProductList();
+	}
 	
 	private String getCurrentDateString(){
 		DateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
@@ -321,4 +394,78 @@ public class SalesReport extends JFrame {
         cal.add(Calendar.DATE, -i);    
         return "Sales report from " + dateFormat.format(cal.getTime()) + " to " + getCurrentDateString();
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		if(rdbtnToday.isSelected()){
+			lblSalesReportTable.setText("Sales report for today, " + getCurrentDateString());
+			txtDay.setEditable(false);
+			txtDay.setEnabled(false);
+			cboDate_1.setEnabled(false);
+			cboDate_2.setEnabled(false);
+                        loadDateList();
+		}
+		else if(rdbtnPast.isSelected()){
+			txtDay.setEditable(true);
+			txtDay.setEnabled(true);
+			cboDate_1.setEnabled(false);
+			cboDate_2.setEnabled(false);
+			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
+			txtDay.getDocument().addDocumentListener(this);
+                        loadDateList();
+		}
+		else if(rdbtnCustom.isSelected()){
+			txtDay.setEditable(false);
+			txtDay.setEnabled(false);
+			cboDate_1.setEnabled(true);
+			cboDate_2.setEnabled(true);
+			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_2.getValue()));
+                        loadDateList();
+		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		if(rdbtnCustom.isSelected()){
+			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_2.getValue()));
+		}
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent arg0) {
+		if(rdbtnPast.isSelected()){
+			if(allValidInputs()) {
+				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
+				loadDateList();
+			}
+		}
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent arg0) {
+		if(rdbtnPast.isSelected()){
+			if(allValidInputs()) {
+				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
+				loadDateList();
+			}
+		}
+	}
+
+
+	@Override
+	public void removeUpdate(DocumentEvent arg0) {
+		if(rdbtnPast.isSelected()){
+			if(allValidInputs()) {
+				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
+				loadDateList();
+			}
+		}
+	}
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        if(e.getSource().equals(tblDateList.getSelectionModel())){
+           loadProductList();
+        }
+    }
 }

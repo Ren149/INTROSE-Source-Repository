@@ -35,7 +35,11 @@ import ProjectBackEnd.ProductManager;
 import net.miginfocom.swing.MigLayout;
 
 public class ExpiryPanel extends JPanel implements ItemListener, ActionListener, ListSelectionListener, MouseListener {
-	private JTable tblExpiryList = new JTable();;
+	private JTable tblExpiryList = new JTable() {
+		public boolean isCellEditable(int row, int column) {                
+            return false;               
+		}
+	};
 	private JLabel lblTitle = new JLabel("Expiry List");
 	private JScrollPane scrNearExpiredProducts = new JScrollPane();
 	private JPanel panel = new JPanel();

@@ -95,7 +95,7 @@ public class MainWindow extends JFrame implements ActionListener{
 			
 		}
 		else if(e.getSource().equals(btnReorderList)) {
-			//reorderListPanel.update();
+			reorderListPanel.update();
 			((CardLayout)getContentPane().getLayout()).show(getContentPane(), "REORDER_LIST");
 			btnSale.setBackground(Color.WHITE);
 			btnProductList.setBackground(Color.WHITE);
