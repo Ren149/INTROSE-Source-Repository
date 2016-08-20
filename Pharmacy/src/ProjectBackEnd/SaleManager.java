@@ -37,25 +37,29 @@ public class SaleManager {
     
     public int getLatestSalesID()
 	{
-    	DBConnection con = new DBConnection();
+                DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
+                int temp;
     	sQuery = "SELECT MAX(salesID) FROM sales;";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
-			con.disconnect();
+			
 			
 			if(rs.next()) {
-                            return rs.getInt(1);
+                            temp =  rs.getInt(1);
+                            con.disconnect();
+                            rs.close();
+                            return temp;
 			}
-			rs.close();	
+				
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		return 1;
 	}
     
     public void recordTransaction(float totalSold, String date)

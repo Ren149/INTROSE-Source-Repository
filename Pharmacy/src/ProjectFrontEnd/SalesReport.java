@@ -255,8 +255,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		if(rdbtnToday.isSelected()) {
                     //TODAY 
-                    String entrydate = "";
-                    entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
+                    String entrydate = "2016-08-21";
+                    //entrydate = new SimpleDateFormat("yyyy-MM-dd").format(today);
 
                     salesIDList = sm.getSalesIDList(entrydate);
                     for(int i = 0; i < salesIDList.size(); i++){
@@ -314,7 +314,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                 String newDateString2 = df.format(endDate);
                 
                 do{
-                	int cashSale = 0;
+                	float cashSale = 0;
                 	startDate = cal.getTime();
                     String entrydate = "";
                     entrydate = new SimpleDateFormat("yyyy-MM-dd").format(startDate);
@@ -348,9 +348,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                 
                 if(tblDateList.getSelectedRow() != -1){
                 String entrydate = String.valueOf(tblDateList.getValueAt(tblDateList.getSelectedRow(), 0));
-
                 prodIDList = lm.getProdIDList(entrydate);
-                
                 for(int i = 0; i < prodIDList.size(); i++){
                     String prodName = pm.getProductName(prodIDList.get(i));
                     int QtySold = lm.getTotalProdQty(prodIDList.get(i), entrydate);
