@@ -101,8 +101,7 @@ public class ReorderPointPanel extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(btnAdjust))
-		{
+		if(e.getSource().equals(btnAdjust)) {
 			rm.setHighReorderPoint(Integer.parseInt(txtHighDemandReorderPoint.getText()));
 			rm.setLowReorderPoint(Integer.parseInt(txtLowDemandReorderPoint.getText()));
 			dispose();

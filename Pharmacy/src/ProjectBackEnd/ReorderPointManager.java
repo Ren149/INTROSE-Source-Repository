@@ -13,38 +13,6 @@ public class ReorderPointManager {
 	{
 	}
 	
-	public String setDemand(int productID, int reorderPoint)
-	{	DBConnection con = new DBConnection();
-	PreparedStatement ps;
-	ResultSet rs;
-	String sQuery = "SELECT SUM(batch_quantity_left) "
-			+ "FROM batch "
-			+ "WHERE productID = '" + productID + "' ;";
-	String demand = "";
-		
-		try {
-			ps = con.getConnection().prepareStatement(sQuery);
-			
-			rs = ps.executeQuery();
-			
-			if(rs.next()) {
-				if(rs.getInt(1) > reorderPoint)
-					demand = "High";
-				else
-					demand = "Low";
-			}	
-
-			con.disconnect();
-			
-			rs.close();
-			
-			return demand;
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		return demand;
-	}
-	
 	
 	public int getHighReorderPoint() {
 		DBConnection con = new DBConnection();

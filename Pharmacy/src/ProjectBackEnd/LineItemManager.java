@@ -12,35 +12,142 @@ public class LineItemManager {
 	public LineItemManager()
 	{
 	}
-	
+
     public void recordTransaction(int salesID, int productID, int totalQty, float unit_price, float total_price_sold)
 	{
-    	
-    	DBConnection con = new DBConnection();
-    	PreparedStatement ps;
-    	ResultSet rs;
-    	String sQuery;
-
-		sQuery = "INSERT INTO line_item(salesID, productID, quantity_sold, unit_price, total_price_sold)"
-						+ "VALUES('"+ salesID +"','"+ productID + "', '"+totalQty+"', '"+unit_price+"', '"+total_price_sold+")";
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "INSERT INTO line_item(salesID, productID, quantity_sold, unit_price, total_price_sold) "
+                        +"VALUES('"+ salesID +"','"+ productID + "', '"+totalQty+"', '"+unit_price+"', '"+total_price_sold+"')";
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			ps.executeUpdate(sQuery);
-			con.disconnect();
+			con.getConnection().close();
+                        
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}
     
 
+	public String determineDemand(int productID){
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT SUM(quantity_sold) "
+				+ "FROM line_item "
+				+ "WHERE productID = '" + productID + "' ;";
+		String demand = "";
+		
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			float averageSaleCount = getAverageSaleCount();
+			
+			if(rs.next()) {
+				if(rs.getInt(1) >= averageSaleCount)
+					demand = "High";
+				else
+					demand = "Low";
+			}	
+
+			con.disconnect();
+			
+			rs.close();
+			
+			return demand;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return demand;
+	}
+	
+    
+    public ArrayList<Integer> getProdIDList(String entrydate) {	
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT DISTINCT productID FROM line_item WHERE salesID "
+                        + "IN (SELECT salesID FROM sales WHERE date_sold LIKE '%"+entrydate+"%') "
+                        + "ORDER BY productID ASC";
+                
+		ArrayList<Integer> prodIDList = new ArrayList<>();
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				prodIDList.add(rs.getInt(1));
+			}
+
+			con.getConnection().close();
+			rs.close(); 
+			return prodIDList;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+    
+    public int getTotalProdQty(int prodID, String entrydate){
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT SUM(quantity_sold) FROM line_item WHERE productID = '"+prodID+"'"
+                +"AND salesID IN (SELECT salesID FROM sales WHERE date_sold LIKE '%"+entrydate+"%') ";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			rs = ps.executeQuery();
+			con.getConnection().close();
+			
+			if(rs.next()) {
+					return rs.getInt(1);
+			}
+			rs.close(); 	
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+                return -1;
+    }
+    
+    public float getUnitPrice(int prodID, String entrydate){
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT DISTINCT unit_price FROM line_item WHERE productID = '"+prodID+"'"
+                +"AND salesID IN (SELECT salesID FROM sales WHERE date_sold LIKE '%"+entrydate+"%') ";
+
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			rs = ps.executeQuery();
+			con.getConnection().close();
+			
+			if(rs.next()) {
+					return rs.getFloat(1);
+			}
+			rs.close(); 	
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+                return -1;
+    }
 
 	public ArrayList<Integer> getProductIDs() {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
-		String sQuery = "SELECT DISTINCT(productID) "
-				+ "FROM line_item;";
+		String sQuery = "SELECT DISTINCT(l.productID) "
+				+ "FROM line_item l, products p "
+				+ "WHERE l.productID = p.productID "
+				+ "ORDER BY p.product_name;";
 		
 		ArrayList<Integer> id = new ArrayList<>();
 
@@ -94,36 +201,47 @@ public class LineItemManager {
 		
 		return 0;
 	}
-	
 
-	public int getAverageQuantity() {
+	private ArrayList<Integer> getTotalSaleCountList() {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
-		String sQuery = "SELECT AVG(quantity_sold) "
-				+ "FROM line_item;";
-		int quantity = -1;
+		String sQuery = "SELECT SUM(quantity_sold) "
+				+ "FROM line_item "
+				+ "GROUP BY productID;";
+		ArrayList<Integer> saleCountList = new ArrayList<>();
 
 		try {
 			ps = con.getConnection().prepareStatement(sQuery);
 			
 			rs = ps.executeQuery();
 			
-			if(rs.next()) {
-				quantity = rs.getInt(1);
+			while(rs.next()) {
+				saleCountList.add(rs.getInt(1));
 			}
 
 			con.disconnect();
 			
 			rs.close();
 			
-			return quantity;
+			return saleCountList;
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return 0;
+		return null;
 	}
 	
+	private float getAverageSaleCount() {
+		ArrayList<Integer> saleCountList = getTotalSaleCountList();
+		float averageSaleCount = 0;
+		int i = 0;
+		
+		for(i = 0; i < saleCountList.size(); i++){
+			averageSaleCount += saleCountList.get(i);
+		}
 
+		averageSaleCount /= i;
+		return averageSaleCount;
+	}
 }
