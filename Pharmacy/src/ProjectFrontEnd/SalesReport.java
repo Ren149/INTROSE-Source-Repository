@@ -6,8 +6,11 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -25,25 +28,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.mysql.jdbc.StringUtils;
 
-import net.miginfocom.swing.MigLayout;
-
 import ProjectBackEnd.LineItemManager;
 import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
-import java.text.ParseException;
-import java.time.LocalDate;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import net.miginfocom.swing.MigLayout;
 
 public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener, ListSelectionListener {
 	private ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
@@ -59,8 +53,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	private JLabel lblTotalCashSales_2 = new JLabel("Total Cash Sales:");
 	private JLabel lblTotalCashSalesValue_2 = new JLabel("0.00");
 	private JSeparator separator = new JSeparator();
-	private JSpinner cboDate_1 = new JSpinner();
-	private JSpinner cboDate_2 = new JSpinner();
+	private JSpinner spnDate_1 = new JSpinner();
+	private JSpinner spnDate_2 = new JSpinner();
 	private JTable tblDateList = new JTable();
 	private JTable tblProductList = new JTable();
 	private JScrollPane scrDateList = new JScrollPane();
@@ -95,28 +89,15 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		lblSalesReportTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
-		tblDateList.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Date", "Sales Total"
-			}
-		));
 		tblDateList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblDateList.getSelectionModel().addListSelectionListener(this);
+		tblDateList.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		
 		scrDateList.setViewportView(tblDateList);
-                
-
-		tblProductList.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Item Name", "Sales Count", "Sales Total"
-			}
-		));
+		
 		tblProductList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-
+		tblProductList.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		
 		scrProductList.setViewportView(tblProductList);
 		
 		rdbtnPast.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -159,24 +140,37 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		lblTotalCashSalesValue_2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-		cboDate_1.setForeground(Color.WHITE);
-		cboDate_1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		cboDate_1.setModel(new SpinnerDateModel());
-		cboDate_1.setEditor(new JSpinner.DateEditor(cboDate_1, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
-		cboDate_1.setEnabled(false);
-		cboDate_1.addChangeListener(this);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_MONTH, - 1);
+		Date date1_ini = calendar.getTime();
+		Date date1_max = calendar.getTime();
 		
-		cboDate_2.setForeground(Color.WHITE);
-		cboDate_2.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		cboDate_2.setModel(new SpinnerDateModel());
-		cboDate_2.setEditor(new JSpinner.DateEditor(cboDate_2, new SimpleDateFormat("MMM-dd-yyyy").toPattern()));
-		cboDate_2.setEnabled(false);
-		cboDate_2.addChangeListener(this);
+		int daysAfterEarliestSaleDate = 7; //change this to get the number of days ago the earliest sale was made
+		calendar.add(Calendar.DAY_OF_MONTH, - daysAfterEarliestSaleDate); 
+		Date date1_min = calendar.getTime();
+		
+		calendar = Calendar.getInstance();
+		Date date2_ini = calendar.getTime();
+		Date date2_max = calendar.getTime();
+		
+		spnDate_1.setForeground(Color.WHITE);
+		spnDate_1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		spnDate_1.setModel(new SpinnerDateModel(date1_ini, date1_min, date1_max, Calendar.DAY_OF_MONTH));
+		spnDate_1.setEditor(new JSpinner.DateEditor(spnDate_1, new SimpleDateFormat("dd-MMM-yyyy").toPattern()));
+		spnDate_1.setEnabled(false);
+		spnDate_1.addChangeListener(this);
+		
+		spnDate_2.setForeground(Color.WHITE);
+		spnDate_2.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		spnDate_2.setModel(new SpinnerDateModel(date2_ini, null, date2_max, Calendar.DAY_OF_MONTH));
+		spnDate_2.setEditor(new JSpinner.DateEditor(spnDate_2, new SimpleDateFormat("dd-MMM-yyyy").toPattern()));
+		spnDate_2.setEnabled(false);
+		spnDate_2.addChangeListener(this);
 		
 		salesReportMainPanel.setBackground(Color.WHITE);
-		salesReportMainPanel.setLayout(new MigLayout("", "[][20px:20px][grow][grow]", "[][][][][][][grow][]"));
+		salesReportMainPanel.setLayout(new MigLayout("", "[][20px:20px][][]", "[][][][][][][grow][]"));
 		salesReportMainPanel.add(lblTitle, "cell 0 0");
-		salesReportMainPanel.add(lblSalesReportTable, "cell 2 0");
+		salesReportMainPanel.add(lblSalesReportTable, "cell 2 0 2 1");
 		
 		rdbtnToday.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		rdbtnToday.setBackground(Color.WHITE);
@@ -194,15 +188,16 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		salesReportMainPanel.add(rdbtnCustom, "cell 0 4");
 		salesReportMainPanel.add(separator, "cell 1 0 1 8,alignx center,growy");
 		salesReportMainPanel.add(lblDays, "cell 0 2,alignx left");
-		salesReportMainPanel.add(cboDate_1, "flowx,cell 0 5");
+		salesReportMainPanel.add(spnDate_1, "flowx,cell 0 5");
 		salesReportMainPanel.add(lblTo, "cell 0 5");
-		salesReportMainPanel.add(cboDate_2, "cell 0 5");
+		salesReportMainPanel.add(spnDate_2, "cell 0 5");
 		salesReportMainPanel.add(lblTotalCashSales_1, "flowx,cell 2 7,alignx right");
 		salesReportMainPanel.add(lblTotalCashSalesValue_1, "cell 2 7,alignx right");
 		salesReportMainPanel.add(lblTotalCashSales_2, "flowx,cell 3 7,alignx right");
 		salesReportMainPanel.add(lblTotalCashSalesValue_2, "cell 3 7,alignx right");
                 
 		loadDateList();
+		loadProductList();
 		
 		pack();
 		setLocationRelativeTo(null);
@@ -238,18 +233,14 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 				}
 			}
 		}
-		else if(rdbtnCustom.isSelected()) {
-			
-		}
 		
 		return valid;
 	}
 	
 	private void loadDateList() {
-		//declare ka ng ArrayList dito
-                float TotalCashSale1 = 0;
+        float TotalCashSale1 = 0;
 
-                Date today = new Date();
+        Date today = new Date();
 		DefaultTableModel dateListTableModel = new DefaultTableModel();
 		dateListTableModel.setColumnIdentifiers(new String[] {"Date", "Cash Sales"});
 		
@@ -290,8 +281,8 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                     }
 		} else if(rdbtnCustom.isSelected()) {
                     
-                String startDateString = new SimpleDateFormat("yyyy-MM-dd").format(cboDate_2.getValue());
-                String endDateString =  new SimpleDateFormat("yyyy-MM-dd").format(cboDate_1.getValue());
+                String startDateString = new SimpleDateFormat("yyyy-MM-dd").format(spnDate_2.getValue());
+                String endDateString =  new SimpleDateFormat("yyyy-MM-dd").format(spnDate_1.getValue());
                 
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                
@@ -389,34 +380,59 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 			lblSalesReportTable.setText("Sales report for today, " + getCurrentDateString());
 			txtDay.setEditable(false);
 			txtDay.setEnabled(false);
-			cboDate_1.setEnabled(false);
-			cboDate_2.setEnabled(false);
-                        loadDateList();
+			spnDate_1.setEnabled(false);
+			spnDate_2.setEnabled(false);
+			lblError.setText("");
+			txtDay.setBackground(Color.WHITE);
+			txtDay.setText("7");
+            loadDateList();
 		}
 		else if(rdbtnPast.isSelected()){
 			txtDay.setEditable(true);
 			txtDay.setEnabled(true);
-			cboDate_1.setEnabled(false);
-			cboDate_2.setEnabled(false);
+			spnDate_1.setEnabled(false);
+			spnDate_2.setEnabled(false);
 			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
 			txtDay.getDocument().addDocumentListener(this);
-                        loadDateList();
+			loadDateList();
 		}
 		else if(rdbtnCustom.isSelected()){
 			txtDay.setEditable(false);
 			txtDay.setEnabled(false);
-			cboDate_1.setEnabled(true);
-			cboDate_2.setEnabled(true);
-			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_2.getValue()));
-                        loadDateList();
+			spnDate_1.setEnabled(true);
+			spnDate_2.setEnabled(true);
+			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(spnDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(spnDate_2.getValue()));
+			lblError.setText("");
+			txtDay.setBackground(Color.WHITE);
+			txtDay.setText("7");
+			loadDateList();
 		}
 	}
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if(rdbtnCustom.isSelected()){
-			lblSalesReportTable.setText("Sales report from " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_1.getValue()) + " to " + new SimpleDateFormat("MMMM dd, yyyy").format(cboDate_2.getValue()));
+		if(e.getSource().equals(spnDate_1)) {
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			String newStart = df.format(spnDate_1.getValue());
+			
+			try {
+				((SpinnerDateModel)spnDate_2.getModel()).setStart(df.parse(newStart));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
 		}
+		else if(e.getSource().equals(spnDate_2)) {
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			String newEnd = df.format(spnDate_2.getValue());
+			
+			try {
+				((SpinnerDateModel)spnDate_1.getModel()).setEnd(df.parse(newEnd));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		loadDateList();
 	}
 
 	@Override
