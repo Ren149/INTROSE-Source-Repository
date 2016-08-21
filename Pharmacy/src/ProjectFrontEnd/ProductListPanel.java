@@ -164,18 +164,18 @@ public class ProductListPanel extends JPanel implements ActionListener, ListSele
 			String entryDate = "";
 
 			switch(entryDateTemp.getMonth()) {
-				case 1: entryDate += "Jan "; break;
-				case 2: entryDate += "Feb "; break;
-				case 3: entryDate += "Mar "; break;
-				case 4: entryDate += "Apr "; break;
-				case 5: entryDate += "May "; break;
-				case 6: entryDate += "Jun "; break;
-				case 7: entryDate += "Jul "; break;
-				case 8: entryDate += "Aug "; break;
-				case 9: entryDate += "Sep "; break;
-				case 10: entryDate += "Oct "; break;
-				case 11: entryDate += "Nov "; break;
-				case 12: entryDate += "Dec "; break;
+				case 0: entryDate += "Jan "; break;
+				case 1: entryDate += "Feb "; break;
+				case 2: entryDate += "Mar "; break;
+				case 3: entryDate += "Apr "; break;
+				case 4: entryDate += "May "; break;
+				case 5: entryDate += "Jun "; break;
+				case 6: entryDate += "Jul "; break;
+				case 7: entryDate += "Aug "; break;
+				case 8: entryDate += "Sep "; break;
+				case 9: entryDate += "Oct "; break;
+				case 10: entryDate += "Nov "; break;
+				case 11: entryDate += "Dec "; break;
 			}
 			
 			entryDate += String.format("%02d", entryDateTemp.getDate()) + ", " + (entryDateTemp.getYear() + 1900);
