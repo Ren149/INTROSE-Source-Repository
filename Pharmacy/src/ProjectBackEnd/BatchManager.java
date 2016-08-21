@@ -370,8 +370,16 @@ public class BatchManager {
 		int yearIterator = currentDate.getYear();
 		ArrayList<Integer> productIDList = new ArrayList<>();
 			
+		
 		do
 		{
+			if(month == 0)
+				   sQuery = "SELECT b.batchID "
+							+ "FROM batch b "
+							+ "WHERE b.expiry_month <= " + monthIterator 
+							+ " AND b.expiry_year = " + yearIterator
+							+ " AND b.batch_quantity_left > 0;";
+			else
 		   sQuery = "SELECT b.batchID "
 					+ "FROM batch b "
 					+ "WHERE b.expiry_month = " + monthIterator 
@@ -402,12 +410,12 @@ public class BatchManager {
 			}
 		
 			month--;
-		} while(month >= 0);
-
+		} while(month > 0);
+		
 		return productIDList;
 	}
-	
-	
+
+
 	public void addBatch(int productID, int batchquantity, double buyingprice, int expiremonth, int expiryyear, String lotnumber) {
 		DBConnection con = new DBConnection();
 		PreparedStatement ps;
