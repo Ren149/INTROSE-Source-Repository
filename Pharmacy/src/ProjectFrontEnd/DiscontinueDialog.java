@@ -29,6 +29,7 @@ public class DiscontinueDialog extends JFrame implements ActionListener {
 	private JLabel lblRemoveSuccess = new JLabel("Batch removed.");
 
 	private ProductManager pm = new ProductManager();
+	private BatchManager bm = new BatchManager();
 
 	private int productID;
 
@@ -78,6 +79,7 @@ public class DiscontinueDialog extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnOK)) {
+			bm.emptyBatches(productID);
 			pm.setDiscontinued(productID, true);
 			dispose();
 		} else if (e.getSource().equals(btnCancel)) {
