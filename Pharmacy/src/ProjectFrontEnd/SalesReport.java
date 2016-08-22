@@ -155,8 +155,22 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		calendar.add(Calendar.DAY_OF_MONTH, - 1);
 		Date date1_ini = calendar.getTime();
 		Date date1_max = calendar.getTime();
-		
-		int daysAfterEarliestSaleDate = 7; //change this to get the number of days ago the earliest sale was made
+                
+                String minDateString = sm.getFirstSalesDate();
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+               
+                Date minDate = new Date();                
+				try {
+					minDate = df.parse(minDateString);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                                
+                long diff = Math.abs(date1_ini.getTime() - minDate.getTime());
+                long diffDays = (diff / (24 * 60 * 60 * 1000)) + 1;
+                
+		int daysAfterEarliestSaleDate = (int) diffDays; //change this to get the number of days ago the earliest sale was made
 		calendar.add(Calendar.DAY_OF_MONTH, - daysAfterEarliestSaleDate); 
 		Date date1_min = calendar.getTime();
 		
