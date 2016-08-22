@@ -484,6 +484,24 @@ public class BatchManager {
         }
     }
     
+    public void emptyBatches(int productID) {
+    	DBConnection con = new DBConnection();
+		PreparedStatement ps;
+    	String sQuery = "UPDATE batch "
+				+ "SET total_batch_quantity = 0 "
+				+ "AND batch_quantity_left = 0 "
+				+ "WHERE productID = "+ productID +";";
+        
+        try {
+        	ps = con.getConnection().prepareStatement(sQuery);
+        	ps.executeUpdate(sQuery);
+			
+        	con.disconnect();
+        } catch(SQLException e) {
+        	e.printStackTrace();
+        }
+    }
+    
     public ArrayList<Integer> getBatchIDofProductList(int productID){
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
