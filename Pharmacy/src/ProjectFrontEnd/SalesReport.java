@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,9 +29,9 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.mysql.jdbc.StringUtils;
@@ -39,7 +41,7 @@ import ProjectBackEnd.ProductManager;
 import ProjectBackEnd.SaleManager;
 import net.miginfocom.swing.MigLayout;
 
-public class SalesReport extends JFrame implements ActionListener, ChangeListener, DocumentListener, ListSelectionListener {
+public class SalesReport extends JFrame implements ActionListener, ChangeListener, KeyListener, ListSelectionListener {
 	private ButtonGroup salesReportDateSelectionRadioBtn = new ButtonGroup();
 	private JTextField txtDay;
 	private JPanel salesReportMainPanel = new JPanel();
@@ -55,8 +57,16 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 	private JSeparator separator = new JSeparator();
 	private JSpinner spnDate_1 = new JSpinner();
 	private JSpinner spnDate_2 = new JSpinner();
-	private JTable tblDateList = new JTable();
-	private JTable tblProductList = new JTable();
+	private JTable tblDateList = new JTable() {
+		public boolean isCellEditable(int row, int column) {                
+            return false;               
+		}
+	};
+	private JTable tblProductList = new JTable() {
+		public boolean isCellEditable(int row, int column) {                
+            return false;               
+		}
+	};
 	private JScrollPane scrDateList = new JScrollPane();
 	private JScrollPane scrProductList = new JScrollPane();
 	private JRadioButton rdbtnToday = new JRadioButton("Today");
@@ -67,7 +77,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
         
         private ArrayList<Integer> prodIDList = new ArrayList<Integer>();
         private ArrayList<Integer> salesIDList = new ArrayList<Integer>();
-        private ArrayList<Integer> TotalSalesList = new ArrayList<Integer>();
+        private ArrayList<Float> TotalSalesList = new ArrayList<Float>();
         
         //MANAGERS
         private SaleManager sm = new SaleManager();
@@ -84,10 +94,10 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		getContentPane().setLayout(new CardLayout(10, 10));
 		getContentPane().add(salesReportMainPanel, "name_448996073156723");
 		
-		lblTitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		lblTitle.setFont(new Font("Segoe UI Light", Font.PLAIN, 16));
 		lblTitle.setBackground(Color.WHITE);
 		
-		lblSalesReportTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblSalesReportTable.setFont(new Font("Segoe UI Light", Font.PLAIN, 13));
 
 		tblDateList.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tblDateList.getSelectionModel().addListSelectionListener(this);
@@ -100,7 +110,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		scrProductList.setViewportView(tblProductList);
 		
-		rdbtnPast.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		rdbtnPast.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		rdbtnPast.setBackground(Color.WHITE);
 		rdbtnPast.addActionListener(this);
 		
@@ -111,10 +121,11 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		txtDay.setColumns(3);
 		txtDay.setEditable(false);
 		txtDay.setEnabled(false);
+		txtDay.addKeyListener(this);
 
 		lblError.setFont(new Font("Segoe UI", Font.ITALIC, 11));
 		
-		rdbtnCustom.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		rdbtnCustom.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		rdbtnCustom.setBackground(Color.WHITE);
 		rdbtnCustom.addActionListener(this);
 
@@ -126,17 +137,17 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 
 		lblSalesReportTable.setText("Sales report for today, " + getCurrentDateString());
 		
-		lblDays.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblDays.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 
 		lblError.setText("");
 		
-		lblTo.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblTo.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		
-		lblTotalCashSales_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		lblTotalCashSales_1.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
 		
 		lblTotalCashSalesValue_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
-		lblTotalCashSales_2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		lblTotalCashSales_2.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
 		
 		lblTotalCashSalesValue_2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
@@ -144,8 +155,22 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		calendar.add(Calendar.DAY_OF_MONTH, - 1);
 		Date date1_ini = calendar.getTime();
 		Date date1_max = calendar.getTime();
-		
-		int daysAfterEarliestSaleDate = 7; //change this to get the number of days ago the earliest sale was made
+                
+                String minDateString = sm.getFirstSalesDate();
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+               
+                Date minDate = new Date();                
+				try {
+					minDate = df.parse(minDateString);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                                
+                long diff = Math.abs(date1_ini.getTime() - minDate.getTime());
+                long diffDays = (diff / (24 * 60 * 60 * 1000)) + 1;
+                
+		int daysAfterEarliestSaleDate = (int) diffDays; //change this to get the number of days ago the earliest sale was made
 		calendar.add(Calendar.DAY_OF_MONTH, - daysAfterEarliestSaleDate); 
 		Date date1_min = calendar.getTime();
 		
@@ -168,11 +193,11 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		spnDate_2.addChangeListener(this);
 		
 		salesReportMainPanel.setBackground(Color.WHITE);
-		salesReportMainPanel.setLayout(new MigLayout("", "[][20px:20px][][]", "[][][][][][][grow][]"));
+		salesReportMainPanel.setLayout(new MigLayout("", "[][20px:20px][][grow]", "[][][][][][][grow][]"));
 		salesReportMainPanel.add(lblTitle, "cell 0 0");
-		salesReportMainPanel.add(lblSalesReportTable, "cell 2 0 2 1");
+		salesReportMainPanel.add(lblSalesReportTable, "cell 2 0 2 1,aligny bottom");
 		
-		rdbtnToday.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		rdbtnToday.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 11));
 		rdbtnToday.setBackground(Color.WHITE);
 		rdbtnToday.addActionListener(this);
 		rdbtnToday.setSelected(true);
@@ -181,7 +206,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		salesReportMainPanel.add(rdbtnToday, "cell 0 1");
 		salesReportMainPanel.add(scrDateList, "cell 2 1 1 6,growy");
-		salesReportMainPanel.add(scrProductList, "cell 3 1 1 6,growy");
+		salesReportMainPanel.add(scrProductList, "cell 3 1 1 6,grow");
 		salesReportMainPanel.add(rdbtnPast, "flowx,cell 0 2,alignx left");
 		salesReportMainPanel.add(txtDay, "cell 0 2,alignx left");
 		salesReportMainPanel.add(lblError, "cell 0 3,alignx left");
@@ -209,7 +234,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		
 		if(rdbtnPast.isSelected()) {
 			if(StringUtils.isEmptyOrWhitespaceOnly(txtDay.getText())) {
-				lblError.setText("Product must have a quantity.");
+				lblError.setText("Option requires an input.");
 				txtDay.setBackground(Color.YELLOW);
 				valid = false;
 			}
@@ -218,7 +243,6 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 					if(Integer.parseInt(txtDay.getText()) <= 0){
 						lblError.setText("Day must be greater than 0.");
 						txtDay.setBackground(Color.YELLOW);
-						txtDay.setText("");
 						valid = false;
 					}
 					else {
@@ -228,7 +252,6 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 				} catch(NumberFormatException e) {
 					lblError.setText("Day must be a positive whole number.");
 					txtDay.setBackground(Color.YELLOW);
-					txtDay.setText("");
 					valid = false;
 				}
 			}
@@ -254,7 +277,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                         TotalSalesList.add(sm.getTotalSales(salesIDList.get(i)));
                         TotalCashSale1 += TotalSalesList.get(i);
                     }
-                    dateListTableModel.addRow(new Object[] {entrydate,"P "+TotalCashSale1});    
+                    dateListTableModel.addRow(new Object[] {entrydate,"P"+ String.format("%.2f", TotalCashSale1)});    
 		}
 		else if(rdbtnPast.isSelected()) {
 			//PAST N DAYS
@@ -264,7 +287,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                     int N = Integer.parseInt(txtDay.getText());
 	        
                     for(int i = 0; i < N; i++){
-                        int cashSale = 0;
+                        float cashSale = 0;
                         cal.add(Calendar.DATE, daysToDecrement);
                         today = cal.getTime();
                         String entrydate = "";
@@ -277,7 +300,7 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                             TotalCashSale1 += TotalSalesList.get(j);                    
                         }
                         
-                        dateListTableModel.addRow(new Object[] {entrydate,"P "+cashSale});
+                        dateListTableModel.addRow(new Object[] {entrydate,"P"+ String.format("%.2f",cashSale)});
                     }
 		} else if(rdbtnCustom.isSelected()) {
                     
@@ -322,13 +345,19 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                         TotalCashSale1 += TotalSalesList.get(j);                    
                     }
                     
-                    dateListTableModel.addRow(new Object[] {entrydate,"P "+cashSale});
+                    dateListTableModel.addRow(new Object[] {entrydate,"P"+String.format("%.2f",cashSale)});
                 }while(newDateString1.equals(newDateString2) != true);
                 	
 		}
 		
-                lblTotalCashSalesValue_1.setText(String.valueOf(TotalCashSale1));
-                tblDateList.setModel(dateListTableModel);
+        lblTotalCashSalesValue_1.setText("P" + String.format("%.2f",(TotalCashSale1)));
+
+        tblDateList.setModel(dateListTableModel);
+        
+        DefaultTableCellRenderer rendererRight = new DefaultTableCellRenderer();
+		rendererRight.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		tblDateList.getColumnModel().getColumn(1).setCellRenderer(rendererRight);
 	}
 	
 	private void loadProductList() {
@@ -347,12 +376,19 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
                     float cashSale = QtySold * unitPrice;
                     TotalCashSale2 += cashSale;
                     
-                    productListTableModel.addRow(new Object[] {prodName, QtySold, cashSale});
+                    productListTableModel.addRow(new Object[] {prodName, QtySold, "P" + String.format("%.2f",cashSale)});
                     }
                 }
 	
-                lblTotalCashSalesValue_2.setText(String.valueOf(TotalCashSale2));
-		tblProductList.setModel(productListTableModel);
+        lblTotalCashSalesValue_2.setText("P" + String.format("%.2f",TotalCashSale2));
+
+        tblProductList.setModel(productListTableModel);
+
+        DefaultTableCellRenderer rendererRight = new DefaultTableCellRenderer();
+		rendererRight.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		tblProductList.getColumnModel().getColumn(1).setCellRenderer(rendererRight);
+		tblProductList.getColumnModel().getColumn(2).setCellRenderer(rendererRight);
 	}
 	
 	public void update() {
@@ -393,7 +429,6 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 			spnDate_1.setEnabled(false);
 			spnDate_2.setEnabled(false);
 			lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
-			txtDay.getDocument().addDocumentListener(this);
 			loadDateList();
 		}
 		else if(rdbtnCustom.isSelected()){
@@ -435,41 +470,32 @@ public class SalesReport extends JFrame implements ActionListener, ChangeListene
 		loadDateList();
 	}
 
-	@Override
-	public void changedUpdate(DocumentEvent arg0) {
-		if(rdbtnPast.isSelected()){
-			if(allValidInputs()) {
-				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
-				loadDateList();
-			}
-		}
-	}
-
-	@Override
-	public void insertUpdate(DocumentEvent arg0) {
-		if(rdbtnPast.isSelected()){
-			if(allValidInputs()) {
-				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
-				loadDateList();
-			}
-		}
-	}
-
-
-	@Override
-	public void removeUpdate(DocumentEvent arg0) {
-		if(rdbtnPast.isSelected()){
-			if(allValidInputs()) {
-				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
-				loadDateList();
-			}
-		}
-	}
-
     @Override
     public void valueChanged(ListSelectionEvent e) {
         if(e.getSource().equals(tblDateList.getSelectionModel())){
            loadProductList();
         }
     }
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(rdbtnPast.isSelected()){
+			if(allValidInputs()) {
+				lblSalesReportTable.setText(getPastDateString(Integer.parseInt(txtDay.getText())));
+				loadDateList();
+			}
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -1,6 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `pharmacy` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `pharmacy`;
--- MySQL dump 10.13  Distrib 5.7.9, for Win32 (AMD64)
+-- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
 --
 -- Host: localhost    Database: pharmacy
 -- ------------------------------------------------------
@@ -137,7 +137,7 @@ DROP TABLE IF EXISTS `sales`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sales` (
   `salesID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `total_price_sold` int(11) NOT NULL,
+  `total_price_sold` float NOT NULL,
   `date_sold` date NOT NULL,
   PRIMARY KEY (`salesID`),
   UNIQUE KEY `salesID_UNIQUE` (`salesID`)
@@ -152,14 +152,6 @@ LOCK TABLES `sales` WRITE;
 /*!40000 ALTER TABLE `sales` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sales` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'pharmacy'
---
-
---
--- Dumping routines for database 'pharmacy'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -170,4 +162,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-19 21:01:16
+-- Dump completed on 2016-08-22  7:08:49

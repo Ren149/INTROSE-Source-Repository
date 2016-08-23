@@ -76,7 +76,7 @@ public class SaleManager {
 		}
 	}
     
-    public int getTotalSales(int salesID){
+    public float getTotalSales(int salesID){
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -86,9 +86,9 @@ public class SaleManager {
 			ps = con.getConnection().prepareStatement(sQuery);
 			rs = ps.executeQuery();
 			
-			int temp;
+			float temp;
 			if(rs.next()) {
-					temp = rs.getInt(1);
+					temp = rs.getFloat(1);
                                         con.disconnect();
                                         rs.close();
 					return temp;
@@ -125,5 +125,30 @@ public class SaleManager {
 
 		return null;
 	}
+    
+    public String getFirstSalesDate() {	
+		DBConnection con = new DBConnection();
+		PreparedStatement ps;
+		ResultSet rs;
+		String sQuery = "SELECT date_sold FROM sales WHERE salesID = 1;";
+		String salesDate = null;
 
+		try {
+			ps = con.getConnection().prepareStatement(sQuery);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()){
+				salesDate = rs.getString(1);
+			}
+
+			con.disconnect();
+			rs.close(); 
+			return salesDate;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }
