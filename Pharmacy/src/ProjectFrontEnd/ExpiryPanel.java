@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -115,7 +116,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 	
 	private void loadExpiryList() {
 		DefaultTableModel expiryListTableModel = new DefaultTableModel();
-		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Expiry Date", "Quantity"});
+		expiryListTableModel.setColumnIdentifiers(new String[] {"Product Name", "Lot Number", "Entry Date", "Expiry Date", "Quantity"});
 		
 		 if(rdbtnThisMonth.isSelected()) {
 			 id = bm.getExpiredBatchIDList(0);
@@ -128,6 +129,26 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 			String productName = pm.getProductName(bm.getProductID(i));
 			String lotnumber = bm.getLotNumber(i);
 			String quantity = bm.getBatchQuantity(i) + "";
+			Date entryDateTemp = bm.getEntryDate(i);
+			String entryDate = "";
+			
+			switch(entryDateTemp.getMonth()) {
+			case 0: entryDate += "Jan "; break;
+			case 1: entryDate += "Feb "; break;
+			case 2: entryDate += "Mar "; break;
+			case 3: entryDate += "Apr "; break;
+			case 4: entryDate += "May "; break;
+			case 5: entryDate += "Jun "; break;
+			case 6: entryDate += "Jul "; break;
+			case 7: entryDate += "Aug "; break;
+			case 8: entryDate += "Sep "; break;
+			case 9: entryDate += "Oct "; break;
+			case 10: entryDate += "Nov "; break;
+			case 11: entryDate += "Dec "; break;
+		}
+		
+			entryDate += String.format("%02d", entryDateTemp.getDate()) + ", " + (entryDateTemp.getYear() + 1900);
+		
 			String expiryDate = "";
 			
 			switch(bm.getExpiryMonth(i)) {
@@ -146,7 +167,7 @@ public class ExpiryPanel extends JPanel implements ItemListener, ActionListener,
 			}
 			expiryDate += bm.getExpiryYear(i);
 			
-			expiryListTableModel.addRow(new Object[] {productName, lotnumber, expiryDate, quantity});
+			expiryListTableModel.addRow(new Object[] {productName, lotnumber, entryDate, expiryDate, quantity});
 		}
 
 		tblExpiryList.setModel(expiryListTableModel);
