@@ -470,8 +470,8 @@ public class BatchManager {
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
     	String sQuery = "UPDATE batch "
-				+ "SET total_batch_quantity = 0 "
-				+ "AND batch_quantity_left = 0 "
+				+ "SET total_batch_quantity = 0, "
+				+ "batch_quantity_left = 0 "
 				+ "WHERE batchID = "+ batchID +";";
         
         try {
@@ -488,8 +488,8 @@ public class BatchManager {
     	DBConnection con = new DBConnection();
 		PreparedStatement ps;
     	String sQuery = "UPDATE batch "
-				+ "SET total_batch_quantity = 0 "
-				+ "AND batch_quantity_left = 0 "
+				+ "SET total_batch_quantity = 0, "
+				+ "batch_quantity_left = 0 "
 				+ "WHERE productID = "+ productID +";";
         
         try {
